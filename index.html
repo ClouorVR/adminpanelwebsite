@@ -1,25 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel</title>
+    <title>MonkeOS PlayFab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Game Admin Panel</h1>
-    
-    <input type="text" id="playerId" placeholder="Enter Player ID">
-    <button onclick="searchPlayer()">Search</button>
+<body class="bg-gray-900 text-white flex h-screen font-sans">
 
-    <div id="playerStats">
-        <p>Pebbles: <span id="pebbleCount">0</span></p>
-        <button onclick="addPebbles(100)">Give 100 Pebbles</button>
+    <div class="w-64 bg-gray-800 p-6 flex flex-col gap-4 shadow-2xl">
+        <h1 class="text-2xl font-bold text-blue-500 mb-4">MonkeOS Admin</h1>
+        <button onclick="switchTab('players')" class="text-left bg-gray-700 p-3 rounded hover:bg-blue-600 transition">Players</button>
+        <button onclick="switchTab('recent')" class="text-left bg-gray-700 p-3 rounded hover:bg-blue-600 transition">Recent Joins</button>
+        <button onclick="switchTab('analytics')" class="text-left bg-gray-700 p-3 rounded hover:bg-blue-600 transition">Analytics</button>
+    </div>
+
+    <div class="flex-1 p-10 overflow-y-auto">
+        
+        <div id="tab-players" class="tab-content block">
+            <h2 class="text-3xl font-bold mb-6">Player Management</h2>
+            
+            <div class="flex gap-2 mb-8 bg-gray-800 p-4 rounded-lg w-full max-w-2xl">
+                <input type="text" id="playerId" class="flex-1 p-3 rounded bg-gray-700 text-white border-none outline-none" placeholder="Enter Player ID...">
+                <button onclick="searchPlayer()" class="bg-blue-600 font-bold px-6 py-3 rounded hover:bg-blue-500">Search</button>
+            </div>
+
+            <div id="playerStats" class="hidden bg-gray-800 p-6 rounded-lg w-full max-w-2xl shadow-lg">
+                <h3 class="text-2xl font-bold text-green-400 mb-2" id="displayName">Player</h3>
+                <p class="text-gray-400 mb-4">ID: <span id="displayId" class="text-white"></span></p>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-gray-700 p-4 rounded">
+                        <h4 class="font-bold mb-2">Pebbles: <span id="pebbleCount" class="text-yellow-400 text-xl">0</span></h4>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="pebbleAmount" class="w-24 p-1 bg-gray-800 rounded text-center" value="100">
+                            <button onclick="modifyPebbles(true)" class="bg-green-600 px-3 rounded hover:bg-green-500">+</button>
+                            <button onclick="modifyPebbles(false)" class="bg-red-600 px-3 rounded hover:bg-red-500">-</button>
+                        </div>
+                        <button onclick="setPebbles()" class="bg-purple-600 w-full py-1 rounded hover:bg-purple-500 text-sm">Set Exact Amount</button>
+                    </div>
+
+                    <div class="bg-gray-700 p-4 rounded">
+                        <h4 class="font-bold mb-2">Cosmetics</h4>
+                        <ul id="cosmeticList" class="text-sm text-gray-300 mb-3 list-disc pl-5 h-20 overflow-y-auto"></ul>
+                        <div class="flex gap-2">
+                            <input type="text" id="cosmeticId" class="w-full p-1 bg-gray-800 rounded text-sm" placeholder="item_id">
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="manageCosmetic(true)" class="bg-blue-600 flex-1 py-1 rounded hover:bg-blue-500 text-sm">Give</button>
+                            <button onclick="manageCosmetic(false)" class="bg-red-600 flex-1 py-1 rounded hover:bg-red-500 text-sm">Revoke</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-recent" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Recently Joined</h2>
+            <button onclick="loadRecentPlayers()" class="bg-blue-600 px-4 py-2 rounded mb-4 hover:bg-blue-500">Refresh List</button>
+            <div class="bg-gray-800 p-6 rounded-lg">
+                <ul id="recentList" class="divide-y divide-gray-700">
+                    <li class="py-2 text-gray-400">Click refresh to load...</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tab-analytics" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6">Game Analytics</h2>
+            <button onclick="loadAnalytics()" class="bg-blue-600 px-4 py-2 rounded mb-4 hover:bg-blue-500">Load Data</button>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-800 p-6 rounded-lg text-center">
+                    <h3 class="text-gray-400">Total Registered Players</h3>
+                    <p id="totalPlayers" class="text-4xl font-bold text-blue-400 mt-2">0</p>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg text-center">
+                    <h3 class="text-gray-400">Total Pebbles in Economy</h3>
+                    <p id="totalPebbles" class="text-4xl font-bold text-yellow-400 mt-2">0</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // TODO: Paste your Firebase config here from your Firebase console
-        const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyAwdIbkPpWg9AiCu6ZB3T2yRaKaoAJAse4",
   authDomain: "adminpanel-b1a70.firebaseapp.com",
   projectId: "adminpanel-b1a70",
@@ -32,26 +97,114 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // UI Tabs
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+        };
+
+        // Player Search
         window.searchPlayer = async () => {
             const id = document.getElementById('playerId').value;
+            if (!id) return;
+            
             const docRef = doc(db, "players", id);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                document.getElementById('pebbleCount').innerText = docSnap.data().pebbles;
+                const data = docSnap.data();
+                document.getElementById('playerStats').classList.remove('hidden');
+                document.getElementById('displayName').innerText = data.name || "Unknown Name";
+                document.getElementById('displayId').innerText = id;
+                document.getElementById('pebbleCount').innerText = data.pebbles || 0;
+                
+                const cosList = document.getElementById('cosmeticList');
+                cosList.innerHTML = '';
+                if (data.cosmetics && data.cosmetics.length > 0) {
+                    data.cosmetics.forEach(item => {
+                        cosList.innerHTML += `<li>${item}</li>`;
+                    });
+                } else {
+                    cosList.innerHTML = `<li class="text-gray-500">No cosmetics</li>`;
+                }
             } else {
-                alert("Player not found!");
+                alert("bruh that player doesnt exist");
+                document.getElementById('playerStats').classList.add('hidden');
             }
         };
 
-        window.addPebbles = async (amount) => {
+        // Pebbles Math
+        window.modifyPebbles = async (isAdding) => {
             const id = document.getElementById('playerId').value;
+            const amountStr = document.getElementById('pebbleAmount').value;
+            const amount = parseInt(amountStr);
+            if (!amount || amount <= 0) return;
+
+            const finalAmount = isAdding ? amount : -amount;
             const docRef = doc(db, "players", id);
-            await updateDoc(docRef, {
-                pebbles: increment(amount)
+            await updateDoc(docRef, { pebbles: increment(finalAmount) });
+            searchPlayer();
+        };
+
+        window.setPebbles = async () => {
+            const id = document.getElementById('playerId').value;
+            const amount = parseInt(document.getElementById('pebbleAmount').value);
+            const docRef = doc(db, "players", id);
+            await updateDoc(docRef, { pebbles: amount });
+            searchPlayer();
+        };
+
+        // Cosmetics Math
+        window.manageCosmetic = async (isGiving) => {
+            const id = document.getElementById('playerId').value;
+            const cosmeticId = document.getElementById('cosmeticId').value;
+            if (!cosmeticId) return;
+
+            const docRef = doc(db, "players", id);
+            if (isGiving) {
+                await updateDoc(docRef, { cosmetics: arrayUnion(cosmeticId) });
+            } else {
+                await updateDoc(docRef, { cosmetics: arrayRemove(cosmeticId) });
+            }
+            document.getElementById('cosmeticId').value = '';
+            searchPlayer();
+        };
+
+        // Recent Players (Requires a 'joinedAt' timestamp in unity!)
+        window.loadRecentPlayers = async () => {
+            const list = document.getElementById('recentList');
+            list.innerHTML = 'Loading...';
+            try {
+                // it grabs the 10 newest players!
+                const q = query(collection(db, "players"), orderBy("joinedAt", "desc"), limit(10));
+                const querySnapshot = await getDocs(q);
+                list.innerHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const d = doc.data();
+                    list.innerHTML += `<li class="py-2 flex justify-between">
+                        <span class="font-bold">${d.name || 'Unnamed'}</span>
+                        <span class="text-gray-500 text-sm">${doc.id}</span>
+                    </li>`;
+                });
+            } catch (e) {
+                list.innerHTML = '<li class="text-red-400">Error: Make sure your Unity game saves a "joinedAt" timestamp!</li>';
+            }
+        };
+
+        // Analytics
+        window.loadAnalytics = async () => {
+            const querySnapshot = await getDocs(collection(db, "players"));
+            let totalPebbles = 0;
+            let totalPlayers = 0;
+
+            querySnapshot.forEach((doc) => {
+                totalPlayers++;
+                const data = doc.data();
+                if (data.pebbles) totalPebbles += data.pebbles;
             });
-            alert("Pebbles added!");
-            searchPlayer(); // Refresh display
+
+            document.getElementById('totalPlayers').innerText = totalPlayers;
+            document.getElementById('totalPebbles').innerText = totalPebbles;
         };
     </script>
 </body>
