@@ -1,52 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MonkeOS PlayFab</title>
+    <title>MonkeOS Firebase Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white flex h-screen font-sans">
+<body class="bg-gray-900 text-white flex h-screen font-sans select-none overflow-hidden">
 
-    <div class="w-64 bg-gray-800 p-6 flex flex-col gap-4 shadow-2xl">
-        <h1 class="text-2xl font-bold text-blue-500 mb-4">MonkeOS Admin</h1>
-        <button onclick="switchTab('players')" class="text-left bg-gray-700 p-3 rounded hover:bg-blue-600 transition">Players</button>
-        <button onclick="switchTab('recent')" class="text-left bg-gray-700 p-3 rounded hover:bg-blue-600 transition">Recent Joins</button>
-        <button onclick="switchTab('analytics')" class="text-left bg-gray-700 p-3 rounded hover:bg-blue-600 transition">Analytics</button>
+    <div class="w-64 bg-gray-800 p-6 flex flex-col gap-4 shadow-2xl border-r border-gray-700">
+        <h1 class="text-2xl font-black text-blue-500 mb-4 tracking-wide border-b border-gray-700 pb-2">MonkeOS Admin</h1>
+        <button onclick="switchTab('players')" class="text-left bg-blue-600 p-3 rounded font-bold hover:bg-blue-500 transition shadow-md">Players</button>
+        <button onclick="switchTab('recent')" class="text-left bg-gray-700 p-3 rounded font-bold hover:bg-blue-600 transition">Recent Joins</button>
+        <button onclick="switchTab('analytics')" class="text-left bg-gray-700 p-3 rounded font-bold hover:bg-blue-600 transition">Analytics</button>
     </div>
 
-    <div class="flex-1 p-10 overflow-y-auto">
+    <div class="flex-1 p-10 overflow-y-auto bg-gradient-to-b from-gray-950 to-gray-900">
         
         <div id="tab-players" class="tab-content block">
-            <h2 class="text-3xl font-bold mb-6">Player Management</h2>
+            <h2 class="text-3xl font-black mb-6 tracking-tight text-blue-400">Player Management</h2>
             
-            <div class="flex gap-2 mb-8 bg-gray-800 p-4 rounded-lg w-full max-w-2xl">
-                <input type="text" id="playerId" class="flex-1 p-3 rounded bg-gray-700 text-white border-none outline-none" placeholder="Enter Player ID...">
-                <button onclick="searchPlayer()" class="bg-blue-600 font-bold px-6 py-3 rounded hover:bg-blue-500">Search</button>
+            <div class="flex gap-2 mb-8 bg-gray-800 p-4 rounded-xl border border-gray-700 w-full max-w-2xl shadow-lg">
+                <select id="searchType" class="p-3 rounded bg-gray-900 text-white border border-gray-700 outline-none font-bold text-sm">
+                    <option value="id">Player ID</option>
+                    <option value="name">Player Name</option>
+                </select>
+                <input type="text" id="playerId" class="flex-1 p-3 rounded bg-gray-700 text-white border border-gray-600 outline-none focus:border-blue-500 font-mono" placeholder="Search query...">
+                <button onclick="searchPlayer()" class="bg-blue-600 font-black px-8 rounded hover:bg-blue-500 transition text-sm uppercase tracking-wider">Search</button>
             </div>
 
-            <div id="playerStats" class="hidden bg-gray-800 p-6 rounded-lg w-full max-w-2xl shadow-lg">
-                <h3 class="text-2xl font-bold text-green-400 mb-2" id="displayName">Player</h3>
-                <p class="text-gray-400 mb-4">ID: <span id="displayId" class="text-white"></span></p>
+            <div id="playerStats" class="hidden bg-gray-800 p-6 rounded-xl border border-gray-700 w-full max-w-2xl shadow-2xl relative">
+                
+                <div class="absolute top-6 right-6 flex gap-2">
+                    <span id="adminBadge" class="hidden bg-purple-600 text-white text-xs font-black px-3 py-1 rounded shadow">ADMIN</span>
+                    <span id="banBadge" class="hidden bg-red-600 text-white text-xs font-black px-3 py-1 rounded shadow">BANNED</span>
+                </div>
+
+                <h3 class="text-3xl font-black text-green-400 mb-1" id="displayName">Player</h3>
+                <p class="text-gray-400 font-mono text-sm mb-6">Database ID: <span id="displayId" class="text-white font-bold"></span></p>
                 
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h4 class="font-bold mb-2">Pebbles: <span id="pebbleCount" class="text-yellow-400 text-xl">0</span></h4>
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner">
+                        <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Pebbles Wallet</h4>
+                        <p class="text-2xl font-black text-yellow-400 mb-3" id="pebbleCount">0</p>
                         <div class="flex gap-2 mb-2">
-                            <input type="number" id="pebbleAmount" class="w-24 p-1 bg-gray-800 rounded text-center" value="100">
-                            <button onclick="modifyPebbles(true)" class="bg-green-600 px-3 rounded hover:bg-green-500">+</button>
-                            <button onclick="modifyPebbles(false)" class="bg-red-600 px-3 rounded hover:bg-red-500">-</button>
+                            <input type="number" id="pebbleAmount" class="w-full p-2 bg-gray-800 border border-gray-700 rounded text-center font-bold text-white focus:border-yellow-500" value="100">
+                            <button onclick="modifyPebbles(true)" class="bg-green-600 font-black px-4 rounded hover:bg-green-500 transition">+</button>
+                            <button onclick="modifyPebbles(false)" class="bg-red-600 font-black px-4 rounded hover:bg-red-500 transition">-</button>
                         </div>
-                        <button onclick="setPebbles()" class="bg-purple-600 w-full py-1 rounded hover:bg-purple-500 text-sm">Set Exact Amount</button>
+                        <button onclick="setPebbles()" class="bg-purple-600 w-full py-2 rounded hover:bg-purple-500 text-xs font-bold transition">Set Exact Balance</button>
                     </div>
 
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h4 class="font-bold mb-2">Cosmetics</h4>
-                        <ul id="cosmeticList" class="text-sm text-gray-300 mb-3 list-disc pl-5 h-20 overflow-y-auto"></ul>
-                        <div class="flex gap-2">
-                            <input type="text" id="cosmeticId" class="w-full p-1 bg-gray-800 rounded text-sm" placeholder="item_id">
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Moderation Controls</h4>
+                            <p class="text-xs text-gray-500 mb-4">override account permissions live in database records :3</p>
                         </div>
-                        <div class="flex gap-2 mt-2">
-                            <button onclick="manageCosmetic(true)" class="bg-blue-600 flex-1 py-1 rounded hover:bg-blue-500 text-sm">Give</button>
-                            <button onclick="manageCosmetic(false)" class="bg-red-600 flex-1 py-1 rounded hover:bg-red-500 text-sm">Revoke</button>
+                        <div class="flex flex-col gap-2">
+                            <button id="adminBtn" onclick="toggleAdmin()" class="bg-purple-600 font-bold py-2 rounded hover:bg-purple-500 text-xs transition">Toggle Admin Rights</button>
+                            <button id="banBtn" onclick="toggleBan()" class="bg-red-600 font-bold py-2 rounded hover:bg-red-500 text-xs transition">Toggle Ban Status</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner col-span-2">
+                        <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Cosmetics Inventory</h4>
+                        <ul id="cosmeticList" class="text-sm font-mono text-gray-300 mb-3 list-disc pl-5 h-24 overflow-y-auto bg-gray-800 p-2 rounded border border-gray-700"></ul>
+                        <div class="flex gap-2">
+                            <input type="text" id="cosmeticId" class="flex-1 p-2 bg-gray-800 border border-gray-700 rounded font-mono text-sm" placeholder="item_id">
+                            <button onclick="manageCosmetic(true)" class="bg-blue-600 font-bold px-4 rounded hover:bg-blue-500 text-xs transition">Give</button>
+                            <button onclick="manageCosmetic(false)" class="bg-red-600 font-bold px-4 rounded hover:bg-red-500 text-xs transition">Revoke</button>
                         </div>
                     </div>
                 </div>
@@ -54,26 +74,26 @@
         </div>
 
         <div id="tab-recent" class="tab-content hidden">
-            <h2 class="text-3xl font-bold mb-6">Recently Joined</h2>
-            <button onclick="loadRecentPlayers()" class="bg-blue-600 px-4 py-2 rounded mb-4 hover:bg-blue-500">Refresh List</button>
-            <div class="bg-gray-800 p-6 rounded-lg">
-                <ul id="recentList" class="divide-y divide-gray-700">
-                    <li class="py-2 text-gray-400">Click refresh to load...</li>
+            <h2 class="text-3xl font-black mb-6 text-blue-400">Recently Joined</h2>
+            <button onclick="loadRecentPlayers()" class="bg-blue-600 font-bold px-6 py-2.5 rounded-lg mb-4 hover:bg-blue-500 shadow transition text-sm">Refresh System List</button>
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 max-w-2xl shadow-lg">
+                <ul id="recentList" class="divide-y divide-gray-700 font-mono text-sm">
+                    <li class="py-2 text-gray-500 italic">Click refresh to scan cluster records...</li>
                 </ul>
             </div>
         </div>
 
         <div id="tab-analytics" class="tab-content hidden">
-            <h2 class="text-3xl font-bold mb-6">Game Analytics</h2>
-            <button onclick="loadAnalytics()" class="bg-blue-600 px-4 py-2 rounded mb-4 hover:bg-blue-500">Load Data</button>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-gray-800 p-6 rounded-lg text-center">
-                    <h3 class="text-gray-400">Total Registered Players</h3>
-                    <p id="totalPlayers" class="text-4xl font-bold text-blue-400 mt-2">0</p>
+            <h2 class="text-3xl font-black mb-6 text-blue-400">Game Analytics</h2>
+            <button onclick="loadAnalytics()" class="bg-blue-600 font-bold px-6 py-2.5 rounded-lg mb-6 hover:bg-blue-500 shadow transition text-sm">Recalculate Totals</button>
+            <div class="grid grid-cols-2 gap-6 max-w-2xl">
+                <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl text-center shadow-lg">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Registered Players</h3>
+                    <p id="totalPlayers" class="text-5xl font-black text-blue-400 mt-2">0</p>
                 </div>
-                <div class="bg-gray-800 p-6 rounded-lg text-center">
-                    <h3 class="text-gray-400">Total Pebbles in Economy</h3>
-                    <p id="totalPebbles" class="text-4xl font-bold text-yellow-400 mt-2">0</p>
+                <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl text-center shadow-lg">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pebbles in Economy</h3>
+                    <p id="totalPebbles" class="text-5xl font-black text-yellow-400 mt-2">0</p>
                 </div>
             </div>
         </div>
@@ -82,9 +102,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyAwdIbkPpWg9AiCu6ZB3T2yRaKaoAJAse4",
   authDomain: "adminpanel-b1a70.firebaseapp.com",
   projectId: "adminpanel-b1a70",
@@ -97,27 +117,60 @@ const firebaseConfig = {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // UI Tabs
+        // Core Window Setup to fix Initialization routing bugs
         window.switchTab = (tabName) => {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tabName).classList.remove('hidden');
         };
 
-        // Player Search
+        // Deep Search Player Engines (IDs and Names support)
         window.searchPlayer = async () => {
-            const id = document.getElementById('playerId').value;
-            if (!id) return;
+            const searchInput = document.getElementById('playerId').value.trim();
+            const searchType = document.getElementById('searchType').value;
+            if (!searchInput) return;
             
-            const docRef = doc(db, "players", id);
+            let finalTargetId = searchInput;
+
+            // Name Database Lookups query pipeline
+            if (searchType === 'name') {
+                const nameQuery = query(collection(db, "players"), where("name", "==", searchInput));
+                const querySnap = await getDocs(nameQuery);
+                if (!querySnap.empty) {
+                    finalTargetId = querySnap.docs[0].id;
+                } else {
+                    alert("bruh that player name database record doesnt exist! :(");
+                    return;
+                }
+            }
+            
+            const docRef = doc(db, "players", finalTargetId);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 document.getElementById('playerStats').classList.remove('hidden');
                 document.getElementById('displayName').innerText = data.name || "Unknown Name";
-                document.getElementById('displayId').innerText = id;
-                document.getElementById('pebbleCount').innerText = data.pebbles || 0;
+                document.getElementById('displayId').innerText = finalTargetId;
+                document.getElementById('pebbleCount').innerText = data.pebbles !== undefined ? data.pebbles : 0;
                 
+                // Toggle Security Badge Flags visibility UI
+                if (data.isAdmin === true) {
+                    document.getElementById('adminBadge').classList.remove('hidden');
+                    document.getElementById('adminBtn').innerText = "Revoke Admin Status";
+                } else {
+                    document.getElementById('adminBadge').classList.add('hidden');
+                    document.getElementById('adminBtn').innerText = "Give Admin Status";
+                }
+
+                if (data.isBanned === true) {
+                    document.getElementById('banBadge').classList.remove('hidden');
+                    document.getElementById('banBtn').innerText = "Lift Network Ban";
+                } else {
+                    document.getElementById('banBadge').classList.add('hidden');
+                    document.getElementById('banBtn').innerText = "Ban Player Account";
+                }
+
+                // Inventory Compilers updates
                 const cosList = document.getElementById('cosmeticList');
                 cosList.innerHTML = '';
                 if (data.cosmetics && data.cosmetics.length > 0) {
@@ -125,20 +178,20 @@ const firebaseConfig = {
                         cosList.innerHTML += `<li>${item}</li>`;
                     });
                 } else {
-                    cosList.innerHTML = `<li class="text-gray-500">No cosmetics</li>`;
+                    cosList.innerHTML = `<li class="text-gray-500 italic">No cosmetics owned</li>`;
                 }
             } else {
-                alert("bruh that player doesnt exist");
+                alert("bruh that player id record doesnt exist! :(");
                 document.getElementById('playerStats').classList.add('hidden');
             }
         };
 
-        // Pebbles Math
+        // Pebbles Adjuster math
         window.modifyPebbles = async (isAdding) => {
-            const id = document.getElementById('playerId').value;
+            const id = document.getElementById('displayId').innerText;
             const amountStr = document.getElementById('pebbleAmount').value;
             const amount = parseInt(amountStr);
-            if (!amount || amount <= 0) return;
+            if (!id || !amount || amount <= 0) return;
 
             const finalAmount = isAdding ? amount : -amount;
             const docRef = doc(db, "players", id);
@@ -147,18 +200,47 @@ const firebaseConfig = {
         };
 
         window.setPebbles = async () => {
-            const id = document.getElementById('playerId').value;
+            const id = document.getElementById('displayId').innerText;
             const amount = parseInt(document.getElementById('pebbleAmount').value);
+            if (!id || isNaN(amount)) return;
+            
             const docRef = doc(db, "players", id);
             await updateDoc(docRef, { pebbles: amount });
             searchPlayer();
         };
 
-        // Cosmetics Math
+        // Custom Security Toggles Engine overrides
+        window.toggleAdmin = async () => {
+            const id = document.getElementById('displayId').innerText;
+            if (!id) return;
+            
+            const docRef = doc(db, "players", id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const currentStatus = docSnap.data().isAdmin || false;
+                await updateDoc(docRef, { isAdmin: !currentStatus });
+                searchPlayer();
+            }
+        };
+
+        window.toggleBan = async () => {
+            const id = document.getElementById('displayId').innerText;
+            if (!id) return;
+            
+            const docRef = doc(db, "players", id);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const currentStatus = docSnap.data().isBanned || false;
+                await updateDoc(docRef, { isBanned: !currentStatus });
+                searchPlayer();
+            }
+        };
+
+        // Cosmetic asset lists loaders
         window.manageCosmetic = async (isGiving) => {
-            const id = document.getElementById('playerId').value;
-            const cosmeticId = document.getElementById('cosmeticId').value;
-            if (!cosmeticId) return;
+            const id = document.getElementById('displayId').innerText;
+            const cosmeticId = document.getElementById('cosmeticId').value.trim();
+            if (!id || !cosmeticId) return;
 
             const docRef = doc(db, "players", id);
             if (isGiving) {
@@ -170,28 +252,27 @@ const firebaseConfig = {
             searchPlayer();
         };
 
-        // Recent Players (Requires a 'joinedAt' timestamp in unity!)
+        // Realtime logs loaders pipeline
         window.loadRecentPlayers = async () => {
             const list = document.getElementById('recentList');
-            list.innerHTML = 'Loading...';
+            list.innerHTML = 'Loading dynamic data streams...';
             try {
-                // it grabs the 10 newest players!
                 const q = query(collection(db, "players"), orderBy("joinedAt", "desc"), limit(10));
                 const querySnapshot = await getDocs(q);
                 list.innerHTML = '';
                 querySnapshot.forEach((doc) => {
                     const d = doc.data();
-                    list.innerHTML += `<li class="py-2 flex justify-between">
-                        <span class="font-bold">${d.name || 'Unnamed'}</span>
-                        <span class="text-gray-500 text-sm">${doc.id}</span>
+                    list.innerHTML += `<li class="py-2 flex justify-between items-center">
+                        <span class="font-bold text-green-400">${d.name || 'Unnamed'}</span>
+                        <span class="text-gray-500 text-xs">${doc.id}</span>
                     </li>`;
                 });
             } catch (e) {
-                list.innerHTML = '<li class="text-red-400">Error: Make sure your Unity game saves a "joinedAt" timestamp!</li>';
+                list.innerHTML = '<li class="text-red-400 text-xs">Error: Make sure your game client saves a "joinedAt" server timestamp!</li>';
             }
         };
 
-        // Analytics
+        // Metrics calculators
         window.loadAnalytics = async () => {
             const querySnapshot = await getDocs(collection(db, "players"));
             let totalPebbles = 0;
