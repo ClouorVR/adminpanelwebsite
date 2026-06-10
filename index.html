@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Game Admin Panel</h1>
+    
+    <input type="text" id="playerId" placeholder="Enter Player ID">
+    <button onclick="searchPlayer()">Search</button>
+
+    <div id="playerStats">
+        <p>Pebbles: <span id="pebbleCount">0</span></p>
+        <button onclick="addPebbles(100)">Give 100 Pebbles</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        // TODO: Paste your Firebase config here from your Firebase console
+        const firebaseConfig = {
+  apiKey: "AIzaSyAwdIbkPpWg9AiCu6ZB3T2yRaKaoAJAse4",
+  authDomain: "adminpanel-b1a70.firebaseapp.com",
+  projectId: "adminpanel-b1a70",
+  storageBucket: "adminpanel-b1a70.firebasestorage.app",
+  messagingSenderId: "372275388549",
+  appId: "1:372275388549:web:e5ba76160bc995c16409ec",
+  measurementId: "G-1ZP9DKCRB6"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.searchPlayer = async () => {
+            const id = document.getElementById('playerId').value;
+            const docRef = doc(db, "players", id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                document.getElementById('pebbleCount').innerText = docSnap.data().pebbles;
+            } else {
+                alert("Player not found!");
+            }
+        };
+
+        window.addPebbles = async (amount) => {
+            const id = document.getElementById('playerId').value;
+            const docRef = doc(db, "players", id);
+            await updateDoc(docRef, {
+                pebbles: increment(amount)
+            });
+            alert("Pebbles added!");
+            searchPlayer(); // Refresh display
+        };
+    </script>
+</body>
+</html>
