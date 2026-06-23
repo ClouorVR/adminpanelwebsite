@@ -1,94 +1,395 @@
-const SECRET = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ClouorVR Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex h-screen font-sans select-none overflow-hidden">
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization"
+<div class="w-64 bg-gray-800 p-6 flex flex-col gap-4 shadow-2xl border-r border-gray-700">
+    <h1 class="text-2xl font-black text-orange-500 mb-4 tracking-wide border-b border-gray-700 pb-2">ClouorVR</h1>
+    <button onclick="switchTab('players')" id="btn-players" class="text-left bg-orange-600 p-3 rounded font-bold hover:bg-orange-500 transition shadow-md">Players</button>
+    <button onclick="switchTab('allplayers')" id="btn-allplayers" class="text-left bg-gray-700  p-3 rounded font-bold hover:bg-orange-600 transition">All Players</button>
+    <button onclick="switchTab('analytics')" id="btn-analytics" class="text-left bg-gray-700  p-3 rounded font-bold hover:bg-orange-600 transition">Analytics</button>
+
+    <div class="mt-auto border-t border-gray-700 pt-4 flex flex-col gap-2">
+        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">PlayFab Local Database</p>
+        <input id="newPlayerId" type="text" class="p-2 bg-gray-900 border border-gray-700 rounded text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Player ID">
+        <input id="newPlayerName" type="text" class="p-2 bg-gray-900 border border-gray-700 rounded text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Player Name">
+        <button onclick="createNewPlayer()" class="bg-orange-700 text-xs font-bold py-2 rounded hover:bg-orange-600 transition">Create Player Account</button>
+        <button onclick="clearAllData()" class="bg-red-950 text-xs font-bold py-1 rounded hover:bg-red-600 transition mt-2">Wipe Database</button>
+    </div>
+</div>
+
+<div class="flex-1 p-10 overflow-y-auto bg-gradient-to-b from-gray-950 to-gray-900">
+
+    <div id="tab-players" class="tab-content block">
+        <h2 class="text-3xl font-black mb-6 tracking-tight text-orange-400">Player Management</h2>
+
+        <div class="flex gap-2 mb-8 bg-gray-800 p-4 rounded-xl border border-gray-700 w-full max-w-2xl shadow-lg">
+            <select id="searchType" class="p-3 rounded bg-gray-900 text-white border border-gray-700 outline-none font-bold text-sm">
+                <option value="id">Player ID</option>
+                <option value="name">Player Name</option>
+            </select>
+            <input type="text" id="playerId" class="flex-1 p-3 rounded bg-gray-700 text-white border border-gray-600 outline-none focus:border-orange-500 font-mono" placeholder="Search query...">
+            <button onclick="searchPlayer()" class="bg-orange-600 font-black px-8 rounded hover:bg-orange-500 transition text-sm uppercase tracking-wider">Search</button>
+        </div>
+
+        <div id="playerStats" class="hidden bg-gray-800 p-6 rounded-xl border border-gray-700 w-full max-w-2xl shadow-2xl relative">
+            <div class="absolute top-6 right-6 flex gap-2">
+                <span id="adminBadge" class="hidden bg-purple-600 text-white text-xs font-black px-3 py-1 rounded shadow">ADMIN</span>
+                <span id="banBadge" class="hidden bg-red-600 text-white text-xs font-black px-3 py-1 rounded shadow">BANNED</span>
+            </div>
+
+            <h3 class="text-3xl font-black text-green-400 mb-1" id="displayName">Player</h3>
+            <p id="displayNicknameLine" class="text-orange-300 text-sm font-bold mb-1 hidden">
+                Dashboard nickname: <span id="displayNickname"></span>
+            </p>
+            <p class="text-gray-400 font-mono text-sm mb-4">Database ID: <span id="displayId" class="text-white font-bold"></span></p>
+
+            <div class="mb-6 bg-gray-950 p-4 rounded-xl border border-gray-700 text-xs font-mono text-gray-400 grid grid-cols-2 gap-4 shadow-inner">
+                <div>Account Created: <span id="displayFirstJoined" class="text-orange-400 font-bold"></span></div>
+                <div>Last Active Login: <span id="displayLastSeen" class="text-yellow-400 font-bold"></span></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner">
+                    <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Pebbles Wallet</h4>
+                    <p class="text-2xl font-black text-yellow-400 mb-3" id="pebbleCount">0</p>
+                    <div class="flex gap-2 mb-2">
+                        <input type="number" id="pebbleAmount" class="w-full p-2 bg-gray-800 border border-gray-700 rounded text-center font-bold text-white focus:border-yellow-500 outline-none" value="100">
+                        <button onclick="modifyPebbles(true)" class="bg-green-600 font-black px-4 rounded hover:bg-green-500 transition">+</button>
+                        <button onclick="modifyPebbles(false)" class="bg-red-600 font-black px-4 rounded hover:bg-red-500 transition">−</button>
+                    </div>
+                    <button onclick="setPebbles()" class="bg-purple-600 w-full py-2 rounded hover:bg-purple-500 text-xs font-bold transition">Set Exact Balance</button>
+                </div>
+
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Dashboard Nickname</h4>
+                        <p class="text-gray-500 text-xs mb-1">Only visible here, not in-game.</p>
+                        <input type="text" id="newName" class="w-full p-2 bg-gray-800 border border-gray-700 rounded font-mono text-sm mb-2 outline-none focus:border-orange-500" placeholder="e.g. TroubledPlayer">
+                        <button onclick="changeName()" class="bg-orange-600 font-bold py-2 w-full rounded hover:bg-orange-500 text-xs transition mb-4">Set Nickname</button>
+
+                        <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Moderation</h4>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="kickPlayer()" class="bg-yellow-600 font-bold py-2 rounded hover:bg-yellow-500 text-xs transition">Kick Player</button>
+                        <button id="adminBtn" onclick="toggleAdmin()" class="bg-purple-600 font-bold py-2 rounded hover:bg-purple-500 text-xs transition">Toggle AdminStatus</button>
+                        <button id="banBtn" onclick="toggleBan()" class="bg-red-600 font-bold py-2 rounded hover:bg-red-500 text-xs transition">Toggle BanStatus</button>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-700 shadow-inner col-span-2">
+                    <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Cosmetics Inventory</h4>
+                    <ul id="cosmeticList" class="text-sm font-mono text-gray-300 mb-3 list-disc pl-5 h-24 overflow-y-auto bg-gray-800 p-2 rounded border border-gray-700"></ul>
+                    <div class="flex gap-2">
+                        <input type="text" id="cosmeticId" class="flex-1 p-2 bg-gray-800 border border-gray-700 rounded font-mono text-sm outline-none focus:border-blue-500" placeholder="slot:item_name  e.g.  hat:tophat">
+                        <button onclick="manageCosmetic(true)" class="bg-blue-600 font-bold px-4 rounded hover:bg-blue-500 text-xs transition">Give</button>
+                        <button onclick="manageCosmetic(false)" class="bg-red-600 font-bold px-4 rounded hover:bg-red-500 text-xs transition">Revoke</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-allplayers" class="tab-content hidden">
+        <h2 class="text-3xl font-black mb-6 text-orange-400">All Database Players</h2>
+        <button onclick="loadAllPlayers()" class="bg-orange-600 font-bold px-6 py-2.5 rounded-lg mb-4 hover:bg-orange-500 shadow transition text-sm">Refresh List</button>
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 max-w-2xl shadow-lg">
+            <ul id="allList" class="divide-y divide-gray-700 font-mono text-sm">
+                <li class="py-2 text-gray-500 italic">Click refresh to scan...</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-analytics" class="tab-content hidden">
+        <h2 class="text-3xl font-black mb-6 text-orange-400">Game Analytics</h2>
+        <button onclick="loadAnalytics()" class="bg-orange-600 font-bold px-6 py-2.5 rounded-lg mb-6 hover:bg-orange-500 shadow transition text-sm">Recalculate Totals</button>
+        <div class="grid grid-cols-2 gap-6 max-w-2xl">
+            <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl text-center shadow-lg">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Players</h3>
+                <p id="totalPlayers" class="text-5xl font-black text-orange-400 mt-2">0</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl text-center shadow-lg">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Pebbles</h3>
+                <p id="totalPebbles" class="text-5xl font-black text-yellow-400 mt-2">0</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl text-center shadow-lg">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Banned Players</h3>
+                <p id="totalBanned" class="text-5xl font-black text-red-400 mt-2">0</p>
+            </div>
+            <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl text-center shadow-lg">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Admin Players</h3>
+                <p id="totalAdmins" class="text-5xl font-black text-purple-400 mt-2">0</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getPlayersDB() {
+    let db = localStorage.getItem('cvr_local_db');
+    if(!db) {
+        let initial = [
+            {id: "10001", name: "Filip", pebbles: 500, isAdmin: true, isBanned: false, cosmetics: ["hat:tophat", "badge:beta"], adminNickname: "System Owner", firstJoined: new Date().toLocaleString(), lastSeen: new Date().toLocaleString()},
+        ];
+        localStorage.setItem('cvr_local_db', JSON.stringify(initial));
+        return initial;
+    }
+    return JSON.parse(db);
 }
 
-export default {
-  async fetch(request, env) {
-    if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders })
-    if (request.headers.get("Authorization") !== SECRET) return new Response("no", { status: 403, headers: corsHeaders })
-    
-    let body = await request.json()
-    let kv = env.CLOUOR_KV
-    
-    if (body.action === "poll") {
-      let q = await kv.get("queue", { type: "json" }) || []
-      await kv.put("queue", JSON.stringify([]))
-      return new Response(JSON.stringify(q), { headers: corsHeaders })
-    }
-    
-    async function getp(id) {
-      let p = await kv.get("player:" + id, { type: "json" })
-      if (!p) p = { id: id, name: "unknown", pebbles: 0, isAdmin: false, isBanned: false, cosmetics: [], adminNickname: "", lastSeen: Date.now(), firstJoined: Date.now() }
-      return p
-    }
+function savePlayersDB(data) {
+    localStorage.setItem('cvr_local_db', JSON.stringify(data));
+}
 
-    async function addq(cmd) {
-      let q = await kv.get("queue", { type: "json" }) || []
-      q.push(cmd)
-      await kv.put("queue", JSON.stringify(q))
-    }
+function createNewPlayer() {
+    let id = document.getElementById('newPlayerId').value.trim();
+    let name = document.getElementById('newPlayerName').value.trim();
+    if(!id || !name) { alert('provide both an ID and a Name :3'); return; }
+    let db = getPlayersDB();
+    if(db.some(p => p.id === id)) { alert('this player ID already exists inside dashboard data >:D'); return; }
+    db.push({
+        id: id,
+        name: name,
+        pebbles: 0,
+        isAdmin: false,
+        isBanned: false,
+        cosmetics: [],
+        adminNickname: "",
+        firstJoined: new Date().toLocaleString(),
+        lastSeen: new Date().toLocaleString()
+    });
+    savePlayersDB(db);
+    document.getElementById('newPlayerId').value = '';
+    document.getElementById('newPlayerName').value = '';
+    alert('player profile logged permanently into local search :)');
+    loadAllPlayers();
+}
 
-    if (body.action === "joined") {
-      let p = await getp(body.id)
-      p.name = body.name
-      p.lastSeen = Date.now()
-      await kv.put("player:" + body.id, JSON.stringify(p))
-      return new Response(JSON.stringify({ok:true}), { headers: corsHeaders })
+function clearAllData() {
+    if(confirm('wipe all player files? this resets the app data >:D')) {
+        localStorage.removeItem('cvr_local_db');
+        alert('cleared dashboard memory :)');
+        loadAllPlayers();
     }
+}
 
-    if (body.action === "get_all") {
-      let list = await kv.list({ prefix: "player:" })
-      let players = []
-      for (let k of list.keys) {
-        let p = await kv.get(k.name, { type: "json" })
-        if (p) players.push(p)
-      }
-      return new Response(JSON.stringify({ players: players }), { headers: corsHeaders })
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById('tab-' + tabName).classList.remove('hidden');
+    ['players','allplayers','analytics'].forEach(t => {
+        document.getElementById('btn-' + t).className =
+            'text-left p-3 rounded font-bold transition ' +
+            (t === tabName ? 'bg-orange-600 hover:bg-orange-500 shadow-md' : 'bg-gray-700 hover:bg-orange-600');
+    });
+}
+
+async function apiCall(payload) {
+    let db = getPlayersDB();
+    if (payload.action === 'get_all') {
+        return { players: db };
     }
-
-    if (body.action === "get_player") {
-      if (body.type === "id") {
-        let p = await kv.get("player:" + body.query, { type: "json" })
-        if (p) return new Response(JSON.stringify({ found: true, data: p }), { headers: corsHeaders })
-      } else {
-        let list = await kv.list({ prefix: "player:" })
-        for (let k of list.keys) {
-          let p = await kv.get(k.name, { type: "json" })
-          if (p && p.name === body.query) return new Response(JSON.stringify({ found: true, data: p }), { headers: corsHeaders })
+    if (payload.action === 'get_player') {
+        let foundPlayer = null;
+        if (payload.type === 'id') {
+            foundPlayer = db.find(p => p.id === payload.query);
+        } else {
+            foundPlayer = db.find(p => p.name.toLowerCase() === payload.query.toLowerCase());
         }
-      }
-      return new Response(JSON.stringify({ found: false }), { headers: corsHeaders })
+        if (foundPlayer) {
+            return { found: true, data: foundPlayer };
+        }
+        return { found: false };
     }
-
-    let p = await getp(body.id)
-    
-    if (body.action === "edit_pebbles") p.pebbles += body.amount
-    if (body.action === "set_pebbles") p.pebbles = body.amount
-    if (body.action === "set_name") p.adminNickname = body.value
-    if (body.action === "toggle_admin") p.isAdmin = !p.isAdmin
-    
-    if (body.action === "toggle_ban") {
-      p.isBanned = !p.isBanned
-      if (p.isBanned) await addq({ targetId: p.id, command: "ban", value: "" })
+    let pIndex = db.findIndex(p => p.id === payload.id);
+    if (pIndex === -1) return { ok: false };
+    let p = db[pIndex];
+    if (payload.action === 'edit_pebbles') p.pebbles += payload.amount;
+    if (payload.action === 'set_pebbles') p.pebbles = payload.amount;
+    if (payload.action === 'set_name') p.adminNickname = payload.value;
+    if (payload.action === 'toggle_admin') p.isAdmin = !p.isAdmin;
+    if (payload.action === 'toggle_ban') p.isBanned = !p.isBanned;
+    if (payload.action === 'give_cosmetic') {
+        if (!p.cosmetics.includes(payload.value)) p.cosmetics.push(payload.value);
     }
-    
-    if (body.action === "kick") await addq({ targetId: p.id, command: "kick", value: "" })
-    
-    if (body.action === "give_cosmetic" && !p.cosmetics.includes(body.value)) {
-      p.cosmetics.push(body.value)
-      await addq({ targetId: p.id, command: "give_cosmetic", value: body.value })
+    if (payload.action === 'revoke_cosmetic') {
+        p.cosmetics = p.cosmetics.filter(c => c !== payload.value);
     }
-    
-    if (body.action === "revoke_cosmetic") {
-      p.cosmetics = p.cosmetics.filter(c => c !== body.value)
-      await addq({ targetId: p.id, command: "revoke_cosmetic", value: body.value })
-    }
-
-    await kv.put("player:" + body.id, JSON.stringify(p))
-    return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders })
-  }
+    p.lastSeen = new Date().toLocaleString();
+    db[pIndex] = p;
+    savePlayersDB(db);
+    return { ok: true };
 }
+
+async function searchPlayer() {
+    let input = document.getElementById('playerId').value.trim();
+    let type = document.getElementById('searchType').value;
+    if (!input) return;
+    let res = await apiCall({ action: 'get_player', type, query: input });
+    if (!res) return;
+    if (res.found) {
+        renderPlayer(res.data);
+    } else {
+        alert('no records matching that query found :(');
+        document.getElementById('playerStats').classList.add('hidden');
+    }
+}
+
+function renderPlayer(p) {
+    document.getElementById('playerStats').classList.remove('hidden');
+    document.getElementById('displayName').innerText = p.name;
+    document.getElementById('displayId').innerText = p.id;
+    document.getElementById('pebbleCount').innerText = p.pebbles ?? 0;
+    document.getElementById('displayFirstJoined').innerText = p.firstJoined || 'unknown';
+    document.getElementById('displayLastSeen').innerText = p.lastSeen || 'unknown';
+    if (p.adminNickname) {
+        document.getElementById('displayNickname').innerText = p.adminNickname;
+        document.getElementById('displayNicknameLine').classList.remove('hidden');
+    } else {
+        document.getElementById('displayNicknameLine').classList.add('hidden');
+    }
+    document.getElementById('adminBadge').classList.toggle('hidden', !p.isAdmin);
+    document.getElementById('adminBtn').innerText = p.isAdmin ? 'Revoke Admin Status' : 'Give Admin Status';
+    document.getElementById('banBadge').classList.toggle('hidden', !p.isBanned);
+    document.getElementById('banBtn').innerText = p.isBanned ? 'Lift Network Ban' : 'Ban Player Account';
+    let cosList = document.getElementById('cosmeticList');
+    cosList.innerHTML = '';
+    if (p.cosmetics && p.cosmetics.length > 0) {
+        p.cosmetics.forEach(i => {
+            cosList.innerHTML += `<li class="flex justify-between items-center pr-2">
+                <span>${i}</span>
+                <button onclick="quickRevoke('${i}')" class="text-red-400 text-xs hover:text-red-300 ml-2">✕</button>
+            </li>`;
+        });
+    } else {
+        cosList.innerHTML = `<li class="text-gray-500 italic">No cosmetics</li>`;
+    }
+}
+
+async function modifyPebbles(isAdding) {
+    let id = document.getElementById('displayId').innerText;
+    let amt = parseInt(document.getElementById('pebbleAmount').value);
+    if (!id || isNaN(amt)) return;
+    await apiCall({ action: 'edit_pebbles', id, amount: isAdding ? amt : -amt });
+    await refreshCurrentPlayer();
+}
+
+async function setPebbles() {
+    let id = document.getElementById('displayId').innerText;
+    let amt = parseInt(document.getElementById('pebbleAmount').value);
+    if (!id || isNaN(amt)) return;
+    await apiCall({ action: 'set_pebbles', id, amount: amt });
+    await refreshCurrentPlayer();
+}
+
+async function changeName() {
+    let id = document.getElementById('displayId').innerText;
+    let name = document.getElementById('newName').value.trim();
+    if (!id || !name) return;
+    await apiCall({ action: 'set_name', id, value: name });
+    document.getElementById('newName').value = '';
+    await refreshCurrentPlayer();
+}
+
+async function kickPlayer() {
+    let id = document.getElementById('displayId').innerText;
+    if (!id) return;
+    alert('kick request passed locally to user profile :3');
+}
+
+async function toggleAdmin() {
+    let id = document.getElementById('displayId').innerText;
+    if (!id) return;
+    await apiCall({ action: 'toggle_admin', id });
+    await refreshCurrentPlayer();
+}
+
+async function toggleBan() {
+    let id = document.getElementById('displayId').innerText;
+    if (!id) return;
+    await apiCall({ action: 'toggle_ban', id });
+    await refreshCurrentPlayer();
+}
+
+async function manageCosmetic(isGiving) {
+    let id = document.getElementById('displayId').innerText;
+    let cos = document.getElementById('cosmeticId').value.trim();
+    if (!id || !cos) return;
+    if (!cos.includes(':')) { alert('format must contain slot type e.g. body:cape >:D'); return; }
+    await apiCall({ action: isGiving ? 'give_cosmetic' : 'revoke_cosmetic', id, value: cos });
+    document.getElementById('cosmeticId').value = '';
+    await refreshCurrentPlayer();
+}
+
+async function quickRevoke(value) {
+    let id = document.getElementById('displayId').innerText;
+    if (!id) return;
+    await apiCall({ action: 'revoke_cosmetic', id, value });
+    await refreshCurrentPlayer();
+}
+
+async function refreshCurrentPlayer() {
+    let id = document.getElementById('displayId').innerText;
+    if (!id) return;
+    let res = await apiCall({ action: 'get_player', type: 'id', query: id });
+    if (res && res.found) renderPlayer(res.data);
+}
+
+async function loadAllPlayers() {
+    let list = document.getElementById('allList');
+    list.innerHTML = '<li class="py-2 text-gray-400 italic">Scanning records...</li>';
+    let res = await apiCall({ action: 'get_all' });
+    if (!res) return;
+    list.innerHTML = '';
+    if (res.players && res.players.length > 0) {
+        res.players.forEach(p => {
+            let banned = p.isBanned ? '<span class="text-red-400 text-xs ml-2 font-bold">BANNED</span>' : '';
+            let admin = p.isAdmin ? '<span class="text-purple-400 text-xs ml-2 font-bold">ADMIN</span>' : '';
+            list.innerHTML += `
+                <li class="py-2 flex justify-between items-center cursor-pointer hover:bg-gray-700 px-2 rounded"
+                    onclick="loadPlayerById('${p.id}')">
+                    <span>
+                        <span class="font-bold text-green-400">${p.name}</span>
+                        ${p.adminNickname ? `<span class="text-orange-300 text-xs ml-1">(${p.adminNickname})</span>` : ''}
+                        ${banned}${admin}
+                    </span>
+                    <span class="text-gray-500 text-xs">${p.id}</span>
+                </li>`;
+        });
+    } else {
+        list.innerHTML = '<li class="py-2 text-gray-500 italic">No player profiles discovered inside data arrays.</li>';
+    }
+}
+
+async function loadPlayerById(id) {
+    let res = await apiCall({ action: 'get_player', type: 'id', query: id });
+    if (res && res.found) {
+        document.getElementById('playerId').value = id;
+        document.getElementById('searchType').value = 'id';
+        renderPlayer(res.data);
+        switchTab('players');
+    }
+}
+
+async function loadAnalytics() {
+    let res = await apiCall({ action: 'get_all' });
+    if (!res || !res.players) return;
+    let pebbles = 0, banned = 0, admins = 0;
+    res.players.forEach(p => {
+        pebbles += p.pebbles || 0;
+        if (p.isBanned) banned++;
+        if (p.isAdmin) admins++;
+    });
+    document.getElementById('totalPlayers').innerText = res.players.length;
+    document.getElementById('totalPebbles').innerText = pebbles;
+    document.getElementById('totalBanned').innerText = banned;
+    document.getElementById('totalAdmins').innerText = admins;
+}
+
+getPlayersDB();
+</script>
+</body>
+</html>
