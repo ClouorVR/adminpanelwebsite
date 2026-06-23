@@ -144,23 +144,22 @@ const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0";
 
 async function apiCall(payload) {
+    if (!payload) {
+        console.error("the payload is empty!! you called apiCall without data :(");
+        return;
+    }
+
     let res = await fetch(WORKER_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": SECRET_KEY },
+        headers: { 
+            "Content-Type": "application/json", 
+            "Authorization": SECRET_KEY 
+        },
         body: JSON.stringify(payload)
     });
-
-    let text = await res.text(); // get raw text first :3
     
-    try {
-        return JSON.parse(text); // try to parse it
-    } catch (e) {
-        console.error("The server sent back broken data!! Look:");
-        console.error(text); // this will show you the real error (like 500 html page) :D
-        return null;
-    }
+    return await res.json();
 }
-
 async function createNewPlayer() {
     let id = document.getElementById('newPlayerId').value.trim();
     let name = document.getElementById('newPlayerName').value.trim();
