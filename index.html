@@ -153,9 +153,17 @@ async function apiCall(payload) {
             },
             body: JSON.stringify(payload)
         });
-        return await res.json();
+        
+        let data = await res.json();
+        
+        if (!res.ok) {
+            console.error("worker error:", data.error);
+            return null;
+        }
+        
+        return data;
     } catch (e) {
-        console.error("Worker stream disruption:", e);
+        console.error("fetch failed:", e);
         return null;
     }
 }
