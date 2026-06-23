@@ -146,6 +146,7 @@ const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0";
 async function apiCall(payload) {
     if (!payload) {
         console.error("the payload is empty!! you called apiCall without data :(");
+        console.trace("who called me?"); // <--- ADD THIS
         return;
     }
 
@@ -158,7 +159,13 @@ async function apiCall(payload) {
         body: JSON.stringify(payload)
     });
     
-    return await res.json();
+    // Check if response is empty before parsing
+    let text = await res.text();
+    if (!text) {
+        console.error("Server sent back nothing!!");
+        return null;
+    }
+    return JSON.parse(text);
 }
 async function createNewPlayer() {
     let id = document.getElementById('newPlayerId').value.trim();
