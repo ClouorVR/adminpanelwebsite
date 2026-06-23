@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" href="data:,">
     <title>ClouorVR Live Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -140,7 +141,7 @@
 
 <script>
 // Paste your Cloudflare Worker URL here!
-const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
+const WORKER_URL = "https://adminpanelwebsite.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0";
 
 async function apiCall(payload) {
@@ -149,6 +150,7 @@ async function apiCall(payload) {
         console.trace("who called me?"); // <--- ADD THIS
         return;
     }
+    console.log("Talking to:", WORKER_URL);
 
     let res = await fetch(WORKER_URL, {
         method: "POST",
