@@ -124,7 +124,7 @@
 </div>
 <script>
 const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
-const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"
+const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0";
 async function apiCall(payload) {
     if (!payload) return;
     let res = await fetch(WORKER_URL, {
@@ -315,15 +315,6 @@ async function loadAllPlayers() {
     document.getElementById('totalPebbles').innerText = pebbles;
     document.getElementById('totalBanned').innerText = banned;
     document.getElementById('totalAdmins').innerText = admins;
-}
-async function loadPlayerById(id) {
-    let res = await apiCall({ action: 'get_player', type: 'id', query: id });
-    if (res && res.found) {
-        document.getElementById('playerId').value = id;
-        document.getElementById('searchType').value = 'id';
-        renderPlayer(res.data);
-        switchTab('players');
-    }
 }
 setInterval(() => {
     loadAllPlayers();
