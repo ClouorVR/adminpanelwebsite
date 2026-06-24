@@ -15,14 +15,14 @@
         <p class="text-xs text-gray-500 font-bold uppercase">Active Game Room</p>
         <p id="liveConcurrent" class="text-2xl font-black text-green-400 mt-1">0 <span class="text-xs font-normal text-gray-400">players live</span></p>
     </div>
-    <button onclick="switchTab('players')" id="btn-players" class="text-left bg-orange-600 p-3 rounded-lg font-bold hover:bg-orange-500 transition shadow-md">Player Control</button>
-    <button onclick="switchTab('allplayers')" id="btn-allplayers" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Database Registry</button>
-    <button onclick="switchTab('analytics')" id="btn-analytics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Network Analytics</button>
+    <button onclick="window.switchTab('players')" id="btn-players" class="text-left bg-orange-600 p-3 rounded-lg font-bold hover:bg-orange-500 transition shadow-md">Player Control</button>
+    <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Database Registry</button>
+    <button onclick="window.switchTab('analytics')" id="btn-analytics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Network Analytics</button>
     <div class="mt-auto border-t border-gray-800 pt-4 flex flex-col gap-2">
         <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Manual Account Creator</p>
         <input id="newPlayerId" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Target PUID String">
         <input id="newPlayerName" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Leave empty for random name">
-        <button onclick="createNewPlayer()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold py-2 rounded-lg hover:bg-orange-600 hover:text-white transition">Commit Account File</button>
+        <button onclick="window.createNewPlayer()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold py-2 rounded-lg hover:bg-orange-600 hover:text-white transition">Commit Account File</button>
     </div>
 </div>
 <div class="flex-1 p-10 overflow-y-auto bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
@@ -34,7 +34,7 @@
                 <option value="name">Account Identity Name</option>
             </select>
             <input type="text" id="playerId" class="flex-1 p-3 rounded-lg bg-gray-950 text-white border border-gray-800 outline-none focus:border-orange-500 font-mono text-sm" placeholder="Search parameters...">
-            <button onclick="searchPlayer()" class="bg-orange-600 font-black px-8 rounded-lg hover:bg-orange-500 transition text-sm uppercase tracking-wider">Query</button>
+            <button onclick="window.searchPlayer()" class="bg-orange-600 font-black px-8 rounded-lg hover:bg-orange-500 transition text-sm uppercase tracking-wider">Query</button>
         </div>
         <div id="playerStats" class="hidden bg-gray-900 p-6 rounded-xl border border-gray-800 w-full max-w-2xl shadow-2xl relative">
             <div class="absolute top-6 right-6 flex gap-2">
@@ -59,28 +59,28 @@
                     </div>
                     <div class="flex flex-col gap-2">
                         <div class="flex gap-2">
-                            <button onclick="modifyPebbles(true)" class="bg-green-600 w-full py-2 rounded-lg hover:bg-green-500 font-bold text-xs transition">Add Pebbles</button>
-                            <button onclick="modifyPebbles(false)" class="bg-red-600 w-full py-2 rounded-lg hover:bg-red-500 font-bold text-xs transition">Deduct Pebbles</button>
+                            <button onclick="window.modifyPebbles(true)" class="bg-green-600 w-full py-2 rounded-lg hover:bg-green-500 font-bold text-xs transition">Add Pebbles</button>
+                            <button onclick="window.modifyPebbles(false)" class="bg-red-600 w-full py-2 rounded-lg hover:bg-red-500 font-bold text-xs transition">Deduct Pebbles</button>
                         </div>
-                        <button onclick="setPebbles()" class="bg-gray-800 border border-gray-700 w-full py-2 rounded-lg hover:bg-gray-700 text-xs font-bold transition">Set Exact Balance</button>
+                        <button onclick="window.setPebbles()" class="bg-gray-800 border border-gray-700 w-full py-2 rounded-lg hover:bg-gray-700 text-xs font-bold transition">Set Exact Balance</button>
                     </div>
                 </div>
                 <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col justify-between">
                     <div>
                         <h4 class="font-bold text-gray-400 mb-2 uppercase text-xs tracking-wider">Identity Customization</h4>
                         <input type="text" id="newName" class="w-full p-2 bg-gray-900 border border-gray-800 rounded-lg font-mono text-xs mb-2 outline-none focus:border-orange-500" placeholder="New structural name...">
-                        <button onclick="changeName()" class="bg-orange-600 font-bold py-2 w-full rounded-lg hover:bg-orange-500 text-xs transition mb-4">Apply Nickname</button>
+                        <button onclick="window.changeName()" class="bg-orange-600 font-bold py-2 w-full rounded-lg hover:bg-orange-500 text-xs transition mb-4">Apply Nickname</button>
                     </div>
                     <div class="flex flex-col gap-2 border-t border-gray-850 pt-3">
-                        <button onclick="kickPlayer()" class="bg-yellow-600 font-bold py-2 rounded-lg hover:bg-yellow-500 text-xs transition text-gray-950">Kick Network Client</button>
-                        <button id="adminBtn" onclick="toggleAdmin()" class="bg-purple-600 font-bold py-2 rounded-lg hover:bg-purple-500 text-xs transition">Alter Admin Token</button>
-                        <button id="banBtn" onclick="toggleBan()" class="bg-red-600 font-bold py-2 rounded-lg hover:bg-red-500 text-xs transition">Alter Ban Token</button>
+                        <button onclick="window.kickPlayer()" class="bg-yellow-600 font-bold py-2 rounded-lg hover:bg-yellow-500 text-xs transition text-gray-950">Kick Network Client</button>
+                        <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-purple-600 font-bold py-2 rounded-lg hover:bg-purple-500 text-xs transition">Alter Admin Token</button>
+                        <button id="banBtn" onclick="window.toggleBan()" class="bg-red-600 font-bold py-2 rounded-lg hover:bg-red-500 text-xs transition">Alter Ban Token</button>
                     </div>
                 </div>
                 <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 col-span-2">
                     <div class="flex justify-between items-center mb-2">
                         <h4 class="font-bold text-gray-400 uppercase text-xs tracking-wider">Asset Inventory</h4>
-                        <button onclick="wipeCosmetics()" class="text-red-400 text-xs font-bold hover:underline">Flush Inventory File</button>
+                        <button onclick="window.wipeCosmetics()" class="text-red-400 text-xs font-bold hover:underline">Flush Inventory File</button>
                     </div>
                     <ul id="cosmeticList" class="text-xs font-mono text-gray-300 mb-3 list-none h-24 overflow-y-auto bg-gray-900 p-3 rounded-lg border border-gray-800 flex flex-col gap-1"></ul>
                     <div class="flex gap-2">
@@ -104,9 +104,8 @@
                                 <option value="RightCos:Sword">Sword (Right)</option>
                             </optgroup>
                         </select>
-                        
-                        <button onclick="manageCosmetic(true)" class="bg-blue-600 font-bold px-4 rounded-lg hover:bg-blue-500 text-xs transition">Grant</button>
-                        <button onclick="manageCosmetic(false)" class="bg-red-950 text-red-400 border border-red-900/40 font-bold px-4 rounded-lg hover:bg-red-900 transition text-xs">Remove</button>
+                        <button onclick="window.manageCosmetic(true)" class="bg-blue-600 font-bold px-4 rounded-lg hover:bg-blue-500 text-xs transition">Grant</button>
+                        <button onclick="window.manageCosmetic(false)" class="bg-red-950 text-red-400 border border-red-900/40 font-bold px-4 rounded-lg hover:bg-red-900 transition text-xs">Remove</button>
                     </div>
                 </div>
             </div>
@@ -145,6 +144,7 @@
 <script>
 const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0";
+
 async function apiCall(payload) {
     if (!payload) return;
     let res = await fetch(WORKER_URL, {
@@ -159,7 +159,8 @@ async function apiCall(payload) {
     if (!text) return null;
     return JSON.parse(text);
 }
-async function createNewPlayer() {
+
+window.createNewPlayer = async function() {
     let id = document.getElementById('newPlayerId').value.trim();
     let name = document.getElementById('newPlayerName').value.trim();
     if(!id) { alert('PUID block is required :3'); return; }
@@ -173,10 +174,11 @@ async function createNewPlayer() {
     if(res && res.ok) {
         document.getElementById('newPlayerId').value = '';
         document.getElementById('newPlayerName').value = '';
-        await loadAllPlayers();
+        await window.loadAllPlayers();
     }
 }
-function switchTab(tabName) {
+
+window.switchTab = function(tabName) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
     document.getElementById('tab-' + tabName).classList.remove('hidden');
     ['players','allplayers','analytics'].forEach(t => {
@@ -186,26 +188,26 @@ function switchTab(tabName) {
     });
 }
     
-// Global function to fix the search error
-async function loadPlayerById(playerId) {
-    switchTab('players');
+window.loadPlayerById = async function(playerId) {
+    window.switchTab('players');
     document.getElementById('playerId').value = playerId;
     document.getElementById('searchType').value = 'id';
-    await searchPlayer();
+    await window.searchPlayer();
 }
 
-async function searchPlayer() {
+window.searchPlayer = async function() {
     let input = document.getElementById('playerId').value.trim();
     let type = document.getElementById('searchType').value;
     if (!input) return;
     let res = await apiCall({ action: 'get_player', type, query: input });
-    if (res && res.found) renderPlayer(res.data);
+    if (res && res.found) window.renderPlayer(res.data);
     else {
         alert('Zero indexed matches discovered across worker arrays :(');
         document.getElementById('playerStats').classList.add('hidden');
     }
 }
-function renderPlayer(p) {
+
+window.renderPlayer = function(p) {
     document.getElementById('playerStats').classList.remove('hidden');
     document.getElementById('displayName').innerText = p.name;
     document.getElementById('displayId').innerText = p.id;
@@ -226,82 +228,93 @@ function renderPlayer(p) {
         p.cosmetics.forEach(i => {
             cosList.innerHTML += `<li class="flex justify-between items-center bg-gray-900 border border-gray-800 p-2 rounded-lg text-xs">
                 <span>${i}</span>
-                <button onclick="quickRevoke('${i}')" class="text-red-400 hover:text-red-300 font-bold">Remove</button>
+                <button onclick="window.quickRevoke('${i}')" class="text-red-400 hover:text-red-300 font-bold">Remove</button>
             </li>`;
         });
     } else cosList.innerHTML = `<li class="text-gray-600 italic text-center py-4">No assets configured in profile stack.</li>`;
 }
-async function modifyPebbles(isAdding) {
+
+window.modifyPebbles = async function(isAdding) {
     let id = document.getElementById('displayId').innerText;
     let amt = parseInt(document.getElementById('pebbleAmount').value);
     if (!id || isNaN(amt)) return;
     await apiCall({ action: 'edit_pebbles', id, amount: isAdding ? amt : -amt });
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function setPebbles() {
+
+window.setPebbles = async function() {
     let id = document.getElementById('displayId').innerText;
     let amt = parseInt(document.getElementById('pebbleAmount').value);
     if (!id || isNaN(amt)) return;
     await apiCall({ action: 'set_pebbles', id, amount: amt });
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function changeName() {
+
+window.changeName = async function() {
     let id = document.getElementById('displayId').innerText;
     let name = document.getElementById('newName').value.trim();
     if (!id || !name) return;
     await apiCall({ action: 'set_name', id, value: name });
     document.getElementById('newName').value = '';
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function kickPlayer() {
+
+window.kickPlayer = async function() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     await apiCall({ action: 'kick', id });
     alert('Kick command sent to real-time sync :3');
 }
-async function toggleAdmin() {
+
+window.toggleAdmin = async function() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     await apiCall({ action: 'toggle_admin', id });
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function toggleBan() {
+
+window.toggleBan = async function() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     await apiCall({ action: 'toggle_ban', id });
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function wipeCosmetics() {
+
+window.wipeCosmetics = async function() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     if(!confirm('Flush asset structure? >:D')) return;
     await apiCall({ action: 'wipe_cosmetics', id });
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function manageCosmetic(isGiving) {
+
+window.manageCosmetic = async function(isGiving) {
     let id = document.getElementById('displayId').innerText;
     let cos = document.getElementById('cosmeticId').value;
     if (!id || !cos) { alert('Please select a cosmetic from the dropdown :D'); return; }
     await apiCall({ action: isGiving ? 'give_cosmetic' : 'revoke_cosmetic', id, value: cos });
-    document.getElementById('cosmeticId').value = ''; // resets the dropdown
-    await refreshCurrentPlayer();
+    document.getElementById('cosmeticId').value = ''; 
+    await window.refreshCurrentPlayer();
 }
-async function quickRevoke(value) {
+
+window.quickRevoke = async function(value) {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     await apiCall({ action: 'revoke_cosmetic', id, value });
-    await refreshCurrentPlayer();
+    await window.refreshCurrentPlayer();
 }
-async function refreshCurrentPlayer() {
+
+window.refreshCurrentPlayer = async function() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     
     let res = await apiCall({ action: 'get_player', type: 'id', query: id });
     if (res && res.found) {
-        renderPlayer(res.data);
+        window.renderPlayer(res.data);
     }
 }
-async function loadAllPlayers() {
+
+window.loadAllPlayers = async function() {
     let list = document.getElementById('allList');
     let res = await apiCall({ action: 'get_all' });
     if (!res || !res.players) return;
@@ -322,7 +335,7 @@ async function loadAllPlayers() {
             let statusMarker = isOnline ? '<span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-2 shadow-[0_0_8px_#22c55e]"></span>' : '<span class="w-2 h-2 rounded-full bg-gray-700 inline-block mr-2"></span>';
             list.innerHTML += `
                 <li class="py-3 flex justify-between items-center cursor-pointer hover:bg-gray-900/60 px-3 rounded-lg transition"
-                    onclick="loadPlayerById('${p.id}')">
+                    onclick="window.loadPlayerById('${p.id}')">
                     <span class="flex items-center">
                         ${statusMarker}
                         <span class="font-bold text-gray-200">${p.name}</span>
@@ -347,10 +360,12 @@ async function loadAllPlayers() {
     document.getElementById('totalBanned').innerText = banned;
     document.getElementById('totalAdmins').innerText = admins;
 }
+
 setInterval(() => {
-    loadAllPlayers();
+    window.loadAllPlayers();
 }, 3000);
-loadAllPlayers();
+
+window.loadAllPlayers();
 </script>
 </body>
 </html>
