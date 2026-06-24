@@ -165,6 +165,21 @@ function switchTab(tabName) {
             (t === tabName ? 'bg-orange-600 hover:bg-orange-500 shadow-md' : 'bg-gray-800 hover:bg-orange-600');
     });
 }
+    // Add this global function to fix the error
+async function loadPlayerById(playerId) {
+    // 1. Switch to the Player Control tab
+    switchTab('players');
+    
+    // 2. Set the search input and trigger the query
+    document.getElementById('playerId').value = playerId;
+    document.getElementById('searchType').value = 'id';
+    
+    // 3. Perform the lookup
+    await searchPlayer();
+}
+
+// Ensure you have these updated helper functions in your script
+    
 async function searchPlayer() {
     let input = document.getElementById('playerId').value.trim();
     let type = document.getElementById('searchType').value;
@@ -267,8 +282,12 @@ async function quickRevoke(value) {
 async function refreshCurrentPlayer() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
+    
+    // Updated to reflect the features discussed for admin dashboard management
     let res = await apiCall({ action: 'get_player', type: 'id', query: id });
-    if (res && res.found) renderPlayer(res.data);
+    if (res && res.found) {
+        renderPlayer(res.data);
+    }
 }
 async function loadAllPlayers() {
     let list = document.getElementById('allList');
