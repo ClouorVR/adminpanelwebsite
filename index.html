@@ -84,7 +84,27 @@
                     </div>
                     <ul id="cosmeticList" class="text-xs font-mono text-gray-300 mb-3 list-none h-24 overflow-y-auto bg-gray-900 p-3 rounded-lg border border-gray-800 flex flex-col gap-1"></ul>
                     <div class="flex gap-2">
-                        <input type="text" id="cosmeticId" class="flex-1 p-2 bg-gray-900 border border-gray-800 rounded-lg font-mono text-xs outline-none focus:border-blue-500" placeholder="category:asset_id (e.g. hat:tophat)">
+                        <select id="cosmeticId" class="flex-1 p-2 bg-gray-900 border border-gray-800 rounded-lg font-mono text-xs outline-none focus:border-blue-500">
+                            <option value="" disabled selected>Select cosmetic from database...</option>
+                            <optgroup label="Head Cosmetics">
+                                <option value="HeadCos:TopHat">Top Hat</option>
+                                <option value="HeadCos:Beanie">Beanie</option>
+                                <option value="HeadCos:Crown">Crown</option>
+                            </optgroup>
+                            <optgroup label="Face Cosmetics">
+                                <option value="FaceCos:Glasses">Glasses</option>
+                                <option value="FaceCos:EyePatch">Eye Patch</option>
+                            </optgroup>
+                            <optgroup label="Body Cosmetics">
+                                <option value="BodyCos:Backpack">Backpack</option>
+                                <option value="BodyCos:Cape">Cape</option>
+                            </optgroup>
+                            <optgroup label="Hand Cosmetics">
+                                <option value="LeftCos:Watch">Watch (Left)</option>
+                                <option value="RightCos:Sword">Sword (Right)</option>
+                            </optgroup>
+                        </select>
+                        
                         <button onclick="manageCosmetic(true)" class="bg-blue-600 font-bold px-4 rounded-lg hover:bg-blue-500 text-xs transition">Grant</button>
                         <button onclick="manageCosmetic(false)" class="bg-red-950 text-red-400 border border-red-900/40 font-bold px-4 rounded-lg hover:bg-red-900 transition text-xs">Remove</button>
                     </div>
@@ -165,21 +185,15 @@ function switchTab(tabName) {
             (t === tabName ? 'bg-orange-600 hover:bg-orange-500 shadow-md' : 'bg-gray-800 hover:bg-orange-600');
     });
 }
-    // Add this global function to fix the error
-async function loadPlayerById(playerId) {
-    // 1. Switch to the Player Control tab
-    switchTab('players');
     
-    // 2. Set the search input and trigger the query
+// Global function to fix the search error
+async function loadPlayerById(playerId) {
+    switchTab('players');
     document.getElementById('playerId').value = playerId;
     document.getElementById('searchType').value = 'id';
-    
-    // 3. Perform the lookup
     await searchPlayer();
 }
 
-// Ensure you have these updated helper functions in your script
-    
 async function searchPlayer() {
     let input = document.getElementById('playerId').value.trim();
     let type = document.getElementById('searchType').value;
@@ -243,7 +257,7 @@ async function kickPlayer() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     await apiCall({ action: 'kick', id });
-    alert('Kick code appended to loop pipeline :3');
+    alert('Kick command sent to real-time sync :3');
 }
 async function toggleAdmin() {
     let id = document.getElementById('displayId').innerText;
@@ -266,11 +280,10 @@ async function wipeCosmetics() {
 }
 async function manageCosmetic(isGiving) {
     let id = document.getElementById('displayId').innerText;
-    let cos = document.getElementById('cosmeticId').value.trim();
-    if (!id || !cos) return;
-    if (!cos.includes(':')) { alert('Data block missing classification separator (:) >:D'); return; }
+    let cos = document.getElementById('cosmeticId').value;
+    if (!id || !cos) { alert('Please select a cosmetic from the dropdown :D'); return; }
     await apiCall({ action: isGiving ? 'give_cosmetic' : 'revoke_cosmetic', id, value: cos });
-    document.getElementById('cosmeticId').value = '';
+    document.getElementById('cosmeticId').value = ''; // resets the dropdown
     await refreshCurrentPlayer();
 }
 async function quickRevoke(value) {
@@ -283,7 +296,6 @@ async function refreshCurrentPlayer() {
     let id = document.getElementById('displayId').innerText;
     if (!id) return;
     
-    // Updated to reflect the features discussed for admin dashboard management
     let res = await apiCall({ action: 'get_player', type: 'id', query: id });
     if (res && res.found) {
         renderPlayer(res.data);
