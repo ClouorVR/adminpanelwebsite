@@ -25,6 +25,11 @@
         <input id="newPlayerName" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Leave empty for random name">
         <button onclick="window.createNewPlayer()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold py-2 rounded-lg hover:bg-orange-600 hover:text-white transition">Commit Account File</button>
     </div>
+    <div id="ownerSection" class="hidden border-t border-gray-800 pt-4 flex flex-col gap-2">
+        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Authorize Dashboard Gmail</p>
+        <input id="authEmailInput" type="email" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="staff@gmail.com">
+        <button onclick="window.authorizeEmail()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs font-bold py-2 rounded-lg hover:bg-blue-600 hover:text-white transition">Allow Gmail Address</button>
+    </div>
 </div>
 <div class="flex-1 p-10 overflow-y-auto bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
     <div id="tab-players" class="tab-content block">
@@ -76,6 +81,7 @@
                         <button onclick="window.kickPlayer()" class="bg-yellow-600 font-bold py-2 rounded-lg hover:bg-yellow-500 text-xs transition text-gray-950">Kick Network Client</button>
                         <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-purple-600 font-bold py-2 rounded-lg hover:bg-purple-500 text-xs transition">Alter Admin Token</button>
                         <button id="banBtn" onclick="window.toggleBan()" class="bg-red-600 font-bold py-2 rounded-lg hover:bg-red-500 text-xs transition">Alter Ban Token</button>
+                        <button id="ownerDeleteBtn" onclick="window.deletePlayerAccount()" class="hidden bg-red-700 font-bold py-2 rounded-lg hover:bg-red-600 text-xs transition text-white">DELETE ACCOUNT PERMANENTLY</button>
                     </div>
                 </div>
                 <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 col-span-2">
@@ -152,9 +158,19 @@
         </div>
     </div>
 </div>
+
+<div id="loginOverlay" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50">
+    <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 w-96 shadow-2xl flex flex-col gap-4">
+        <h2 class="text-xl font-black text-orange-500 text-center tracking-wide">ClouorVR Login</h2>
+        <input id="loginEmail" type="email" class="p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" placeholder="Enter Gmail Address">
+        <button onclick="window.tryLogin()" class="bg-orange-600 font-black py-3 rounded-lg hover:bg-orange-500 transition text-sm uppercase tracking-wider">Authenticate</button>
+    </div>
+</div>
+
 <script>
 const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"; 
+window.currentUserEmail = "schatziheiko1984@gmail.com";
 
 async function apiCall(payload) {
     if (!payload) return;
@@ -170,6 +186,68 @@ async function apiCall(payload) {
 }
 
 window.globalCatalog = [];
+
+window.tryLogin = async function() {
+    let email = document.getElementById('loginEmail').value.trim();
+    if(!email) { alert('enter email :3'); return; }
+    let res = await apiCall({ action: 'verify_email', email: email });
+    if (email === 'schatziheiko1984@gmail.com' || (res && res.allowed)) {
+        window.currentUserEmail = email;
+        localStorage.setItem('clouor_email', email);
+        document.getElementById('loginOverlay').classList.add('hidden');
+        window.setupSecurityUI();
+    } else {
+        alert('access denied >:(');
+    }
+}
+
+window.setupSecurityUI = function() {
+    let isOwner = window.currentUserEmail === 'schatziheiko1984@gmail.com';
+    if (isOwner) {
+        document.getElementById('ownerSection').classList.remove('hidden');
+        let btn = document.getElementById('ownerDeleteBtn');
+        if (btn) btn.classList.remove('hidden');
+    } else {
+        document.getElementById('ownerSection').classList.add('hidden');
+        let btn = document.getElementById('ownerDeleteBtn');
+        if (btn) btn.classList.add('hidden');
+    }
+}
+
+window.authorizeEmail = async function() {
+    let em = document.getElementById('authEmailInput').value.trim();
+    if(!em) return;
+    let res = await apiCall({ action: 'add_allowed_email', email: em });
+    if(res) {
+        alert('email successfully allowed :D');
+        document.getElementById('authEmailInput').value = '';
+    }
+}
+
+window.deletePlayerAccount = async function() {
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("no player loaded :3"); return; }
+    if(confirm("delete this profile entirely from database? >:D")) {
+        await apiCall({ action: 'delete_player', id: id });
+        alert('account removed :D');
+        document.getElementById('playerStats').classList.add('hidden');
+        await window.loadAllPlayers();
+    }
+}
+
+window.checkAutoLogin = async function() {
+    let saved = localStorage.getItem('clouor_email');
+    if (saved) {
+        let res = await apiCall({ action: 'verify_email', email: saved });
+        if (saved === 'schatziheiko1984@gmail.com' || (res && res.allowed)) {
+            window.currentUserEmail = saved;
+            document.getElementById('loginOverlay').classList.add('hidden');
+            window.setupSecurityUI();
+            return;
+        }
+    }
+    document.getElementById('loginOverlay').classList.remove('hidden');
+}
 
 window.createNewPlayer = async function() {
     let id = document.getElementById('newPlayerId').value.trim();
@@ -399,8 +477,8 @@ window.loadAllPlayers = async function() {
     window.updateCosmeticDropdown();
 }
 
-setInterval(() => { window.loadAllPlayers(); }, 3000);
-window.loadAllPlayers();
+setInterval(() => { if(window.currentUserEmail) window.loadAllPlayers(); }, 3000);
+window.checkAutoLogin();
 </script>
 </body>
 </html>
