@@ -170,7 +170,7 @@
 <script>
 const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"; 
-window.activeSecurityToken = "246d9f5e85e8f7e320157aec61ecde95e962454f205e16f6f6ff4040c4014c73";
+window.activeSecurityToken = localStorage.getItem('clouor_token_v2') || "246d9f5e85e8f7e320157aec61ecde95e962454f205e16f6f6ff4040c4014c73";
 
 async function apiCall(payload) {
     if (!payload) return;
@@ -236,16 +236,17 @@ window.deletePlayerAccount = async function() {
 }
 
 window.checkAutoLogin = async function() {
-    let saved = localStorage.getItem('clouor_token_v2');
-    if (saved) {
-        let res = await apiCall({ action: 'verify_key', key: saved });
-        if (saved === SECRET_KEY || (res && res.allowed)) {
-            window.activeSecurityToken = saved;
+    let token = window.activeSecurityToken;
+    if (token) {
+        let res = await apiCall({ action: 'verify_key', key: token });
+        if (token === SECRET_KEY || (res && res.allowed)) {
             document.getElementById('loginOverlay').classList.add('hidden');
             window.setupSecurityUI();
             return;
         }
     }
+    window.activeSecurityToken = "";
+    localStorage.removeItem('clouor_token_v2');
     document.getElementById('loginOverlay').classList.remove('hidden');
 }
 
