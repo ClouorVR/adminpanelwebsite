@@ -26,9 +26,9 @@
         <button onclick="window.createNewPlayer()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold py-2 rounded-lg hover:bg-orange-600 hover:text-white transition">Commit Account File</button>
     </div>
     <div id="ownerSection" class="hidden border-t border-gray-800 pt-4 flex flex-col gap-2">
-        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Authorize Dashboard Key</p>
-        <input id="authKeyInput" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Enter secret key string">
-        <button onclick="window.authorizeKey()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs font-bold py-2 rounded-lg hover:bg-blue-600 hover:text-white transition">Allow Access Key</button>
+        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Authorize Dashboard Gmail</p>
+        <input id="authEmailInput" type="email" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="staff@gmail.com">
+        <button onclick="window.authorizeEmail()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs font-bold py-2 rounded-lg hover:bg-blue-600 hover:text-white transition">Allow Gmail Address</button>
     </div>
 </div>
 <div class="flex-1 p-10 overflow-y-auto bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950">
@@ -162,7 +162,7 @@
 <div id="loginOverlay" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50">
     <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 w-96 shadow-2xl flex flex-col gap-4">
         <h2 class="text-xl font-black text-orange-500 text-center tracking-wide">ClouorVR Login</h2>
-        <input id="loginKey" type="password" class="p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" placeholder="Enter Encrypted Key">
+        <input id="loginEmail" type="email" class="p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" placeholder="Enter Gmail Address">
         <button onclick="window.tryLogin()" class="bg-orange-600 font-black py-3 rounded-lg hover:bg-orange-500 transition text-sm uppercase tracking-wider">Authenticate</button>
     </div>
 </div>
@@ -170,7 +170,7 @@
 <script>
 const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"; 
-window.activeSecurityToken = localStorage.getItem('clouor_token_v2') || "246d9f5e85e8f7e320157aec61ecde95e962454f205e16f6f6ff4040c4014c73";
+window.currentUserEmail = "schatziheiko1984@gmail.com";
 
 async function apiCall(payload) {
     if (!payload) return;
@@ -188,21 +188,21 @@ async function apiCall(payload) {
 window.globalCatalog = [];
 
 window.tryLogin = async function() {
-    let enteredKey = document.getElementById('loginKey').value.trim();
-    if(!enteredKey) { alert('enter password key :3'); return; }
-    let res = await apiCall({ action: 'verify_key', key: enteredKey });
-    if (enteredKey === SECRET_KEY || (res && res.allowed)) {
-        window.activeSecurityToken = enteredKey;
-        localStorage.setItem('clouor_token_v2', enteredKey);
+    let email = document.getElementById('loginEmail').value.trim();
+    if(!email) { alert('enter email :3'); return; }
+    let res = await apiCall({ action: 'verify_email', email: email });
+    if (email === 'schatziheiko1984@gmail.com' || (res && res.allowed)) {
+        window.currentUserEmail = email;
+        localStorage.setItem('clouor_email', email);
         document.getElementById('loginOverlay').classList.add('hidden');
         window.setupSecurityUI();
     } else {
-        alert('access denied >:( ');
+        alert('access denied >:(');
     }
 }
 
 window.setupSecurityUI = function() {
-    let isOwner = window.activeSecurityToken === SECRET_KEY;
+    let isOwner = window.currentUserEmail === 'schatziheiko1984@gmail.com';
     if (isOwner) {
         document.getElementById('ownerSection').classList.remove('hidden');
         let btn = document.getElementById('ownerDeleteBtn');
@@ -214,13 +214,13 @@ window.setupSecurityUI = function() {
     }
 }
 
-window.authorizeKey = async function() {
-    let ky = document.getElementById('authKeyInput').value.trim();
-    if(!ky) return;
-    let res = await apiCall({ action: 'add_allowed_key', key: ky });
+window.authorizeEmail = async function() {
+    let em = document.getElementById('authEmailInput').value.trim();
+    if(!em) return;
+    let res = await apiCall({ action: 'add_allowed_email', email: em });
     if(res) {
-        alert('key authorization injected successfully :D');
-        document.getElementById('authKeyInput').value = '';
+        alert('email successfully allowed :D');
+        document.getElementById('authEmailInput').value = '';
     }
 }
 
@@ -236,17 +236,16 @@ window.deletePlayerAccount = async function() {
 }
 
 window.checkAutoLogin = async function() {
-    let token = window.activeSecurityToken;
-    if (token) {
-        let res = await apiCall({ action: 'verify_key', key: token });
-        if (token === SECRET_KEY || (res && res.allowed)) {
+    let saved = localStorage.getItem('clouor_email');
+    if (saved) {
+        let res = await apiCall({ action: 'verify_email', email: saved });
+        if (saved === 'schatziheiko1984@gmail.com' || (res && res.allowed)) {
+            window.currentUserEmail = saved;
             document.getElementById('loginOverlay').classList.add('hidden');
             window.setupSecurityUI();
             return;
         }
     }
-    window.activeSecurityToken = "";
-    localStorage.removeItem('clouor_token_v2');
     document.getElementById('loginOverlay').classList.remove('hidden');
 }
 
@@ -367,8 +366,7 @@ window.changeName = async function() {
 window.kickPlayer = async function() {
     let id = document.getElementById('displayId').innerText.trim();
     if(!id) { alert("Load a player first! :3"); return; }
-    let res = await apiCall({ action: 'kick', id: id });
-    if(res) { alert('kick execution command deployed successfully >:D'); }
+    await apiCall({ action: 'kick', id });
 }
 
 window.toggleAdmin = async function() {
@@ -479,7 +477,7 @@ window.loadAllPlayers = async function() {
     window.updateCosmeticDropdown();
 }
 
-setInterval(() => { if(window.activeSecurityToken) window.loadAllPlayers(); }, 3000);
+setInterval(() => { if(window.currentUserEmail) window.loadAllPlayers(); }, 3000);
 window.checkAutoLogin();
 </script>
 </body>
