@@ -195,7 +195,7 @@ window.switchTab = function(tabName) {
     
 window.loadPlayerById = async function(playerId) {
     window.switchTab('players');
-    document.getElementById('playerId').value = playerId;
+    document.getElementById('playerId').value = playerId.trim();
     document.getElementById('searchType').value = 'id';
     await window.searchPlayer();
 }
@@ -258,74 +258,78 @@ window.updateCosmeticDropdown = function() {
 }
 
 window.modifyPebbles = async function(isAdding) {
-    let id = document.getElementById('displayId').innerText;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     let amt = parseInt(document.getElementById('pebbleAmount').value);
-    if (!id || isNaN(amt)) return;
+    if (isNaN(amt)) return;
     await apiCall({ action: 'edit_pebbles', id, amount: isAdding ? amt : -amt });
     await window.refreshCurrentPlayer();
 }
 
 window.setPebbles = async function() {
-    let id = document.getElementById('displayId').innerText;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     let amt = parseInt(document.getElementById('pebbleAmount').value);
-    if (!id || isNaN(amt)) return;
+    if (isNaN(amt)) return;
     await apiCall({ action: 'set_pebbles', id, amount: amt });
     await window.refreshCurrentPlayer();
 }
 
 window.changeName = async function() {
-    let id = document.getElementById('displayId').innerText;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     let name = document.getElementById('newName').value.trim();
-    if (!id || !name) return;
+    if (!name) return;
     await apiCall({ action: 'set_name', id, value: name });
     document.getElementById('newName').value = '';
     await window.refreshCurrentPlayer();
 }
 
 window.kickPlayer = async function() {
-    let id = document.getElementById('displayId').innerText;
-    if (!id) return;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     await apiCall({ action: 'kick', id });
 }
 
 window.toggleAdmin = async function() {
-    let id = document.getElementById('displayId').innerText;
-    if (!id) return;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     await apiCall({ action: 'toggle_admin', id });
     await window.refreshCurrentPlayer();
 }
 
 window.toggleBan = async function() {
-    let id = document.getElementById('displayId').innerText;
-    if (!id) return;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     await apiCall({ action: 'toggle_ban', id });
     await window.refreshCurrentPlayer();
 }
 
 window.wipeCosmetics = async function() {
-    let id = document.getElementById('displayId').innerText;
-    if (!id) return;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     await apiCall({ action: 'wipe_cosmetics', id });
     await window.refreshCurrentPlayer();
 }
 
 window.manageCosmetic = async function(isGiving) {
-    let id = document.getElementById('displayId').innerText;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     let cos = document.getElementById('cosmeticId').value;
-    if (!id || !cos) return;
+    if (!cos) return;
     await apiCall({ action: isGiving ? 'give_cosmetic' : 'revoke_cosmetic', id, value: cos });
     await window.refreshCurrentPlayer();
 }
 
 window.quickRevoke = async function(value) {
-    let id = document.getElementById('displayId').innerText;
-    if (!id) return;
+    let id = document.getElementById('displayId').innerText.trim();
+    if(!id) { alert("Load a player first! :3"); return; }
     await apiCall({ action: 'revoke_cosmetic', id, value });
     await window.refreshCurrentPlayer();
 }
 
 window.refreshCurrentPlayer = async function() {
-    let id = document.getElementById('displayId').innerText;
+    let id = document.getElementById('displayId').innerText.trim();
     if (!id) return;
     let res = await apiCall({ action: 'get_player', type: 'id', query: id });
     if (res && res.found) window.renderPlayer(res.data);
@@ -350,10 +354,9 @@ window.deleteCosmetic = async function(name) {
 }
 
 window.loadAllPlayers = async function() {
-    let res = await apiCall({ action: 'poll' });
+    let res = await apiCall({ action: 'get_all' });
     if (!res) return;
     
-    // Update cosmetics list from cloud
     window.globalCatalog = res.catalog || [];
     let clist = document.getElementById('globalCosmeticList');
     clist.innerHTML = '';
@@ -363,7 +366,6 @@ window.loadAllPlayers = async function() {
         });
     } else clist.innerHTML = '<li class="py-2 text-gray-600">no cloud cosmetics found.</li>';
     
-    // update players
     let list = document.getElementById('allList');
     list.innerHTML = '';
     let concurrentCount = 0;
