@@ -19,6 +19,7 @@
     <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Database Registry</button>
     <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Cosmetics Registry</button>
     <button onclick="window.switchTab('analytics')" id="btn-analytics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Network Analytics</button>
+    
     <div class="mt-auto border-t border-gray-800 pt-4 flex flex-col gap-2">
         <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Manual Account Creator</p>
         <input id="newPlayerId" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Target PUID String">
@@ -102,7 +103,11 @@
         </div>
     </div>
     <div id="tab-allplayers" class="tab-content hidden">
-        <h2 class="text-3xl font-black mb-6 text-orange-500">Global Player Array File</h2>
+        <h2 class="text-3xl font-black mb-4 text-orange-500">Global Player Array File</h2>
+        <div class="flex gap-2 mb-4 max-w-2xl">
+            <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-2 bg-gray-900 border border-gray-800 rounded-lg text-xs font-mono text-white outline-none focus:border-orange-500" placeholder="Quick filter by name or PUID...">
+            <button onclick="window.clearQuickFilter()" class="bg-gray-800 text-xs px-4 rounded-lg hover:bg-gray-700 font-bold">Clear</button>
+        </div>
         <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 max-w-2xl shadow-lg">
             <ul id="allList" class="divide-y divide-gray-800 font-mono text-sm">
                 <li class="py-2 text-gray-500 italic">Scanning remote master branch...</li>
@@ -156,12 +161,23 @@
                 <p id="totalAdmins" class="text-5xl font-black text-purple-500 mt-2">0</p>
             </div>
         </div>
+        <div class="mt-6 bg-gray-900 border border-gray-800 p-4 rounded-xl max-w-2xl">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">System Events</h3>
+            <div id="systemLog" class="h-32 bg-gray-950 rounded-lg p-3 font-mono text-xs text-orange-400 overflow-y-auto border border-gray-850">
+                <div>System status initialized ready :D</div>
+            </div>
+        </div>
     </div>
 </div>
 
 <div id="loginOverlay" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50">
     <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 w-96 shadow-2xl flex flex-col gap-4">
         <h2 class="text-xl font-black text-orange-500 text-center tracking-wide">ClouorVR Login</h2>
+        <div id="gmailPromptSection" class="hidden bg-gray-950 p-3 rounded-lg border border-orange-500/30 text-center text-xs text-gray-300">
+            <p class="mb-2" id="gmailPromptText">Hey dud, is your account browser logged into this?</p>
+            <button onclick="window.acceptSuggestedGmail()" class="bg-orange-600 text-white font-bold px-3 py-1 rounded hover:bg-orange-500 transition mr-2">Ohhh yeah</button>
+            <button onclick="window.rejectSuggestedGmail()" class="bg-gray-800 text-gray-400 px-3 py-1 rounded hover:bg-gray-700 transition">Nah</button>
+        </div>
         <input id="loginEmail" type="email" class="p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" placeholder="Enter Gmail Address">
         <button onclick="window.tryLogin()" class="bg-orange-600 font-black py-3 rounded-lg hover:bg-orange-500 transition text-sm uppercase tracking-wider">Authenticate</button>
     </div>
@@ -171,6 +187,7 @@
 const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"; 
 window.currentUserEmail = "studquest83@gmail.com";
+window.suggestedEmail = "";
 
 async function apiCall(payload) {
     if (!payload) return;
@@ -179,10 +196,13 @@ async function apiCall(payload) {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": SECRET_KEY },
             body: JSON.stringify(payload)
-        });
+        }).catch(() => null);
+        if (!res) return null;
         let text = await res.text();
         return text ? JSON.parse(text) : null;
-    } catch(e) { return null; }
+    } catch(e) { 
+        return null; 
+    }
 }
 
 window.globalCatalog = [];
@@ -196,6 +216,7 @@ window.tryLogin = async function() {
         localStorage.setItem('clouor_email', email);
         document.getElementById('loginOverlay').classList.add('hidden');
         window.setupSecurityUI();
+        window.logEvent("Authenticated successfully as " + email + " :D");
     } else {
         alert('access denied >:(');
     }
@@ -236,28 +257,46 @@ window.deletePlayerAccount = async function() {
 }
 
 window.checkAutoLogin = async function() {
-    let saved = localStorage.getItem('clouor_email');
+    let saved = localStorage.getItem('clouor_email') || window.currentUserEmail;
     if (saved) {
-        let res = await apiCall({ action: 'verify_email', email: saved });
-        if (saved === 'schatziheiko1984@gmail.com' || (res && res.allowed)) {
-            window.currentUserEmail = saved;
-            document.getElementById('loginOverlay').classList.add('hidden');
-            window.setupSecurityUI();
-            return;
-        }
+        window.suggestedEmail = saved;
+        document.getElementById('gmailPromptText').innerText = "Hey dud, is this " + saved + " your account browser mapping?";
+        document.getElementById('gmailPromptSection').classList.remove('hidden');
+        document.getElementById('loginEmail').value = saved;
+    } else {
+        document.getElementById('loginOverlay').classList.remove('hidden');
     }
-    document.getElementById('loginOverlay').classList.remove('hidden');
+}
+
+window.acceptSuggestedGmail = function() {
+    if(window.suggestedEmail) {
+        document.getElementById('loginEmail').value = window.suggestedEmail;
+        window.tryLogin();
+    }
+}
+
+window.rejectSuggestedGmail = function() {
+    document.getElementById('gmailPromptSection').classList.add('hidden');
+    document.getElementById('loginEmail').value = '';
 }
 
 window.createNewPlayer = async function() {
     let id = document.getElementById('newPlayerId').value.trim();
     let name = document.getElementById('newPlayerName').value.trim();
     if(!id) { alert('PUID block is required :3'); return; }
+    
+    let check = await apiCall({ action: 'get_player', type: 'id', query: id });
+    if (check && check.found) {
+        alert("Hold up, player account already exists in database registry! linking aborted to protect target data >:D");
+        return;
+    }
+
     if(!name) { name = "Player" + Math.floor(Math.random() * 9999999); }
     let res = await apiCall({ action: 'joined', id: id, name: name });
     if(res && res.ok) {
         document.getElementById('newPlayerId').value = '';
         document.getElementById('newPlayerName').value = '';
+        window.logEvent("Committed brand new player profile: " + name + " -> " + id + " :3");
         await window.loadAllPlayers();
     }
 }
@@ -292,8 +331,13 @@ window.renderPlayer = function(p) {
     document.getElementById('displayName').innerText = p.name;
     document.getElementById('displayId').innerText = p.id;
     document.getElementById('pebbleCount').innerText = p.pebbles ?? 0;
-    document.getElementById('displayFirstJoined').innerText = p.firstJoined || 'unknown';
-    document.getElementById('displayLastSeen').innerText = p.lastSeen || 'unknown';
+    
+    let isInspecting = !document.getElementById('playerStats').classList.contains('hidden');
+    if (!isInspecting) {
+        document.getElementById('displayFirstJoined').innerText = p.firstJoined || 'unknown';
+        document.getElementById('displayLastSeen').innerText = p.lastSeen || 'unknown';
+    }
+    
     if (p.adminNickname) {
         document.getElementById('displayNickname').innerText = p.adminNickname;
         document.getElementById('displayNicknameLine').classList.remove('hidden');
@@ -316,6 +360,7 @@ window.renderPlayer = function(p) {
 
 window.updateCosmeticDropdown = function() {
     let sel = document.getElementById('cosmeticId');
+    if(!sel) return;
     sel.innerHTML = '<option value="" disabled selected>Select cosmetic from cloud...</option>';
     let groups = {};
     window.globalCatalog.forEach(c => {
@@ -366,7 +411,12 @@ window.changeName = async function() {
 window.kickPlayer = async function() {
     let id = document.getElementById('displayId').innerText.trim();
     if(!id) { alert("Load a player first! :3"); return; }
-    await apiCall({ action: 'kick', id });
+    window.logEvent("Sending network drop intercept package to client: " + id);
+    let res = await apiCall({ action: 'kick_player', id: id });
+    if(!res || res.error || res.status === 404) {
+        res = await apiCall({ action: 'kick', id: id });
+    }
+    alert('Kick payload dispatched :D');
 }
 
 window.toggleAdmin = async function() {
@@ -431,20 +481,46 @@ window.deleteCosmetic = async function(name) {
     await window.loadAllPlayers();
 }
 
+window.logEvent = function(msg) {
+    let log = document.getElementById('systemLog');
+    if(log) {
+        log.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        log.scrollTop = log.scrollHeight;
+    }
+}
+
+window.applyQuickFilter = function() {
+    let val = document.getElementById('quickFilterInput').value.toLowerCase();
+    let items = document.querySelectorAll('#allList li');
+    items.forEach(li => {
+        let text = li.innerText.toLowerCase();
+        if(text.includes(val)) li.classList.remove('hidden');
+        else li.classList.add('hidden');
+    });
+}
+
+window.clearQuickFilter = function() {
+    document.getElementById('quickFilterInput').value = '';
+    window.applyQuickFilter();
+}
+
 window.loadAllPlayers = async function() {
     let res = await apiCall({ action: 'get_all' });
     if (!res) return;
     
     window.globalCatalog = res.catalog || [];
     let clist = document.getElementById('globalCosmeticList');
-    clist.innerHTML = '';
-    if(window.globalCatalog.length > 0) {
-        window.globalCatalog.forEach(c => {
-            clist.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="text-green-400">${c.itemName} <span class="text-gray-500 text-xs">(${c.cosmeticSlot})</span></span> <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-xs font-bold">DELETE</button></li>`;
-        });
-    } else clist.innerHTML = '<li class="py-2 text-gray-600">no cloud cosmetics found.</li>';
+    if(clist) {
+        clist.innerHTML = '';
+        if(window.globalCatalog.length > 0) {
+            window.globalCatalog.forEach(c => {
+                clist.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="text-green-400">${c.itemName} <span class="text-gray-500 text-xs">(${c.cosmeticSlot})</span></span> <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-xs font-bold">DELETE</button></li>`;
+            });
+        } else clist.innerHTML = '<li class="py-2 text-gray-600">no cloud cosmetics found.</li>';
+    }
     
     let list = document.getElementById('allList');
+    if(!list) return;
     list.innerHTML = '';
     let concurrentCount = 0;
     let pebbles = 0, banned = 0, admins = 0;
@@ -475,9 +551,18 @@ window.loadAllPlayers = async function() {
     document.getElementById('totalBanned').innerText = banned;
     document.getElementById('totalAdmins').innerText = admins;
     window.updateCosmeticDropdown();
+    window.applyQuickFilter();
 }
 
-setInterval(() => { if(window.currentUserEmail) window.loadAllPlayers(); }, 3000);
+setInterval(() => { 
+    if(window.currentUserEmail) {
+        let activeProfileOpen = !document.getElementById('playerStats').classList.contains('hidden');
+        if(!activeProfileOpen) {
+            window.loadAllPlayers(); 
+        }
+    } 
+}, 3000);
+
 window.checkAutoLogin();
 </script>
 </body>
