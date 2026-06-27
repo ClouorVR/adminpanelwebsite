@@ -206,6 +206,7 @@ window.tryLogin = async function() {
     if(!pass) { alert('type pass :3'); return; }
     if (pass === 'clouorvr2026') {
         localStorage.setItem('cvr_saved_pass', pass);
+        localStorage.setItem('cvr_saved_email', 'schatziheiko1984@gmail.com');
         window.currentUserEmail = 'schatziheiko1984@gmail.com';
         document.getElementById('loginOverlay').classList.add('hidden');
         window.setupSecurityUI();
@@ -218,7 +219,7 @@ window.tryLogin = async function() {
 window.onload = function() {
     let saved = localStorage.getItem('cvr_saved_pass');
     if(saved === 'clouorvr2026') {
-        window.currentUserEmail = 'schatziheiko1984@gmail.com';
+        window.currentUserEmail = localStorage.getItem('cvr_saved_email') || 'schatziheiko1984@gmail.com';
         document.getElementById('loginOverlay').classList.add('hidden');
         window.setupSecurityUI();
         window.loadAllPlayers();
