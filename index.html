@@ -90,6 +90,10 @@
                         <h4 class="font-bold text-gray-400 uppercase text-xs tracking-wider">Asset Inventory</h4>
                         <button onclick="window.wipeCosmetics()" class="text-red-400 text-xs font-bold hover:underline">Flush Inventory File</button>
                     </div>
+                    <div class="flex items-center justify-between mb-3 gap-3 text-xs text-gray-400 font-mono">
+                        <p id="cosmeticsOwnedCount">Owned Cosmetics: 0</p>
+                        <div id="cosmeticsOwnedTags" class="flex flex-wrap gap-2"></div>
+                    </div>
                     <ul id="cosmeticList" class="text-xs font-mono text-gray-300 mb-3 list-none h-24 overflow-y-auto bg-gray-900 p-3 rounded-lg border border-gray-800 flex flex-col gap-1"></ul>
                     <div class="flex gap-2">
                         <select id="cosmeticId" class="flex-1 p-2 bg-gray-900 border border-gray-800 rounded-lg font-mono text-xs outline-none focus:border-blue-500">
@@ -130,7 +134,11 @@
                     <option value="RightCos">RightCos</option>
                 </select>
                 <input id="newCosPrice" type="number" class="w-full p-2.5 mb-3 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Price (Pebbles)">
-                <button onclick="window.createCosmetic()" class="bg-orange-600 font-bold py-2 w-full rounded-lg hover:bg-orange-500 text-xs transition">Commit Cosmetic to Cloud</button>
+                <div class="flex gap-2 mb-3">
+                    <button onclick="window.createCosmetic()" class="bg-orange-600 font-bold py-2 w-full rounded-lg hover:bg-orange-500 text-xs transition">Commit Cosmetic to Cloud</button>
+                    <button id="updateCosmeticBtn" onclick="window.updateCosmetic()" class="bg-yellow-600 font-bold py-2 w-full rounded-lg hover:bg-yellow-500 text-xs transition hidden">Update Asset</button>
+                </div>
+                <button id="cancelEditCosmeticBtn" onclick="window.cancelCosmeticEdit()" class="bg-gray-800 text-white py-2 w-full rounded-lg hover:bg-gray-700 text-xs transition hidden">Cancel Edit</button>
             </div>
             <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-lg">
                 <h3 class="font-bold text-gray-400 uppercase text-xs tracking-wider mb-4">Registered Cloud Assets</h3>
@@ -312,11 +320,8 @@ window.renderPlayer = function(p) {
     document.getElementById('displayId').innerText = p.id;
     document.getElementById('pebbleCount').innerText = p.pebbles ?? 0;
     
-    let isInspecting = !document.getElementById('playerStats').classList.contains('hidden');
-    if (!isInspecting) {
-        document.getElementById('displayFirstJoined').innerText = p.firstJoined || 'unknown';
-        document.getElementById('displayLastSeen').innerText = p.lastSeen || 'unknown';
-    }
+    document.getElementById('displayFirstJoined').innerText = p.firstJoined || 'unknown';
+    document.getElementById('displayLastSeen').innerText = p.lastSeen || 'unknown';
     
     if (p.adminNickname) {
         document.getElementById('displayNickname').innerText = p.adminNickname;
@@ -326,15 +331,25 @@ window.renderPlayer = function(p) {
     document.getElementById('adminBtn').innerText = p.isAdmin ? 'Revoke Access Status' : 'Grant Staff Access';
     document.getElementById('banBadge').classList.toggle('hidden', !p.isBanned);
     document.getElementById('banBtn').innerText = p.isBanned ? 'Lift Blacklist Token' : 'Deploy Blacklist Token';
-    
+
     let cosList = document.getElementById('cosmeticList');
+    let ownedCount = document.getElementById('cosmeticsOwnedCount');
+    let ownedTags = document.getElementById('cosmeticsOwnedTags');
     cosList.innerHTML = '';
+    ownedTags.innerHTML = '';
+
     if (p.cosmetics && p.cosmetics.length > 0) {
+        ownedCount.innerText = `Owned Cosmetics: ${p.cosmetics.length}`;
         p.cosmetics.forEach(i => {
             cosList.innerHTML += `<li class="flex justify-between items-center bg-gray-900 border border-gray-800 p-2 rounded-lg text-xs">
                 <span>${i}</span><button onclick="window.quickRevoke('${i}')" class="text-red-400 font-bold">Remove</button></li>`;
+            ownedTags.innerHTML += `<span class="px-2 py-1 rounded bg-green-700 text-white text-[10px] uppercase">${i}</span>`;
         });
-    } else cosList.innerHTML = `<li class="text-gray-600 italic text-center py-4">No assets configured.</li>`;
+    } else {
+        ownedCount.innerText = 'Owned Cosmetics: 0';
+        ownedTags.innerHTML = '<span class="text-gray-500 text-xs">None</span>';
+        cosList.innerHTML = `<li class="text-gray-600 italic text-center py-4">No assets configured.</li>`;
+    }
     window.updateCosmeticDropdown();
 }
 
@@ -343,11 +358,11 @@ window.updateCosmeticDropdown = function() {
     if(!sel) return;
     sel.innerHTML = '<option value="" disabled selected>Select cosmetic from cloud...</option>';
     let groups = {};
-    window.globalCatalog.forEach(c => {
+    (window.globalCatalog || []).forEach(c => {
         if(!groups[c.cosmeticSlot]) groups[c.cosmeticSlot] = [];
         groups[c.cosmeticSlot].push(c);
     });
-    for(let slot in groups) {
+    for (let slot in groups) {
         let optgroup = document.createElement('optgroup');
         optgroup.label = slot;
         groups[slot].forEach(c => {
@@ -445,7 +460,7 @@ window.refreshCurrentPlayer = async function() {
 
 window.createCosmetic = async function() {
     let id = document.getElementById('newCosId').value;
-    let name = document.getElementById('newCosName').value;
+    let name = document.getElementById('newCosName').value.trim();
     let slot = document.getElementById('newCosSlot').value;
     let price = document.getElementById('newCosPrice').value;
     if(!id || !name || !price) { alert('fill all inputs :3'); return; }
@@ -453,7 +468,41 @@ window.createCosmetic = async function() {
     document.getElementById('newCosId').value = '';
     document.getElementById('newCosName').value = '';
     document.getElementById('newCosPrice').value = '';
+    window.cancelCosmeticEdit();
     await window.loadAllPlayers(); 
+}
+
+window.editCosmetic = function(id, encodedName, slot, price) {
+    const name = decodeURIComponent(encodedName);
+    document.getElementById('newCosId').value = id;
+    document.getElementById('newCosName').value = name;
+    document.getElementById('newCosSlot').value = slot;
+    document.getElementById('newCosPrice').value = price;
+    document.getElementById('updateCosmeticBtn').classList.remove('hidden');
+    document.getElementById('cancelEditCosmeticBtn').classList.remove('hidden');
+}
+
+window.updateCosmetic = async function() {
+    let id = document.getElementById('newCosId').value;
+    let name = document.getElementById('newCosName').value.trim();
+    let slot = document.getElementById('newCosSlot').value;
+    let price = document.getElementById('newCosPrice').value;
+    if(!id || !name || !price) { alert('fill all inputs :3'); return; }
+    await apiCall({ action: 'remove_comm_cosmetic', name });
+    await apiCall({ action: 'add_cosmetic', id, name, slot, price });
+    document.getElementById('newCosId').value = '';
+    document.getElementById('newCosName').value = '';
+    document.getElementById('newCosPrice').value = '';
+    window.cancelCosmeticEdit();
+    await window.loadAllPlayers();
+}
+
+window.cancelCosmeticEdit = function() {
+    document.getElementById('newCosId').value = '';
+    document.getElementById('newCosName').value = '';
+    document.getElementById('newCosPrice').value = '';
+    document.getElementById('updateCosmeticBtn').classList.add('hidden');
+    document.getElementById('cancelEditCosmeticBtn').classList.add('hidden');
 }
 
 window.deleteCosmetic = async function(name) {
@@ -487,24 +536,24 @@ window.clearQuickFilter = function() {
 window.loadAllPlayers = async function() {
     let res = await apiCall({ action: 'get_all' });
     if (!res) return;
-    
+
     window.globalCatalog = res.catalog || [];
     let clist = document.getElementById('globalCosmeticList');
     if(clist) {
         clist.innerHTML = '';
         if(window.globalCatalog.length > 0) {
             window.globalCatalog.forEach(c => {
-                clist.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="text-green-400">${c.itemName} <span class="text-gray-500 text-xs">(${c.cosmeticSlot})</span></span> <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-xs font-bold">DELETE</button></li>`;
+                clist.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="text-green-400">${c.itemName} <span class="text-gray-500 text-xs">(${c.cosmeticSlot})</span></span><div class="flex gap-2"><button onclick="window.editCosmetic('${c.id}','${encodeURIComponent(c.itemName)}','${c.cosmeticSlot}','${c.price}')" class="text-blue-400 hover:text-blue-300 text-xs font-bold">EDIT</button><button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-xs font-bold">DELETE</button></div></li>`;
             });
         } else clist.innerHTML = '<li class="py-2 text-gray-600">no cloud cosmetics found.</li>';
     }
-    
+
     let list = document.getElementById('allList');
     if(!list) return;
     list.innerHTML = '';
     let concurrentCount = 0;
     let pebbles = 0, banned = 0, admins = 0;
-    
+
     if (res.players && res.players.length > 0) {
         res.players.forEach(p => {
             let isBanned = p.isBanned ? '<span class="text-red-500 text-xs font-bold ml-2">BANNED</span>' : '';
@@ -518,13 +567,13 @@ window.loadAllPlayers = async function() {
             list.innerHTML += `<li class="py-3 flex justify-between items-center cursor-pointer hover:bg-gray-900 px-3" onclick="window.loadPlayerById('${p.id}')">
                 <span class="flex items-center">${statusMarker} <span class="font-bold text-gray-200">${p.name}</span> ${isBanned}${admin}</span>
                 <span class="text-gray-600 text-xs font-mono">${p.id}</span></li>`;
-            
+
             pebbles += p.pebbles || 0;
             if (p.isBanned) banned++;
             if (p.isAdmin) admins++;
         });
     }
-    
+
     document.getElementById('liveConcurrent').innerHTML = `${concurrentCount} <span class="text-xs font-normal text-gray-400">players live</span>`;
     document.getElementById('totalPlayers').innerText = res.players ? res.players.length : 0;
     document.getElementById('totalPebbles').innerText = pebbles;
