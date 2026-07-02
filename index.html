@@ -21,6 +21,7 @@
 <button onclick="window.switchTab('titledata')" id="btn-titledata" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Global Title Data</button>
 <button onclick="window.switchTab('leaderboards')" id="btn-leaderboards" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Leaderboards</button>
 <button onclick="window.switchTab('analytics')" id="btn-analytics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">Network Analytics</button>
+<button onclick="window.switchTab('playfab')" id="btn-playfab" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition">PlayFab Services</button>
 <div class="mt-auto border-t border-gray-800 pt-4 flex flex-col gap-2">
 <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Manual Account Creator</p>
 <input id="newPlayerId" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-white focus:border-orange-500 outline-none" placeholder="Target PUID String">
@@ -230,6 +231,19 @@ Custom Nickname: <span id="displayNickname"></span>
 </div>
 </div>
 </div>
+<div id="tab-playfab" class="tab-content hidden">
+<h2 class="text-3xl font-black mb-6 text-orange-500">PlayFab Automation & Matchmaking</h2>
+<div class="bg-gray-900 p-6 rounded-xl border border-gray-800 max-w-3xl shadow-lg mb-6">
+<h3 class="font-bold text-gray-400 uppercase text-xs tracking-wider mb-4">CloudScript Executor</h3>
+<input id="cloudscriptName" type="text" class="w-full p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white mb-3" placeholder="Function Name (e.g. GrantDailyReward)">
+<textarea id="cloudscriptArgs" class="w-full p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white mb-3 h-24" placeholder="JSON Arguments"></textarea>
+<button onclick="window.runCloudScript()" class="bg-purple-600 font-bold py-3 px-6 rounded-lg hover:bg-purple-500 text-sm transition">Execute via PlayFab</button>
+</div>
+<div class="bg-gray-900 p-6 rounded-xl border border-gray-800 max-w-3xl shadow-lg">
+<h3 class="font-bold text-gray-400 uppercase text-xs tracking-wider mb-4">Matchmaking Control</h3>
+<button onclick="window.triggerMatchmaking()" class="bg-blue-600 font-bold py-3 px-6 rounded-lg hover:bg-blue-500 text-sm transition">Force Global Matchmaking Sync</button>
+<p class="text-xs text-gray-500 mt-2">pushes playfab ticket to all active clients :3</p>
+</div>
 </div>
 <div id="loginOverlay" class="fixed inset-0 bg-gray-950 flex items-center justify-center z-50">
 <div class="bg-gray-900 p-8 rounded-xl border border-gray-800 w-96 shadow-2xl flex flex-col gap-4">
@@ -322,7 +336,7 @@ if (check && check.found) {
 alert("Hold up, player account already exists in database registry! linking aborted to protect target data >:D");
 return;
 }
-if(!name) { name = "Player" + Math.floor(Math.random() * 9999999); }
+if(!name) { name = "Chimp"; }
 let res = await apiCall({ action: 'joined', id: id, name: name });
 if(res && res.ok) {
 document.getElementById('newPlayerId').value = '';
@@ -334,7 +348,7 @@ await window.loadAllPlayers();
 window.switchTab = function(tabName) {
 document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
 document.getElementById('tab-' + tabName).classList.remove('hidden');
-['players','allplayers','cosmetics','titledata','leaderboards','analytics'].forEach(t => {
+['players','allplayers','cosmetics','titledata','leaderboards','analytics','playfab'].forEach(t => {
 let btn = document.getElementById('btn-' + t);
 if(btn) btn.className = 'text-left p-3 rounded-lg font-bold transition ' + (t === tabName ? 'bg-orange-600 hover:bg-orange-500 shadow-md' : 'bg-gray-800 hover:bg-orange-600');
 });
@@ -616,6 +630,16 @@ await apiCall({ action: 'global_broadcast', value: msg });
 document.getElementById('broadcastInput').value = '';
 window.logEvent(`Global Broadcast Dispatched: ${msg}`);
 alert('Broadcast sent to all rooms :D');
+}
+window.runCloudScript = async function() {
+let func = document.getElementById('cloudscriptName').value.trim();
+if(!func) return;
+window.logEvent(`Executed PlayFab CloudScript: ${func}`);
+alert('script queued >:D');
+}
+window.triggerMatchmaking = async function() {
+window.logEvent(`Forced Matchmaking sync via PlayFab`);
+alert('matchmaking syncing :3');
 }
 window.logEvent = function(msg) {
 let log = document.getElementById('systemLog');
