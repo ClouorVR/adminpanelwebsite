@@ -10,119 +10,130 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #475569; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.animate-slide { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-fade { animation: fadeIn 0.3s ease forwards; }
+.animate-slide { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade { animation: fadeIn 0.4s ease forwards; }
+.glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
 .toast { animation: slideUp 0.3s forwards, fadeIn 0.3s forwards, slideUp 0.3s reverse forwards 2.7s; }
 </style>
 </head>
-<body class="bg-slate-950 text-slate-200 flex h-screen font-sans select-none overflow-hidden antialiased">
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-200 flex h-screen font-sans select-none overflow-hidden antialiased">
 
-<div id="loginScreen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-sm shadow-2xl animate-slide text-center flex flex-col items-center">
-        <div class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center text-white font-black text-3xl mb-6 shadow-[0_0_20px_rgba(249,115,22,0.4)]">C</div>
-        <h2 class="text-2xl font-black text-white mb-2">Chimps Engine</h2>
-        <p class="text-slate-400 text-sm mb-8">Sign in to manage your workspaces</p>
+<div id="loginScreen" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-opacity duration-500">
+    <div class="glass-panel p-10 rounded-3xl w-full max-w-md shadow-2xl animate-slide text-center flex flex-col items-center">
+        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-4xl mb-6 shadow-[0_0_30px_rgba(59,130,246,0.4)]">C</div>
+        <h2 class="text-3xl font-black text-white mb-2">Chimps Engine</h2>
+        <p class="text-slate-400 text-sm mb-8" id="authStatusText">Verifying Cloudflare Zero Trust authentication...</p>
         
-        <div class="w-full flex flex-col gap-3">
-            <button onclick="window.processOAuth('Google')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-3">
-                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                Continue with Google
-            </button>
-            <button onclick="window.processOAuth('GitHub')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-3">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
-                Continue with GitHub
+        <div id="authActions" class="w-full flex flex-col gap-4 hidden">
+            <div class="p-4 bg-blue-900/20 border border-blue-500/30 rounded-xl text-left mb-2">
+                <p class="text-xs text-blue-300 font-medium leading-relaxed">To enable native Google/GitHub authentication, configure Cloudflare Access (Zero Trust) for this domain. The system will automatically authenticate users via headers.</p>
+            </div>
+            <button onclick="window.masterOverrideLogin()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-3 shadow-lg">
+                Proceed via Developer Override
             </button>
         </div>
     </div>
 </div>
 
-<div class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col z-10">
-    <div class="p-6 border-b border-slate-800">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black text-lg">C</div>
+<div class="w-72 glass-panel border-r border-white/5 flex flex-col z-10 shadow-2xl relative">
+    <div class="p-6 border-b border-white/5">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">C</div>
             <div class="flex flex-col">
-                <span class="text-sm font-bold text-white">Chimps Engine</span>
-                <span id="userDisplayTag" class="text-[10px] text-slate-400 font-mono"></span>
+                <span class="text-base font-black text-white tracking-wide">CHIMPS VR</span>
+                <span id="userDisplayTag" class="text-[10px] text-blue-400 font-mono tracking-wider"></span>
             </div>
         </div>
     </div>
 
-    <div class="p-4 border-b border-slate-800">
-        <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Projects</span>
-            <button onclick="window.showCreateProjectModal()" class="text-orange-500 hover:text-orange-400 transition font-black pb-1">+</button>
+    <div class="p-5 border-b border-white/5">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Active Projects</span>
+            <button onclick="window.showCreateProjectModal()" class="text-blue-500 hover:text-blue-400 transition font-black text-lg pb-1">+</button>
         </div>
-        <div id="projectsListContainer" class="flex flex-col gap-1 max-h-40 overflow-y-auto"></div>
+        <div id="projectsListContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2"></div>
     </div>
 
-    <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto" id="mainNav">
-        <button onclick="window.switchTab('overview')" id="btn-overview" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 bg-orange-500/10 text-orange-500">
-            Overview
+    <nav class="flex-1 p-5 flex flex-col gap-2 overflow-y-auto" id="mainNav">
+        <button onclick="window.switchTab('overview')" id="btn-overview" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            System Overview
         </button>
-        <button onclick="window.switchTab('players')" id="btn-players" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
-            Player Control
+        <button onclick="window.switchTab('players')" id="btn-players" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+            Player Operations
         </button>
-        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
             Database Registry
         </button>
-        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
             Asset Catalog
         </button>
-        <button onclick="window.switchTab('projectsettings')" id="btn-projectsettings" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
-            Project Settings
+        <button onclick="window.switchTab('projectsettings')" id="btn-projectsettings" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+            Configuration
         </button>
     </nav>
 
-    <div class="p-4 border-t border-slate-800">
-        <button onclick="window.logout()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-lg transition text-xs">Sign Out</button>
+    <div class="p-5 border-t border-white/5">
+        <button onclick="window.logout()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition text-xs shadow-md">Terminate Session</button>
     </div>
 </div>
 
-<div class="flex-1 flex flex-col bg-slate-950 overflow-hidden relative">
-    <header class="h-16 border-b border-slate-800 bg-slate-900/50 flex items-center px-8 justify-between backdrop-blur-sm z-10">
-        <h2 id="currentTabTitle" class="text-lg font-bold text-white">Overview</h2>
-        <div class="flex items-center gap-3 bg-slate-950 border border-slate-800 px-4 py-1.5 rounded-full">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span>
-            <span class="text-xs font-bold text-slate-300">Live Concurrency: <span id="liveConcurrent" class="text-white ml-1 text-sm">0</span></span>
+<div class="flex-1 flex flex-col overflow-hidden relative">
+    <header class="h-20 border-b border-white/5 bg-transparent flex items-center px-10 justify-between z-10">
+        <h2 id="currentTabTitle" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">System Overview</h2>
+        <div class="flex items-center gap-3 glass-panel px-5 py-2.5 rounded-full shadow-lg">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
+            <span class="text-xs font-bold text-slate-300 tracking-wider">NETWORK STATUS: <span class="text-white ml-1 text-sm">SECURE</span></span>
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-8 relative">
-        <div id="noProjectOverlay" class="absolute inset-0 bg-slate-950 z-40 flex flex-col items-center justify-center p-4">
-            <div class="w-16 h-16 border-4 border-slate-800 border-t-orange-500 rounded-full animate-spin mb-6"></div>
-            <h2 class="text-2xl font-bold text-white mb-2">No Active Project</h2>
-            <p class="text-slate-400 text-sm mb-6">Create or select a project from the sidebar to initialize the dashboard.</p>
-            <button onclick="window.showCreateProjectModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg transition shadow-lg">Initialize Project</button>
+    <main class="flex-1 overflow-y-auto p-10 relative">
+        <div id="noProjectOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-40 flex flex-col items-center justify-center p-4">
+            <div class="w-16 h-16 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin mb-8 shadow-[0_0_15px_rgba(59,130,246,0.3)]"></div>
+            <h2 class="text-3xl font-black text-white mb-3">No Active Project</h2>
+            <p class="text-slate-400 text-sm mb-8">Initialize a new container to begin database tracking.</p>
+            <button onclick="window.showCreateProjectModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-8 rounded-xl transition shadow-[0_0_20px_rgba(59,130,246,0.4)]">Initialize Container</button>
         </div>
 
-        <div id="tab-overview" class="tab-content block max-w-4xl mx-auto animate-slide">
-            <h1 class="text-3xl font-black text-white mb-2">Project Credentials</h1>
-            <p class="text-sm text-slate-400 mb-8">Integrate these values directly into your Unity MirrorVRManager component.</p>
+        <div id="tab-overview" class="tab-content block max-w-5xl mx-auto animate-slide">
             
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                <div class="p-6 flex flex-col gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                <div class="glass-panel rounded-3xl p-8 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Storage Consumed</h3>
+                    <p class="text-5xl font-black text-white" id="statDataGB">0.000000 <span class="text-lg text-slate-500">GB</span></p>
+                </div>
+                <div class="glass-panel rounded-3xl p-8 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">In-Game Concurrent Players</h3>
+                    <p class="text-5xl font-black text-emerald-400" id="statInGame">0</p>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-black text-white mb-4">Project Architecture Keys</h3>
+            <div class="glass-panel rounded-3xl shadow-xl overflow-hidden">
+                <div class="p-8 flex flex-col gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Project ID</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Target Project ID</label>
                         <div class="flex">
-                            <input type="text" id="overviewProjId" readonly class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
-                            <button onclick="window.copyToClipboard('overviewProjId')" class="bg-slate-800 hover:bg-slate-700 px-5 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
+                            <input type="text" id="overviewProjId" readonly class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
+                            <button onclick="window.copyToClipboard('overviewProjId')" class="bg-slate-800 hover:bg-slate-700 px-6 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">API Endpoint</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Remote API Endpoint</label>
                         <div class="flex">
-                            <input type="text" id="overviewEndpoint" readonly class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
-                            <button onclick="window.copyToClipboard('overviewEndpoint')" class="bg-slate-800 hover:bg-slate-700 px-5 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
+                            <input type="text" id="overviewEndpoint" readonly class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
+                            <button onclick="window.copyToClipboard('overviewEndpoint')" class="bg-slate-800 hover:bg-slate-700 px-6 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Secret API Key (Keep Private)</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Encrypted API Key</label>
                         <div class="flex">
-                            <input type="password" id="overviewApiKey" readonly class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-orange-400 outline-none">
-                            <button onclick="window.toggleKeyVisibility('overviewApiKey')" class="bg-slate-900 px-4 border-y border-slate-800 text-slate-400 hover:text-white transition">👁</button>
-                            <button onclick="window.copyToClipboard('overviewApiKey')" class="bg-slate-800 hover:bg-slate-700 px-5 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
+                            <input type="password" id="overviewApiKey" readonly class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-indigo-400 outline-none">
+                            <button onclick="window.toggleKeyVisibility('overviewApiKey')" class="bg-slate-900 px-5 border-y border-slate-800 text-slate-400 hover:text-white transition">👁</button>
+                            <button onclick="window.copyToClipboard('overviewApiKey')" class="bg-slate-800 hover:bg-slate-700 px-6 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
                         </div>
                     </div>
                 </div>
@@ -130,59 +141,59 @@
         </div>
 
         <div id="tab-players" class="tab-content hidden max-w-5xl mx-auto animate-slide">
-            <div class="flex gap-3 mb-6 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-md">
-                <select id="searchType" class="p-3 rounded-lg bg-slate-950 border border-slate-800 outline-none font-bold text-sm text-slate-300 focus:border-orange-500">
-                    <option value="id">Player PUID</option>
-                    <option value="name">Display Name</option>
+            <div class="flex gap-4 mb-8 glass-panel p-3 rounded-2xl shadow-lg">
+                <select id="searchType" class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 outline-none font-bold text-sm text-slate-300 focus:border-blue-500">
+                    <option value="id">Network PUID</option>
+                    <option value="name">Identified Name</option>
                 </select>
-                <input type="text" id="playerId" class="flex-1 p-3 rounded-lg bg-slate-950 border border-slate-800 outline-none focus:border-orange-500 font-mono text-sm transition" placeholder="Enter query...">
-                <button onclick="window.searchPlayer()" class="bg-orange-500 font-bold px-8 rounded-lg hover:bg-orange-600 transition text-sm text-white shadow-md">Search</button>
+                <input type="text" id="playerId" class="flex-1 p-3.5 rounded-xl bg-slate-950 border border-slate-800 outline-none focus:border-blue-500 font-mono text-sm transition" placeholder="Execute query...">
+                <button onclick="window.searchPlayer()" class="bg-blue-600 font-bold px-10 rounded-xl hover:bg-blue-500 transition text-sm text-white shadow-lg">Execute</button>
             </div>
 
-            <div id="playerStats" class="hidden bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl relative animate-fade">
-                <div class="absolute top-8 right-8 flex gap-2">
-                    <span id="ownerBadge" class="hidden bg-orange-500/20 text-orange-500 border border-orange-500/50 text-[10px] font-bold px-2 py-1 rounded">OWNER</span>
-                    <span id="adminBadge" class="hidden bg-blue-500/20 text-blue-400 border border-blue-500/50 text-[10px] font-bold px-2 py-1 rounded">STAFF</span>
-                    <span id="banBadge" class="hidden bg-red-500/20 text-red-400 border border-red-500/50 text-[10px] font-bold px-2 py-1 rounded">BANNED</span>
+            <div id="playerStats" class="hidden glass-panel p-10 rounded-3xl shadow-2xl relative animate-fade">
+                <div class="absolute top-10 right-10 flex gap-2">
+                    <span id="ownerBadge" class="hidden bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-wider">OWNER</span>
+                    <span id="adminBadge" class="hidden bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-wider">STAFF</span>
+                    <span id="banBadge" class="hidden bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-wider">SUSPENDED</span>
                 </div>
 
-                <h3 class="text-3xl font-black text-white mb-1" id="displayName">--</h3>
-                <p class="text-slate-500 font-mono text-xs mb-6 bg-slate-950 inline-block px-3 py-1.5 rounded-lg border border-slate-800">PUID: <span id="displayId" class="text-slate-300 font-bold"></span></p>
+                <h3 class="text-4xl font-black text-white mb-2" id="displayName">--</h3>
+                <p class="text-slate-400 font-mono text-xs mb-8 bg-slate-950 inline-block px-4 py-2 rounded-xl border border-slate-800">PUID: <span id="displayId" class="text-slate-200 font-bold"></span></p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col">
-                        <h4 class="font-bold text-slate-500 mb-3 uppercase text-[10px] tracking-wider">Economy Balance</h4>
-                        <p class="text-4xl font-black text-cyan-400 mb-5" id="pebbleCount">0</p>
+                    <div class="bg-slate-950/50 p-6 rounded-2xl border border-white/5 flex flex-col relative overflow-hidden">
+                        <h4 class="font-bold text-slate-500 mb-4 uppercase text-[10px] tracking-widest">Economy Ledger</h4>
+                        <p class="text-4xl font-black text-cyan-400 mb-6" id="pebbleCount">0</p>
                         <div class="mt-auto">
-                            <input type="number" id="pebbleAmount" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-center font-bold focus:border-orange-500 outline-none mb-2 text-sm" placeholder="Amount">
+                            <input type="number" id="pebbleAmount" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-center font-bold focus:border-blue-500 outline-none mb-3 text-sm" placeholder="Input Value">
                             <div class="flex gap-2 mb-2">
-                                <button onclick="window.modifyPebbles(true)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold transition">Add</button>
-                                <button onclick="window.modifyPebbles(false)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold transition">Remove</button>
+                                <button onclick="window.modifyPebbles(true)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs font-bold transition">Deposit</button>
+                                <button onclick="window.modifyPebbles(false)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs font-bold transition">Withdraw</button>
                             </div>
-                            <button onclick="window.setPebbles()" class="w-full border border-slate-700 hover:bg-slate-800 py-2 rounded-lg text-xs font-bold transition">Set Exact</button>
+                            <button onclick="window.setPebbles()" class="w-full border border-slate-700 hover:bg-slate-800 py-2.5 rounded-xl text-xs font-bold transition">Set Absolute</button>
                         </div>
                     </div>
 
-                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col">
-                        <h4 class="font-bold text-slate-500 mb-3 uppercase text-[10px] tracking-wider">Identity & Tags</h4>
-                        <input type="text" id="newName" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-sm mb-2 outline-none focus:border-orange-500" placeholder="Override Name">
-                        <button onclick="window.changeName()" class="w-full bg-slate-800 hover:bg-slate-700 font-bold py-2 rounded-lg text-xs transition mb-4">Apply Override</button>
+                    <div class="bg-slate-950/50 p-6 rounded-2xl border border-white/5 flex flex-col relative overflow-hidden">
+                        <h4 class="font-bold text-slate-500 mb-4 uppercase text-[10px] tracking-widest">Identity Override</h4>
+                        <input type="text" id="newName" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm mb-3 outline-none focus:border-blue-500" placeholder="Display Override">
+                        <button onclick="window.changeName()" class="w-full bg-slate-800 hover:bg-slate-700 font-bold py-2.5 rounded-xl text-xs transition mb-6">Commit Override</button>
                         
                         <div class="flex gap-2 mb-2 mt-auto">
-                            <input type="text" id="newTagInput" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs outline-none focus:border-blue-500" placeholder="Tag Name">
-                            <button onclick="window.addPlayerTag()" class="bg-slate-800 hover:bg-slate-700 px-3 font-bold rounded-lg transition">+</button>
+                            <input type="text" id="newTagInput" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs outline-none focus:border-indigo-500" placeholder="Metadata Tag">
+                            <button onclick="window.addPlayerTag()" class="bg-slate-800 hover:bg-slate-700 px-4 font-bold rounded-xl transition shadow-md">+</button>
                         </div>
-                        <div id="playerTagsContainer" class="flex flex-wrap gap-1 mt-1 max-h-16 overflow-y-auto"></div>
+                        <div id="playerTagsContainer" class="flex flex-wrap gap-1.5 mt-2 max-h-16 overflow-y-auto"></div>
                     </div>
 
-                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                    <div class="bg-slate-950/50 p-6 rounded-2xl border border-white/5 flex flex-col justify-between relative overflow-hidden">
                         <div>
-                            <h4 class="font-bold text-slate-500 mb-3 uppercase text-[10px] tracking-wider">Access Control</h4>
-                            <div class="flex flex-col gap-2">
-                                <button id="ownerBtn" onclick="window.toggleOwner()" class="bg-slate-900 border border-slate-800 hover:border-orange-500 font-bold py-2.5 rounded-lg text-xs transition">Toggle Owner Privilege</button>
-                                <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-slate-900 border border-slate-800 hover:border-blue-500 font-bold py-2.5 rounded-lg text-xs transition">Toggle Staff Role</button>
-                                <button id="banBtn" onclick="window.toggleBan()" class="bg-slate-900 border border-slate-800 hover:border-red-500 text-red-400 font-bold py-2.5 rounded-lg text-xs transition">Toggle Suspension</button>
-                                <button onclick="window.kickPlayer()" class="mt-2 text-slate-500 hover:text-slate-300 font-bold text-xs transition">Force Disconnect</button>
+                            <h4 class="font-bold text-slate-500 mb-4 uppercase text-[10px] tracking-widest">Access Directives</h4>
+                            <div class="flex flex-col gap-3">
+                                <button onclick="window.toggleOwner()" class="bg-slate-900 border border-slate-800 hover:border-orange-500 font-bold py-3 rounded-xl text-xs transition shadow-sm">Toggle Owner Access</button>
+                                <button onclick="window.toggleAdmin()" class="bg-slate-900 border border-slate-800 hover:border-blue-500 font-bold py-3 rounded-xl text-xs transition shadow-sm">Toggle Staff Role</button>
+                                <button onclick="window.toggleBan()" class="bg-slate-900 border border-slate-800 hover:border-red-500 text-red-400 font-bold py-3 rounded-xl text-xs transition shadow-sm">Toggle Suspension</button>
+                                <button onclick="window.kickPlayer()" class="mt-3 text-slate-500 hover:text-slate-300 font-bold text-xs transition">Force Disconnect Term</button>
                             </div>
                         </div>
                     </div>
@@ -191,89 +202,89 @@
         </div>
 
         <div id="tab-allplayers" class="tab-content hidden max-w-5xl mx-auto animate-slide">
-            <div class="flex gap-3 mb-6 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-md">
-                <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Filter parameters by string names, or structural IDs...">
-                <button onclick="window.clearQuickFilter()" class="bg-slate-800 px-6 rounded-lg hover:bg-slate-700 font-bold transition text-sm">Clear</button>
-                <button onclick="window.showProvisionModal()" class="bg-blue-600 text-white text-sm px-6 rounded-lg hover:bg-blue-500 font-bold transition">Manual Provision</button>
+            <div class="flex gap-4 mb-8 glass-panel p-3 rounded-2xl shadow-lg">
+                <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Filter arrays by string, tag, or identifier...">
+                <button onclick="window.clearQuickFilter()" class="bg-slate-800 px-8 rounded-xl hover:bg-slate-700 font-bold transition text-sm">Clear</button>
+                <button onclick="window.showProvisionModal()" class="bg-blue-600 text-white text-sm px-8 rounded-xl hover:bg-blue-500 font-bold transition shadow-lg">Manual Provision</button>
             </div>
             
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
-                <ul id="allList" class="divide-y divide-slate-800 text-sm max-h-[600px] overflow-y-auto">
-                    <li class="py-8 text-slate-500 text-center">Awaiting data stream...</li>
+            <div class="glass-panel rounded-3xl shadow-2xl overflow-hidden">
+                <ul id="allList" class="divide-y divide-white/5 text-sm max-h-[600px] overflow-y-auto">
+                    <li class="py-10 text-slate-500 text-center font-medium">Awaiting array streaming...</li>
                 </ul>
             </div>
         </div>
 
         <div id="tab-cosmetics" class="tab-content hidden max-w-5xl mx-auto animate-slide">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-1 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl h-fit">
-                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-wider mb-4">Register Asset Payload</h3>
-                    <input id="newCosId" type="number" class="w-full p-2.5 mb-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Item ID">
-                    <input id="newCosName" type="text" class="w-full p-2.5 mb-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Display Name">
-                    <select id="newCosSlot" class="w-full p-2.5 mb-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition">
-                        <option value="HeadCos">Head</option>
-                        <option value="FaceCos">Face</option>
-                        <option value="BodyCos">Body</option>
-                        <option value="LeftCos">Left Hand</option>
-                        <option value="RightCos">Right Hand</option>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-1 glass-panel p-8 rounded-3xl shadow-2xl h-fit">
+                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-6">Commit Asset Schema</h3>
+                    <input id="newCosId" type="number" class="w-full p-3.5 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Unique Index ID">
+                    <input id="newCosName" type="text" class="w-full p-3.5 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Asset Display Name">
+                    <select id="newCosSlot" class="w-full p-3.5 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition text-slate-300">
+                        <option value="HeadCos">Attachment: Head</option>
+                        <option value="FaceCos">Attachment: Face</option>
+                        <option value="BodyCos">Attachment: Body</option>
+                        <option value="LeftCos">Attachment: Left Hand</option>
+                        <option value="RightCos">Attachment: Right Hand</option>
                     </select>
-                    <input id="newCosPrice" type="number" class="w-full p-2.5 mb-5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Cost (PB)">
-                    <button onclick="window.createCosmetic()" class="bg-orange-500 font-bold py-3 w-full rounded-lg hover:bg-orange-600 text-sm transition text-white shadow-md">Write Asset Schema</button>
+                    <input id="newCosPrice" type="number" class="w-full p-3.5 mb-8 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Economy Value (PB)">
+                    <button onclick="window.createCosmetic()" class="bg-blue-600 font-bold py-3.5 w-full rounded-xl hover:bg-blue-500 text-sm transition text-white shadow-lg">Write to Database</button>
                 </div>
-                <div class="md:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col">
-                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-wider mb-4">Cloud Catalogs</h3>
-                    <ul id="globalCosmeticList" class="divide-y divide-slate-800 text-sm flex-1 overflow-y-auto bg-slate-950 p-2 rounded-xl border border-slate-800">
-                        <li class="py-6 text-slate-600 text-center">Awaiting catalog retrieval...</li>
+                <div class="md:col-span-2 glass-panel p-8 rounded-3xl shadow-2xl flex flex-col">
+                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-6">Cloud Schema Catalog</h3>
+                    <ul id="globalCosmeticList" class="divide-y divide-white/5 text-sm flex-1 overflow-y-auto bg-slate-950 p-4 rounded-2xl border border-slate-800 shadow-inner">
+                        <li class="py-10 text-slate-600 text-center font-medium">Awaiting structure retrieval...</li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <div id="tab-projectsettings" class="tab-content hidden max-w-4xl mx-auto animate-slide">
-            <h1 class="text-3xl font-black text-white mb-6">Project Configuration</h1>
-            <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl flex flex-col gap-5">
+            <h1 class="text-3xl font-black text-white mb-8">Environment Parameters</h1>
+            <div class="glass-panel p-10 rounded-3xl shadow-2xl flex flex-col gap-6">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Display Name</label>
-                    <input id="projSettingNameInput" type="text" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-bold outline-none focus:border-blue-500 transition">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Project Designation String</label>
+                    <input id="projSettingNameInput" type="text" class="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-bold outline-none focus:border-blue-500 transition shadow-inner">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Logo Graphic URL</label>
-                    <input id="projSettingLogoInput" type="text" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-blue-500 transition">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Asset Logo Remote URL</label>
+                    <input id="projSettingLogoInput" type="text" class="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-blue-500 transition shadow-inner">
                 </div>
-                <div class="pt-4 border-t border-slate-800 mt-2">
-                    <button onclick="window.saveCurrentProjectSettings()" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-500 transition text-sm shadow-md">Commit Parameters</button>
+                <div class="pt-6 border-t border-white/5 mt-4">
+                    <button onclick="window.saveCurrentProjectSettings()" class="bg-blue-600 text-white font-bold py-4 px-10 rounded-xl hover:bg-blue-500 transition text-sm shadow-[0_0_20px_rgba(59,130,246,0.4)]">Update Architecture Settings</button>
                 </div>
             </div>
         </div>
     </main>
 </div>
 
-<div id="createProjectModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-md shadow-2xl animate-slide">
-        <h3 class="text-2xl font-black text-white mb-2">Initialize Architecture</h3>
-        <p class="text-slate-400 text-sm mb-6">Allocate a new database instance and credential set.</p>
+<div id="createProjectModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-opacity">
+    <div class="glass-panel p-10 rounded-3xl w-full max-w-md shadow-2xl animate-slide text-center">
+        <h3 class="text-2xl font-black text-white mb-3">Allocate New Container</h3>
+        <p class="text-slate-400 text-sm mb-8">Provision a secure isolated environment segment.</p>
         
-        <input id="newProjName" type="text" class="w-full p-3 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-orange-500 text-white transition" placeholder="Project Name Designation">
-        <input id="newProjLogo" type="text" class="w-full p-3 mb-6 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-orange-500 text-white transition" placeholder="Logo Link URL (Optional)">
+        <input id="newProjName" type="text" class="w-full p-4 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 text-white transition shadow-inner" placeholder="Environment Name">
+        <input id="newProjLogo" type="text" class="w-full p-4 mb-8 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 text-white transition shadow-inner" placeholder="Optional Logo Target URL">
         
-        <div class="flex gap-3">
-            <button onclick="window.submitCreateProject()" class="flex-1 bg-orange-500 font-bold p-3 rounded-xl text-sm hover:bg-orange-600 transition text-white shadow-md">Generate Code</button>
-            <button onclick="document.getElementById('createProjectModal').classList.add('hidden')" class="bg-slate-800 font-bold px-6 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Cancel</button>
+        <div class="flex gap-4">
+            <button onclick="window.submitCreateProject()" class="flex-1 bg-blue-600 font-bold p-3.5 rounded-xl text-sm hover:bg-blue-500 transition text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]">Generate Database</button>
+            <button onclick="document.getElementById('createProjectModal').classList.add('hidden')" class="bg-slate-800 font-bold px-8 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Abort</button>
         </div>
     </div>
 </div>
 
-<div id="provisionModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-md shadow-2xl animate-slide">
-        <h3 class="text-2xl font-black text-white mb-2">Manual Provision</h3>
-        <p class="text-slate-400 text-sm mb-6">Inject a new player record into the database.</p>
+<div id="provisionModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel p-10 rounded-3xl w-full max-w-md shadow-2xl animate-slide text-center">
+        <h3 class="text-2xl font-black text-white mb-3">Manual Provisioning</h3>
+        <p class="text-slate-400 text-sm mb-8">Force a new record index into the database.</p>
         
-        <input id="provPlayerId" type="text" class="w-full p-3 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-blue-500 text-white transition" placeholder="Target PUID String">
-        <input id="provPlayerName" type="text" class="w-full p-3 mb-6 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 text-white transition" placeholder="Name Override (Optional)">
+        <input id="provPlayerId" type="text" class="w-full p-4 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-emerald-500 text-white transition shadow-inner" placeholder="Network Identifier (PUID)">
+        <input id="provPlayerName" type="text" class="w-full p-4 mb-8 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-emerald-500 text-white transition shadow-inner" placeholder="Default Display Override">
         
-        <div class="flex gap-3">
-            <button onclick="window.executeProvision()" class="flex-1 bg-blue-600 font-bold p-3 rounded-xl text-sm hover:bg-blue-500 transition text-white shadow-md">Inject Record</button>
-            <button onclick="document.getElementById('provisionModal').classList.add('hidden')" class="bg-slate-800 font-bold px-6 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Cancel</button>
+        <div class="flex gap-4">
+            <button onclick="window.executeProvision()" class="flex-1 bg-emerald-600 font-bold p-3.5 rounded-xl text-sm hover:bg-emerald-500 transition text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]">Inject Data Block</button>
+            <button onclick="document.getElementById('provisionModal').classList.add('hidden')" class="bg-slate-800 font-bold px-8 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Abort</button>
         </div>
     </div>
 </div>
@@ -281,24 +292,57 @@
 <script>
 const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev/api"; 
 
-let activeUser = localStorage.getItem("cvr_oauth_user") || "";
+let activeUser = localStorage.getItem("cvr_override_user") || "";
 let activeProject = null;
 let projectsArray = [];
 let fullPlayerCache = [];
 let globalCatalog = [];
 
-window.onload = function() {
+window.onload = async function() {
+    try {
+        let authReq = await fetch(WORKER_BASE_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "auth_check" })
+        }).catch(() => null);
+        
+        if (authReq) {
+            let authRes = await authReq.json();
+            if (authRes.authenticated && authRes.email) {
+                activeUser = authRes.email;
+                document.getElementById("loginScreen").classList.add("hidden");
+                document.getElementById("userDisplayTag").innerText = activeUser;
+                window.showToast("Authenticated via Zero Trust Access");
+                window.loadProjects();
+                return;
+            }
+        }
+    } catch(e) {}
+    
     if (activeUser) {
         document.getElementById("loginScreen").classList.add("hidden");
         document.getElementById("userDisplayTag").innerText = activeUser;
         window.loadProjects();
+    } else {
+        document.getElementById("authStatusText").innerText = "Authentication Required";
+        document.getElementById("authActions").classList.remove("hidden");
     }
+};
+
+window.masterOverrideLogin = function() {
+    const mockEmail = "developer_override@system";
+    localStorage.setItem("cvr_override_user", mockEmail);
+    activeUser = mockEmail;
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("userDisplayTag").innerText = activeUser;
+    window.showToast("Proceeding via Local Access Token");
+    window.loadProjects();
 };
 
 window.showToast = function(msg) {
     let t = document.createElement('div');
-    t.className = 'toast fixed bottom-6 right-6 bg-slate-800 border border-slate-700 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-bold flex items-center gap-3 z-[100]';
-    t.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> ${msg}`;
+    t.className = 'toast fixed bottom-10 right-10 glass-panel text-white px-6 py-4 rounded-2xl shadow-2xl text-sm font-bold flex items-center gap-3 z-[100]';
+    t.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> ${msg}`;
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 3100);
 }
@@ -307,7 +351,7 @@ window.copyToClipboard = function(elementId) {
     const el = document.getElementById(elementId);
     el.select();
     document.execCommand("copy");
-    window.showToast("Data copied to clipboard.");
+    window.showToast("Copied to local clipboard cache.");
 }
 
 window.toggleKeyVisibility = function(elementId) {
@@ -315,18 +359,8 @@ window.toggleKeyVisibility = function(elementId) {
     el.type = el.type === "password" ? "text" : "password";
 }
 
-window.processOAuth = function(provider) {
-    const mockEmail = provider === "Google" ? "developer@gmail.com" : "github_dev_acc";
-    localStorage.setItem("cvr_oauth_user", mockEmail);
-    activeUser = mockEmail;
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("userDisplayTag").innerText = activeUser;
-    window.showToast(`Authenticated via ${provider}`);
-    window.loadProjects();
-};
-
 window.logout = function() {
-    localStorage.removeItem("cvr_oauth_user");
+    localStorage.removeItem("cvr_override_user");
     location.reload();
 };
 
@@ -355,15 +389,15 @@ window.renderProjectsSidebar = function() {
     const cont = document.getElementById("projectsListContainer");
     cont.innerHTML = "";
     if(projectsArray.length === 0) {
-        cont.innerHTML = `<p class="text-[10px] text-slate-600 italic px-2">No structures allocated</p>`;
+        cont.innerHTML = `<p class="text-[10px] text-slate-600 italic px-2 font-medium">No architecture deployed.</p>`;
         return;
     }
     projectsArray.forEach(p => {
         let isSel = activeProject && activeProject.id === p.id;
         let btn = document.createElement("button");
-        btn.className = `w-full text-left p-2 rounded-lg flex items-center gap-3 text-xs font-bold transition ${isSel ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'}`;
+        btn.className = `w-full text-left p-2.5 rounded-xl flex items-center gap-3 text-xs font-bold transition ${isSel ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-inner' : 'bg-transparent text-slate-400 border border-transparent hover:bg-white/5'}`;
         btn.onclick = () => window.selectProject(p);
-        btn.innerHTML = `<img src="${p.logo}" class="w-5 h-5 rounded object-cover border border-slate-700"> <span class="truncate">${p.name}</span>`;
+        btn.innerHTML = `<img src="${p.logo}" class="w-6 h-6 rounded-md object-cover shadow-sm"> <span class="truncate">${p.name}</span>`;
         cont.appendChild(btn);
     });
 };
@@ -376,7 +410,6 @@ window.selectProject = function(proj) {
     document.getElementById("overviewProjId").value = proj.id;
     document.getElementById("overviewEndpoint").value = proj.endpoint;
     document.getElementById("overviewApiKey").value = proj.apiKey;
-    
     document.getElementById("projSettingNameInput").value = proj.name;
     document.getElementById("projSettingLogoInput").value = proj.logo;
     
@@ -390,7 +423,7 @@ window.showCreateProjectModal = function() {
 
 window.submitCreateProject = function() {
     const name = document.getElementById("newProjName").value.trim();
-    const logo = document.getElementById("newProjLogo").value.trim() || "https://placehold.co/100x100/1e293b/ffffff?text=C";
+    const logo = document.getElementById("newProjLogo").value.trim() || "https://placehold.co/150x150/1e293b/3b82f6?text=C";
     if (!name) return;
     
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -401,7 +434,7 @@ window.submitCreateProject = function() {
     
     const newProj = {
         id: `F09Dg#${randUser}DVBP`,
-        endpoint: `https://api.clouor.vr/${randToken}`,
+        endpoint: `https://api.clouor.vr/api/${randToken}`,
         apiKey: `cvr_live_${randToken}${randUser.toLowerCase()}`,
         name: name,
         logo: logo
@@ -415,7 +448,7 @@ window.submitCreateProject = function() {
     document.getElementById("newProjLogo").value = "";
     
     window.selectProject(newProj);
-    window.showToast("Architecture allocation complete.");
+    window.showToast("Database container allocated.");
 };
 
 window.saveCurrentProjectSettings = function() {
@@ -429,7 +462,7 @@ window.saveCurrentProjectSettings = function() {
         projectsArray[idx].logo = logo;
         window.saveProjectsLocally();
         window.selectProject(projectsArray[idx]);
-        window.showToast("Parameters committed successfully.");
+        window.showToast("Environment parameters updated.");
     }
 };
 
@@ -438,21 +471,20 @@ window.switchTab = function(tabId) {
     document.getElementById(`tab-${tabId}`).classList.remove("hidden");
     
     const titles = {
-        'overview': 'Overview',
-        'players': 'Player Control',
+        'overview': 'System Overview',
+        'players': 'Player Operations',
         'allplayers': 'Database Registry',
         'cosmetics': 'Asset Catalog',
-        'projectsettings': 'Project Settings'
+        'projectsettings': 'Configuration'
     };
-    document.getElementById('currentTabTitle').innerText = titles[tabId] || 'Dashboard';
+    document.getElementById('currentTabTitle').innerText = titles[tabId];
 
     document.querySelectorAll("#mainNav button").forEach(b => {
-        b.className = "text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200";
+        b.className = "text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent";
     });
     const activeBtn = document.getElementById(`btn-${tabId}`);
     if (activeBtn) {
-        const isOrange = tabId === 'overview';
-        activeBtn.className = `text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 ${isOrange ? 'bg-orange-500/10 text-orange-500' : 'bg-blue-600/10 text-blue-500'}`;
+        activeBtn.className = "text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 bg-blue-500/20 text-blue-400 border border-blue-500/30";
     }
 };
 
@@ -481,9 +513,13 @@ window.fetchProjectData = async function() {
     if (!res) {
         fullPlayerCache = [];
         globalCatalog = [];
+        document.getElementById('statDataGB').innerHTML = `0.000000 <span class="text-lg text-slate-500">GB</span>`;
     } else {
         fullPlayerCache = res.players || [];
         globalCatalog = res.catalog || [];
+        if(res.dataGB) {
+            document.getElementById('statDataGB').innerHTML = `${res.dataGB} <span class="text-lg text-slate-500">GB</span>`;
+        }
     }
     window.renderAllPlayers();
     window.renderCosmetics();
@@ -497,8 +533,9 @@ window.renderAllPlayers = function() {
     let concurrentCount = 0;
     
     if(fullPlayerCache.length === 0) {
-        list.innerHTML = `<li class="py-8 text-slate-500 text-center">Dataset empty</li>`;
+        list.innerHTML = `<li class="py-10 text-slate-500 text-center font-medium">Dataset configuration empty.</li>`;
         document.getElementById('liveConcurrent').innerText = "0";
+        document.getElementById('statInGame').innerText = "0";
         return;
     }
     
@@ -509,16 +546,17 @@ window.renderAllPlayers = function() {
             if (Date.now() - lastActive < 45000) { isOnline = true; concurrentCount++; }
         }
         
-        let statusMarker = isOnline ? '<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block mr-3 shadow-[0_0_8px_rgba(16,185,129,0.7)]"></span>' : '<span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block mr-3"></span>';
-        let isBanned = p.isBanned ? '<span class="bg-red-500/20 text-red-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2">BANNED</span>' : '';
-        let owner = p.isOwner ? '<span class="bg-orange-500/20 text-orange-500 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2">OWNER</span>' : '';
+        let statusMarker = isOnline ? '<span class="w-3 h-3 rounded-full bg-emerald-500 inline-block mr-4 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>' : '<span class="w-3 h-3 rounded-full bg-white/10 inline-block mr-4"></span>';
+        let isBanned = p.isBanned ? '<span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] font-bold px-2 py-1 rounded-md ml-3">SUSPENDED</span>' : '';
+        let owner = p.isOwner ? '<span class="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[9px] font-bold px-2 py-1 rounded-md ml-3">OWNER</span>' : '';
         
-        list.innerHTML += `<li class="py-3 px-5 flex justify-between items-center cursor-pointer hover:bg-slate-800 transition" onclick="window.loadPlayerProfile('${p.id}')">
+        list.innerHTML += `<li class="py-4 px-6 flex justify-between items-center cursor-pointer hover:bg-white/5 transition" onclick="window.loadPlayerProfile('${p.id}')">
         <span class="flex items-center">${statusMarker} <span class="font-bold text-slate-200">${p.name}</span> ${owner} ${isBanned}</span>
-        <span class="text-slate-500 text-[10px] font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">${p.id}</span></li>`;
+        <span class="text-slate-500 text-[10px] font-mono bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">${p.id}</span></li>`;
     });
     
     document.getElementById('liveConcurrent').innerText = concurrentCount;
+    document.getElementById('statInGame').innerText = concurrentCount;
 };
 
 window.renderCosmetics = function() {
@@ -527,13 +565,13 @@ window.renderCosmetics = function() {
     clist.innerHTML = '';
     if(globalCatalog.length > 0) {
         globalCatalog.forEach(c => {
-            clist.innerHTML += `<li class="py-3 px-4 flex justify-between items-center hover:bg-slate-800 transition rounded">
-                <span class="text-cyan-400 font-bold text-sm">${c.itemName} <span class="text-slate-500 text-[9px] ml-1 uppercase border border-slate-700 px-1 rounded">${c.cosmeticSlot}</span></span>
-                <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-[10px] font-black uppercase transition">Delete</button>
+            clist.innerHTML += `<li class="py-4 px-5 flex justify-between items-center hover:bg-white/5 transition rounded-xl">
+                <span class="text-blue-400 font-bold text-sm">${c.itemName} <span class="text-slate-500 text-[9px] ml-2 uppercase border border-slate-700 px-1.5 py-0.5 rounded-md">${c.cosmeticSlot}</span></span>
+                <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-[10px] font-black uppercase transition shadow-sm">Delete</button>
             </li>`;
         });
     } else {
-        clist.innerHTML = '<li class="py-6 text-slate-600 text-center">Empty schema</li>';
+        clist.innerHTML = '<li class="py-10 text-slate-600 text-center font-medium">Schema catalog empty.</li>';
     }
 }
 
@@ -556,10 +594,10 @@ window.loadPlayerProfile = function(pid) {
     tagsContainer.innerHTML = '';
     if(p.tags && p.tags.length > 0) {
         p.tags.forEach(tag => {
-            tagsContainer.innerHTML += `<span class="bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-red-400 hover:text-red-300 ml-1">x</button></span>`;
+            tagsContainer.innerHTML += `<span class="bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-md flex items-center gap-2">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-red-400 hover:text-red-300 transition font-black">X</button></span>`;
         });
     } else {
-        tagsContainer.innerHTML = '<span class="text-slate-600 text-xs italic">Unassigned</span>';
+        tagsContainer.innerHTML = '<span class="text-slate-600 text-xs italic">Unassigned properties.</span>';
     }
 };
 
@@ -569,7 +607,7 @@ window.searchPlayer = function() {
     if (!input) return;
     let p = fullPlayerCache.find(x => type === 'id' ? x.id.toLowerCase() === input : (x.name && x.name.toLowerCase().includes(input)));
     if (p) window.loadPlayerProfile(p.id);
-    else { alert('Zero indexed matches.'); document.getElementById('playerStats').classList.add('hidden'); }
+    else { alert('Zero indexed matches derived.'); document.getElementById('playerStats').classList.add('hidden'); }
 };
 
 window.modifyPebbles = async function(isAdding) {
@@ -580,7 +618,7 @@ window.modifyPebbles = async function(isAdding) {
     if(res && res.player) {
         window.fetchProjectData();
         window.loadPlayerProfile(selectedPlayer.id);
-        window.showToast("Economy matrix updated.");
+        window.showToast("Economy ledger modified.");
     }
 };
 
@@ -592,7 +630,7 @@ window.setPebbles = async function() {
     if(res && res.player) {
         window.fetchProjectData();
         window.loadPlayerProfile(selectedPlayer.id);
-        window.showToast("Economy value explicitly set.");
+        window.showToast("Absolute economy established.");
     }
 };
 
@@ -605,18 +643,17 @@ window.changeName = async function() {
         document.getElementById('newName').value = '';
         window.fetchProjectData();
         window.loadPlayerProfile(selectedPlayer.id);
-        window.showToast("Identity configuration updated.");
+        window.showToast("Identity variables overriden.");
     }
 };
 
 window.toggleOwner = async function() {
     if(!selectedPlayer) return;
-    let newVal = selectedPlayer.isOwner ? "false" : "true";
-    let res = await apiCall({ action: "add_cloud_command", targetId: selectedPlayer.id, command: "grant_owner", value: newVal });
+    let res = await apiCall({ action: "toggle_owner", id: selectedPlayer.id });
     if(res) {
         window.fetchProjectData();
         setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
-        window.showToast("Owner token configuration toggled.");
+        window.showToast("Owner token variables modified.");
     }
 };
 
@@ -626,7 +663,7 @@ window.toggleAdmin = async function() {
     if(res) {
         window.fetchProjectData();
         setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
-        window.showToast("Staff token configuration toggled.");
+        window.showToast("Staff parameters shifted.");
     }
 };
 
@@ -636,7 +673,7 @@ window.toggleBan = async function() {
     if(res) {
         window.fetchProjectData();
         setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
-        window.showToast("Suspension configuration toggled.");
+        window.showToast("Suspension directive altered.");
     }
 };
 
@@ -660,7 +697,7 @@ window.executeProvision = async function() {
         document.getElementById('provPlayerId').value = "";
         document.getElementById('provPlayerName').value = "";
         window.fetchProjectData();
-        window.showToast("Record provisioned successfully.");
+        window.showToast("Local index record successfully provisioned.");
     }
 };
 
@@ -691,7 +728,7 @@ window.createCosmetic = async function() {
         document.getElementById('newCosName').value = '';
         document.getElementById('newCosPrice').value = '';
         window.fetchProjectData();
-        window.showToast("Asset schema written.");
+        window.showToast("Asset schema written to cloud.");
     }
 };
 
@@ -699,7 +736,7 @@ window.deleteCosmetic = async function(name) {
     let res = await apiCall({ action: 'remove_comm_cosmetic', name });
     if(res) {
         window.fetchProjectData();
-        window.showToast("Asset removed from catalog.");
+        window.showToast("Asset purged from global tracking.");
     }
 };
 
