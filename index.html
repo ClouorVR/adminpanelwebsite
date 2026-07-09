@@ -1,254 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="data:,">
-    <title>Chimps Server Console</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-        
-        .toast {
-            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards, fadeOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 2.7s;
-        }
-        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-    </style>
+<meta charset="UTF-8">
+<link rel="icon" href="data:,">
+<title>Chimps Live Engine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.animate-slide { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade { animation: fadeIn 0.3s ease forwards; }
+.toast { animation: slideUp 0.3s forwards, fadeIn 0.3s forwards, slideUp 0.3s reverse forwards 2.7s; }
+</style>
 </head>
-<body class="bg-[#0f1014] text-[#e4e4e7] flex h-screen font-sans select-none overflow-hidden antialiased">
+<body class="bg-slate-950 text-slate-200 flex h-screen font-sans select-none overflow-hidden antialiased">
 
-<div class="w-64 bg-[#161619] border-r border-[#27272a] flex flex-col z-10 flex-shrink-0">
-    <div class="p-5 border-b border-[#27272a]">
-        <div class="flex items-center justify-between mb-1">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Workspace</span>
-            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-        </div>
-        <div class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition">
-            <div class="w-6 h-6 bg-[#fd366e] rounded flex items-center justify-center font-bold text-white text-xs">C</div>
-            <h1 class="text-base font-bold text-gray-100">Chimps VR</h1>
-            <svg class="w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-    </div>
-
-    <nav class="flex-1 p-3 flex flex-col gap-1 overflow-y-auto">
-        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-3 mb-1 mt-2">Core Services</p>
-        <button onclick="window.switchTab('overview')" id="btn-overview" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 bg-[#27272a]/50 text-[#fd366e]">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> Overview
-        </button>
-        <button onclick="window.switchTab('players')" id="btn-players" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> Player Control
-        </button>
-        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg> Database Registry
-        </button>
-        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg> Asset Catalog
-        </button>
-
-        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-3 mb-1 mt-4">Platform</p>
-        <button onclick="window.switchTab('titledata')" id="btn-titledata" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Settings
-        </button>
-        <button onclick="window.switchTab('news')" id="btn-news" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg> News Broadcast
-        </button>
-        <button onclick="window.switchTab('leaderboards')" id="btn-leaderboards" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Leaderboards
-        </button>
-        <button onclick="window.switchTab('analytics')" id="btn-analytics" class="text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> Analytics
-        </button>
-    </nav>
-
-    <div class="p-4 border-t border-[#27272a]">
-        <div id="ownerSection" class="hidden flex-col gap-2 mb-3">
-            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Access Control</p>
-            <input id="authEmailInput" type="email" class="w-full p-2 bg-[#0f1014] border border-[#27272a] rounded-md text-xs outline-none text-gray-300 focus:border-[#fd366e] transition" placeholder="staff@example.com">
-            <button onclick="window.authorizeEmail()" class="bg-[#27272a] text-gray-300 text-xs font-medium py-1.5 rounded-md hover:bg-[#3f3f46] hover:text-white transition w-full">Authorize Member</button>
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-xs font-bold shadow-inner">AD</div>
-            <div class="flex flex-col">
-                <span class="text-xs font-medium text-gray-200">Administrator</span>
-                <span class="text-[10px] text-gray-500">Master Clearance</span>
-            </div>
+<div id="loginScreen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-sm shadow-2xl animate-slide text-center flex flex-col items-center">
+        <div class="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center text-white font-black text-3xl mb-6 shadow-[0_0_20px_rgba(249,115,22,0.4)]">C</div>
+        <h2 class="text-2xl font-black text-white mb-2">Chimps Engine</h2>
+        <p class="text-slate-400 text-sm mb-8">Sign in to manage your workspaces</p>
+        
+        <div class="w-full flex flex-col gap-3">
+            <button onclick="window.processOAuth('Google')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Continue with Google
+            </button>
+            <button onclick="window.processOAuth('GitHub')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-3">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
+                Continue with GitHub
+            </button>
         </div>
     </div>
 </div>
 
-<div class="flex-1 flex flex-col relative h-full overflow-hidden">
-    
-    <header class="h-14 border-b border-[#27272a] bg-[#0f1014] flex items-center px-6 justify-between flex-shrink-0">
-        <h2 id="currentTabTitle" class="text-lg font-semibold text-gray-100">Project Overview</h2>
-        <div class="flex items-center gap-4">
-            <div class="text-xs text-gray-400 font-medium">Active Network Load:</div>
-            <div class="flex items-center gap-2 bg-[#161619] border border-[#27272a] px-3 py-1 rounded-full">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#fd366e] shadow-[0_0_6px_#fd366e]"></span>
-                <span id="liveConcurrent" class="text-sm font-bold text-gray-200">0</span>
+<div class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col z-10">
+    <div class="p-6 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black text-lg">C</div>
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-white">Chimps Engine</span>
+                <span id="userDisplayTag" class="text-[10px] text-slate-400 font-mono"></span>
             </div>
+        </div>
+    </div>
+
+    <div class="p-4 border-b border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Projects</span>
+            <button onclick="window.showCreateProjectModal()" class="text-orange-500 hover:text-orange-400 transition font-black pb-1">+</button>
+        </div>
+        <div id="projectsListContainer" class="flex flex-col gap-1 max-h-40 overflow-y-auto"></div>
+    </div>
+
+    <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto" id="mainNav">
+        <button onclick="window.switchTab('overview')" id="btn-overview" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 bg-orange-500/10 text-orange-500">
+            Overview
+        </button>
+        <button onclick="window.switchTab('players')" id="btn-players" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+            Player Control
+        </button>
+        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+            Database Registry
+        </button>
+        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+            Asset Catalog
+        </button>
+        <button onclick="window.switchTab('projectsettings')" id="btn-projectsettings" class="text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+            Project Settings
+        </button>
+    </nav>
+
+    <div class="p-4 border-t border-slate-800">
+        <button onclick="window.logout()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-lg transition text-xs">Sign Out</button>
+    </div>
+</div>
+
+<div class="flex-1 flex flex-col bg-slate-950 overflow-hidden relative">
+    <header class="h-16 border-b border-slate-800 bg-slate-900/50 flex items-center px-8 justify-between backdrop-blur-sm z-10">
+        <h2 id="currentTabTitle" class="text-lg font-bold text-white">Overview</h2>
+        <div class="flex items-center gap-3 bg-slate-950 border border-slate-800 px-4 py-1.5 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span>
+            <span class="text-xs font-bold text-slate-300">Live Concurrency: <span id="liveConcurrent" class="text-white ml-1 text-sm">0</span></span>
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-8">
-        
-        <div id="tab-overview" class="tab-content block max-w-4xl mx-auto">
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-white mb-2">Settings</h1>
-                <p class="text-sm text-gray-400">Manage your project credentials and API endpoints.</p>
-            </div>
+    <main class="flex-1 overflow-y-auto p-8 relative">
+        <div id="noProjectOverlay" class="absolute inset-0 bg-slate-950 z-40 flex flex-col items-center justify-center p-4">
+            <div class="w-16 h-16 border-4 border-slate-800 border-t-orange-500 rounded-full animate-spin mb-6"></div>
+            <h2 class="text-2xl font-bold text-white mb-2">No Active Project</h2>
+            <p class="text-slate-400 text-sm mb-6">Create or select a project from the sidebar to initialize the dashboard.</p>
+            <button onclick="window.showCreateProjectModal()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg transition shadow-lg">Initialize Project</button>
+        </div>
 
-            <div class="bg-[#161619] border border-[#27272a] rounded-xl overflow-hidden shadow-lg">
-                <div class="px-6 py-5 border-b border-[#27272a]">
-                    <h3 class="text-base font-semibold text-gray-200">API Credentials</h3>
-                    <p class="text-xs text-gray-500 mt-1">Access services using this project's API Endpoint and Secret Key.</p>
-                </div>
+        <div id="tab-overview" class="tab-content block max-w-4xl mx-auto animate-slide">
+            <h1 class="text-3xl font-black text-white mb-2">Project Credentials</h1>
+            <p class="text-sm text-slate-400 mb-8">Integrate these values directly into your Unity MirrorVRManager component.</p>
+            
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="p-6 flex flex-col gap-6">
                     <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Project ID</label>
-                        <div class="flex group">
-                            <input type="text" readonly value="chimp_prod_2026" class="flex-1 p-2.5 bg-[#0f1014] border border-[#27272a] rounded-l-lg text-sm font-mono text-gray-300 outline-none">
-                            <button onclick="window.copyToClipboard('chimp_prod_2026')" class="bg-[#27272a] hover:bg-[#3f3f46] px-4 border border-l-0 border-[#27272a] rounded-r-lg transition flex items-center justify-center">
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            </button>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Project ID</label>
+                        <div class="flex">
+                            <input type="text" id="overviewProjId" readonly class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
+                            <button onclick="window.copyToClipboard('overviewProjId')" class="bg-slate-800 hover:bg-slate-700 px-5 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">API Endpoint</label>
-                        <div class="flex group">
-                            <input type="text" readonly value="https://clouorvr-backend.schatziheiko1984.workers.dev" class="flex-1 p-2.5 bg-[#0f1014] border border-[#27272a] rounded-l-lg text-sm font-mono text-gray-300 outline-none">
-                            <button onclick="window.copyToClipboard('https://clouorvr-backend.schatziheiko1984.workers.dev')" class="bg-[#27272a] hover:bg-[#3f3f46] px-4 border border-l-0 border-[#27272a] rounded-r-lg transition flex items-center justify-center">
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            </button>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">API Endpoint</label>
+                        <div class="flex">
+                            <input type="text" id="overviewEndpoint" readonly class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
+                            <button onclick="window.copyToClipboard('overviewEndpoint')" class="bg-slate-800 hover:bg-slate-700 px-5 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Secret Key (Confidential)</label>
-                        <div class="flex group">
-                            <input type="password" id="secretKeyDisplay" readonly value="cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0" class="flex-1 p-2.5 bg-[#0f1014] border border-[#27272a] rounded-l-lg text-sm font-mono text-gray-300 outline-none">
-                            <button onclick="window.toggleSecretVisibility()" class="bg-[#0f1014] px-3 border-y border-[#27272a] flex items-center justify-center hover:text-white text-gray-500">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            </button>
-                            <button onclick="window.copyToClipboard('cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0')" class="bg-[#27272a] hover:bg-[#3f3f46] px-4 border border-[#27272a] rounded-r-lg transition flex items-center justify-center">
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            </button>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Secret API Key (Keep Private)</label>
+                        <div class="flex">
+                            <input type="password" id="overviewApiKey" readonly class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-orange-400 outline-none">
+                            <button onclick="window.toggleKeyVisibility('overviewApiKey')" class="bg-slate-900 px-4 border-y border-slate-800 text-slate-400 hover:text-white transition">👁</button>
+                            <button onclick="window.copyToClipboard('overviewApiKey')" class="bg-slate-800 hover:bg-slate-700 px-5 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="tab-players" class="tab-content hidden max-w-5xl mx-auto">
-            <div class="mb-6 flex gap-3">
-                <select id="searchType" class="w-40 p-2.5 rounded-lg bg-[#161619] border border-[#27272a] font-medium text-sm text-gray-200 outline-none focus:border-[#fd366e]">
+        <div id="tab-players" class="tab-content hidden max-w-5xl mx-auto animate-slide">
+            <div class="flex gap-3 mb-6 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-md">
+                <select id="searchType" class="p-3 rounded-lg bg-slate-950 border border-slate-800 outline-none font-bold text-sm text-slate-300 focus:border-orange-500">
                     <option value="id">Player PUID</option>
                     <option value="name">Display Name</option>
                 </select>
-                <div class="flex-1 relative">
-                    <svg class="w-4 h-4 absolute left-3 top-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" id="playerId" class="w-full pl-9 p-2.5 rounded-lg bg-[#161619] border border-[#27272a] outline-none focus:border-[#fd366e] text-sm text-gray-200 transition" placeholder="Search criteria...">
-                </div>
-                <button onclick="window.searchPlayer()" class="bg-[#fd366e] text-white font-medium px-6 rounded-lg hover:bg-rose-600 transition text-sm shadow-sm">Search</button>
+                <input type="text" id="playerId" class="flex-1 p-3 rounded-lg bg-slate-950 border border-slate-800 outline-none focus:border-orange-500 font-mono text-sm transition" placeholder="Enter query...">
+                <button onclick="window.searchPlayer()" class="bg-orange-500 font-bold px-8 rounded-lg hover:bg-orange-600 transition text-sm text-white shadow-md">Search</button>
             </div>
 
-            <div id="playerStats" class="hidden bg-[#161619] rounded-xl border border-[#27272a] shadow-xl overflow-hidden">
-                <div class="p-6 border-b border-[#27272a] relative">
-                    <div class="absolute top-6 right-6 flex gap-2">
-                        <span id="ownerBadge" class="hidden bg-amber-500 text-amber-950 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Owner</span>
-                        <span id="adminBadge" class="hidden bg-purple-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Staff</span>
-                        <span id="banBadge" class="hidden bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Suspended</span>
-                        <span id="pinnedBadge" class="hidden bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">Pinned</span>
-                    </div>
-
-                    <h3 class="text-3xl font-bold text-white tracking-tight" id="displayName">--</h3>
-                    <p id="displayNicknameLine" class="text-rose-400 text-xs font-medium mt-1 hidden">
-                        Alias: <span id="displayNickname" class="text-gray-300"></span>
-                    </p>
-                    <p class="text-gray-400 font-mono text-[11px] mt-2 flex items-center gap-2">
-                        ID: <span id="displayId" class="text-gray-300"></span>
-                        <button onclick="window.copyToClipboard(document.getElementById('displayId').innerText)" class="hover:text-white"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
-                    </p>
-                    
-                    <div class="mt-4 flex gap-6 text-xs text-gray-500 font-medium">
-                        <div>Created: <span id="displayFirstJoined" class="text-gray-300 ml-1"></span></div>
-                        <div>Last Active: <span id="displayLastSeen" class="text-gray-300 ml-1"></span></div>
-                    </div>
+            <div id="playerStats" class="hidden bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl relative animate-fade">
+                <div class="absolute top-8 right-8 flex gap-2">
+                    <span id="ownerBadge" class="hidden bg-orange-500/20 text-orange-500 border border-orange-500/50 text-[10px] font-bold px-2 py-1 rounded">OWNER</span>
+                    <span id="adminBadge" class="hidden bg-blue-500/20 text-blue-400 border border-blue-500/50 text-[10px] font-bold px-2 py-1 rounded">STAFF</span>
+                    <span id="banBadge" class="hidden bg-red-500/20 text-red-400 border border-red-500/50 text-[10px] font-bold px-2 py-1 rounded">BANNED</span>
                 </div>
 
-                <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#0f1014]">
-                    <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Economy Balance</label>
-                        <div class="bg-[#161619] border border-[#27272a] rounded-lg p-4 flex-1">
-                            <p class="text-3xl font-bold text-gray-100 mb-4" id="pebbleCount">0 <span class="text-sm font-medium text-gray-500">PB</span></p>
-                            <input type="number" id="pebbleAmount" class="w-full p-2 bg-[#0f1014] border border-[#27272a] rounded-md focus:border-[#fd366e] outline-none text-sm text-gray-200 mb-3" placeholder="Amount">
+                <h3 class="text-3xl font-black text-white mb-1" id="displayName">--</h3>
+                <p class="text-slate-500 font-mono text-xs mb-6 bg-slate-950 inline-block px-3 py-1.5 rounded-lg border border-slate-800">PUID: <span id="displayId" class="text-slate-300 font-bold"></span></p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col">
+                        <h4 class="font-bold text-slate-500 mb-3 uppercase text-[10px] tracking-wider">Economy Balance</h4>
+                        <p class="text-4xl font-black text-cyan-400 mb-5" id="pebbleCount">0</p>
+                        <div class="mt-auto">
+                            <input type="number" id="pebbleAmount" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-center font-bold focus:border-orange-500 outline-none mb-2 text-sm" placeholder="Amount">
                             <div class="flex gap-2 mb-2">
-                                <button onclick="window.modifyPebbles(true)" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 flex-1 py-1.5 rounded-md text-xs font-medium transition">Add</button>
-                                <button onclick="window.modifyPebbles(false)" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 flex-1 py-1.5 rounded-md text-xs font-medium transition">Remove</button>
+                                <button onclick="window.modifyPebbles(true)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold transition">Add</button>
+                                <button onclick="window.modifyPebbles(false)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2 rounded-lg text-xs font-bold transition">Remove</button>
                             </div>
-                            <button onclick="window.setPebbles()" class="border border-[#27272a] hover:bg-[#27272a] text-gray-300 w-full py-1.5 rounded-md text-xs font-medium transition">Set Explicit Value</button>
+                            <button onclick="window.setPebbles()" class="w-full border border-slate-700 hover:bg-slate-800 py-2 rounded-lg text-xs font-bold transition">Set Exact</button>
                         </div>
                     </div>
 
-                    <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Profile Configuration</label>
-                        <div class="bg-[#161619] border border-[#27272a] rounded-lg p-4 flex-1 flex flex-col">
-                            <div class="mb-4">
-                                <input type="text" id="newName" class="w-full p-2 bg-[#0f1014] border border-[#27272a] rounded-md text-sm outline-none focus:border-[#fd366e] text-gray-200 mb-2" placeholder="Override Display Name">
-                                <button onclick="window.changeName()" class="w-full bg-[#27272a] hover:bg-gray-700 text-gray-200 py-1.5 rounded-md text-xs font-medium transition">Apply Name</button>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex gap-2 mb-2">
-                                    <input type="text" id="newTagInput" class="w-full p-2 bg-[#0f1014] border border-[#27272a] rounded-md text-sm outline-none focus:border-[#fd366e] text-gray-200" placeholder="Assign Tag (e.g. Creator)">
-                                    <button onclick="window.addPlayerTag()" class="bg-[#27272a] hover:bg-gray-700 px-3 rounded-md text-gray-200 transition">+</button>
-                                </div>
-                                <div id="playerTagsContainer" class="flex flex-wrap gap-1.5 mt-2 max-h-16 overflow-y-auto"></div>
-                            </div>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col">
+                        <h4 class="font-bold text-slate-500 mb-3 uppercase text-[10px] tracking-wider">Identity & Tags</h4>
+                        <input type="text" id="newName" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-sm mb-2 outline-none focus:border-orange-500" placeholder="Override Name">
+                        <button onclick="window.changeName()" class="w-full bg-slate-800 hover:bg-slate-700 font-bold py-2 rounded-lg text-xs transition mb-4">Apply Override</button>
+                        
+                        <div class="flex gap-2 mb-2 mt-auto">
+                            <input type="text" id="newTagInput" class="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-xs outline-none focus:border-blue-500" placeholder="Tag Name">
+                            <button onclick="window.addPlayerTag()" class="bg-slate-800 hover:bg-slate-700 px-3 font-bold rounded-lg transition">+</button>
                         </div>
+                        <div id="playerTagsContainer" class="flex flex-wrap gap-1 mt-1 max-h-16 overflow-y-auto"></div>
                     </div>
 
-                    <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Access & Moderation</label>
-                        <div class="bg-[#161619] border border-[#27272a] rounded-lg p-4 flex-1 flex flex-col gap-2">
-                            <button onclick="window.togglePin()" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 py-2 rounded-md text-xs font-medium transition">Toggle Pin Priority</button>
-                            <button onclick="window.kickPlayer()" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 py-2 rounded-md text-xs font-medium transition">Force Disconnect</button>
-                            <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 py-2 rounded-md text-xs font-medium transition">Modify Staff Role</button>
-                            <button id="banBtn" onclick="window.toggleBan()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-md text-xs font-medium transition border border-red-500/20">Modify Suspension</button>
-                            <div class="mt-auto pt-2 border-t border-[#27272a] flex flex-col gap-2">
-                                <button id="ownerBtn" onclick="window.toggleOwner()" class="text-amber-500 hover:text-amber-400 text-xs font-medium transition text-left">Modify Owner Status</button>
-                                <button id="ownerDeleteBtn" onclick="window.deletePlayerAccount()" class="hidden text-red-500 hover:text-red-400 text-xs font-medium transition text-left">Delete Profile Record</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-span-1 md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-                        <div class="flex flex-col">
-                            <div class="flex justify-between items-end mb-2">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Internal Storage Key-Value</label>
-                                <button onclick="window.setInternalData()" class="text-[#fd366e] hover:text-rose-400 text-xs font-medium transition">+ Append Key</button>
-                            </div>
-                            <div id="internalDataContainer" class="bg-[#161619] border border-[#27272a] rounded-lg p-3 h-32 overflow-y-auto font-mono text-xs flex flex-col gap-1.5"></div>
-                        </div>
-
-                        <div class="flex flex-col">
-                            <div class="flex justify-between items-end mb-2">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Asset Inventory</label>
-                                <button onclick="window.wipeCosmetics()" class="text-red-400 hover:text-red-300 text-xs font-medium transition">Flush Inventory</button>
-                            </div>
-                            <div class="bg-[#161619] border border-[#27272a] rounded-lg p-3 flex flex-col">
-                                <div class="flex items-center justify-between mb-3 text-xs text-gray-400 border-b border-[#27272a] pb-2">
-                                    <span id="cosmeticsOwnedCount" class="font-medium">Total: 0</span>
-                                    <div id="cosmeticsOwnedTags" class="flex flex-wrap gap-1 justify-end"></div>
-                                </div>
-                                <ul id="cosmeticList" class="text-xs text-gray-300 mb-3 h-16 overflow-y-auto flex flex-col gap-1"></ul>
-                                <div class="flex gap-2 mt-auto pt-2">
-                                    <select id="cosmeticId" class="flex-1 p-2 bg-[#0f1014] border border-[#27272a] rounded-md font-mono text-xs outline-none focus:border-[#fd366e] text-gray-200">
-                                        <option value="" disabled selected>Select catalog item...</option>
-                                    </select>
-                                    <button onclick="window.manageCosmetic(true)" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 px-3 rounded-md text-xs font-medium transition">Grant</button>
-                                    <button onclick="window.manageCosmetic(false)" class="bg-[#27272a] hover:bg-gray-700 text-gray-200 px-3 rounded-md text-xs font-medium transition">Revoke</button>
-                                </div>
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-slate-500 mb-3 uppercase text-[10px] tracking-wider">Access Control</h4>
+                            <div class="flex flex-col gap-2">
+                                <button id="ownerBtn" onclick="window.toggleOwner()" class="bg-slate-900 border border-slate-800 hover:border-orange-500 font-bold py-2.5 rounded-lg text-xs transition">Toggle Owner Privilege</button>
+                                <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-slate-900 border border-slate-800 hover:border-blue-500 font-bold py-2.5 rounded-lg text-xs transition">Toggle Staff Role</button>
+                                <button id="banBtn" onclick="window.toggleBan()" class="bg-slate-900 border border-slate-800 hover:border-red-500 text-red-400 font-bold py-2.5 rounded-lg text-xs transition">Toggle Suspension</button>
+                                <button onclick="window.kickPlayer()" class="mt-2 text-slate-500 hover:text-slate-300 font-bold text-xs transition">Force Disconnect</button>
                             </div>
                         </div>
                     </div>
@@ -256,226 +190,282 @@
             </div>
         </div>
 
-        <div id="tab-allplayers" class="tab-content hidden max-w-5xl mx-auto">
-            <div class="flex gap-3 mb-6">
-                <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-2.5 bg-[#161619] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200 transition" placeholder="Filter records by identifier, name, or metadata tags...">
-                <button onclick="window.clearQuickFilter()" class="bg-[#27272a] text-sm px-6 rounded-lg hover:bg-[#3f3f46] font-medium text-gray-200 transition">Clear</button>
-                <button onclick="window.grantPebblesToAll()" class="bg-[#161619] border border-[#27272a] text-sm px-6 rounded-lg hover:bg-[#27272a] font-medium text-gray-200 transition">Mass Economy Distribution</button>
+        <div id="tab-allplayers" class="tab-content hidden max-w-5xl mx-auto animate-slide">
+            <div class="flex gap-3 mb-6 bg-slate-900 p-2 rounded-xl border border-slate-800 shadow-md">
+                <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Filter parameters by string names, or structural IDs...">
+                <button onclick="window.clearQuickFilter()" class="bg-slate-800 px-6 rounded-lg hover:bg-slate-700 font-bold transition text-sm">Clear</button>
+                <button onclick="window.showProvisionModal()" class="bg-blue-600 text-white text-sm px-6 rounded-lg hover:bg-blue-500 font-bold transition">Manual Provision</button>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-[#161619] border border-[#27272a] rounded-xl overflow-hidden shadow-lg flex flex-col">
-                    <div class="px-5 py-3 border-b border-[#27272a] flex justify-between items-center bg-[#0f1014]/50">
-                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Registered Profiles</span>
-                    </div>
-                    <ul id="allList" class="divide-y divide-[#27272a] text-sm max-h-[600px] overflow-y-auto">
-                        <li class="py-6 text-gray-500 text-sm text-center">Fetching records...</li>
-                    </ul>
-                </div>
-
-                <div class="lg:col-span-1">
-                    <div class="bg-[#161619] border border-[#27272a] rounded-xl p-5 shadow-lg">
-                        <h3 class="text-sm font-semibold text-gray-200 mb-1">Manual Provisioning</h3>
-                        <p class="text-xs text-gray-500 mb-4">Create a profile record directly in the database.</p>
-                        
-                        <label class="block text-xs font-medium text-gray-400 mb-1">Target PUID String</label>
-                        <input id="newPlayerId" type="text" class="w-full p-2.5 mb-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm font-mono focus:border-[#fd366e] outline-none text-gray-200 transition">
-                        
-                        <label class="block text-xs font-medium text-gray-400 mb-1">Display Name (Optional)</label>
-                        <input id="newPlayerName" type="text" class="w-full p-2.5 mb-5 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200 transition" placeholder="Defaults to system standard">
-                        
-                        <button onclick="window.createNewPlayer()" class="w-full bg-[#fd366e] text-white font-medium py-2.5 rounded-lg hover:bg-rose-600 transition text-sm">Provision Record</button>
-                    </div>
-                </div>
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+                <ul id="allList" class="divide-y divide-slate-800 text-sm max-h-[600px] overflow-y-auto">
+                    <li class="py-8 text-slate-500 text-center">Awaiting data stream...</li>
+                </ul>
             </div>
         </div>
 
-        <div id="tab-cosmetics" class="tab-content hidden max-w-5xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-                <div class="md:col-span-2 bg-[#161619] border border-[#27272a] rounded-xl p-6 shadow-lg h-fit">
-                    <h3 class="text-base font-semibold text-gray-200 mb-1">Asset Schema Definition</h3>
-                    <p class="text-xs text-gray-500 mb-5">Register new items to the global cloud catalog.</p>
-                    
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Item Reference ID</label>
-                    <input id="newCosId" type="number" class="w-full p-2.5 mb-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm font-mono focus:border-[#fd366e] outline-none text-gray-200">
-                    
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Display String</label>
-                    <input id="newCosName" type="text" class="w-full p-2.5 mb-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200">
-                    
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Attachment Target</label>
-                    <select id="newCosSlot" class="w-full p-2.5 mb-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200">
+        <div id="tab-cosmetics" class="tab-content hidden max-w-5xl mx-auto animate-slide">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl h-fit">
+                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-wider mb-4">Register Asset Payload</h3>
+                    <input id="newCosId" type="number" class="w-full p-2.5 mb-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Item ID">
+                    <input id="newCosName" type="text" class="w-full p-2.5 mb-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Display Name">
+                    <select id="newCosSlot" class="w-full p-2.5 mb-3 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition">
                         <option value="HeadCos">Head</option>
                         <option value="FaceCos">Face</option>
                         <option value="BodyCos">Body</option>
                         <option value="LeftCos">Left Hand</option>
                         <option value="RightCos">Right Hand</option>
                     </select>
-                    
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Base Price</label>
-                    <input id="newCosPrice" type="number" class="w-full p-2.5 mb-6 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200">
-                    
-                    <div class="flex flex-col gap-2">
-                        <button onclick="window.createCosmetic()" class="bg-[#fd366e] text-white font-medium py-2.5 rounded-lg hover:bg-rose-600 transition text-sm">Commit Asset Schema</button>
-                        <button id="updateCosmeticBtn" onclick="window.updateCosmetic()" class="bg-[#27272a] text-white font-medium py-2.5 rounded-lg hover:bg-gray-700 transition text-sm hidden">Modify Existing Schema</button>
-                        <button id="cancelEditCosmeticBtn" onclick="window.cancelCosmeticEdit()" class="text-gray-500 hover:text-gray-300 py-2 transition text-sm hidden font-medium">Cancel Edit</button>
-                    </div>
+                    <input id="newCosPrice" type="number" class="w-full p-2.5 mb-5 bg-slate-950 border border-slate-800 rounded-lg text-sm focus:border-orange-500 outline-none transition" placeholder="Cost (PB)">
+                    <button onclick="window.createCosmetic()" class="bg-orange-500 font-bold py-3 w-full rounded-lg hover:bg-orange-600 text-sm transition text-white shadow-md">Write Asset Schema</button>
                 </div>
-                
-                <div class="md:col-span-3 bg-[#161619] border border-[#27272a] rounded-xl overflow-hidden shadow-lg flex flex-col">
-                    <div class="px-5 py-4 border-b border-[#27272a]">
-                        <h3 class="text-sm font-semibold text-gray-200">Global Asset Catalog</h3>
-                    </div>
-                    <ul id="globalCosmeticList" class="divide-y divide-[#27272a] text-sm flex-1 overflow-y-auto max-h-[500px]">
-                        <li class="py-6 text-gray-500 text-center">Fetching catalog configuration...</li>
+                <div class="md:col-span-2 bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col">
+                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-wider mb-4">Cloud Catalogs</h3>
+                    <ul id="globalCosmeticList" class="divide-y divide-slate-800 text-sm flex-1 overflow-y-auto bg-slate-950 p-2 rounded-xl border border-slate-800">
+                        <li class="py-6 text-slate-600 text-center">Awaiting catalog retrieval...</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div id="tab-titledata" class="tab-content hidden max-w-3xl mx-auto">
-            <div class="bg-[#161619] border border-[#27272a] rounded-xl p-6 shadow-lg">
-                <h3 class="text-lg font-semibold text-gray-200 mb-1">Environmental Configuration</h3>
-                <p class="text-sm text-gray-500 mb-6">Modify global variables injected into client environments upon connection.</p>
-                
-                <div class="mb-5">
-                    <label class="block text-sm font-medium text-gray-300 mb-1.5">Network Header (MOTD)</label>
-                    <input id="titleMotd" type="text" class="w-full p-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200 transition">
+        <div id="tab-projectsettings" class="tab-content hidden max-w-4xl mx-auto animate-slide">
+            <h1 class="text-3xl font-black text-white mb-6">Project Configuration</h1>
+            <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-xl flex flex-col gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Display Name</label>
+                    <input id="projSettingNameInput" type="text" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-bold outline-none focus:border-blue-500 transition">
                 </div>
-                
-                <div class="grid grid-cols-2 gap-5 mb-8">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1.5">Economy Multiplier</label>
-                        <input id="titleMultiplier" type="number" step="0.1" class="w-full p-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm font-mono focus:border-[#fd366e] outline-none text-gray-200 transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1.5">Required Client Build Version</label>
-                        <input id="titleVersion" type="text" class="w-full p-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm font-mono focus:border-[#fd366e] outline-none text-gray-200 transition">
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Logo Graphic URL</label>
+                    <input id="projSettingLogoInput" type="text" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-blue-500 transition">
                 </div>
-                
-                <button onclick="window.saveTitleData()" class="bg-[#fd366e] text-white font-medium py-3 px-6 rounded-lg hover:bg-rose-600 transition w-full shadow-sm text-sm">Deploy Configuration Changes</button>
-            </div>
-        </div>
-
-        <div id="tab-news" class="tab-content hidden max-w-3xl mx-auto">
-            <div class="bg-[#161619] border border-[#27272a] rounded-xl p-6 shadow-lg">
-                <h3 class="text-lg font-semibold text-gray-200 mb-1">Title News Broadcast</h3>
-                <p class="text-sm text-gray-500 mb-6">Distribute communications directly to the client interface.</p>
-                
-                <label class="block text-sm font-medium text-gray-300 mb-1.5">Headline String</label>
-                <input id="newsTitle" type="text" class="w-full p-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none mb-4 text-gray-200 transition">
-                
-                <label class="block text-sm font-medium text-gray-300 mb-1.5">Content Body</label>
-                <textarea id="newsBody" class="w-full p-3 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none mb-6 h-40 transition resize-none text-gray-200"></textarea>
-                
-                <button onclick="window.publishNews()" class="bg-[#27272a] text-white border border-[#27272a] font-medium py-3 px-6 rounded-lg hover:bg-gray-700 transition w-full text-sm">Execute Transmission</button>
-            </div>
-        </div>
-
-        <div id="tab-leaderboards" class="tab-content hidden max-w-3xl mx-auto">
-            <div class="bg-[#161619] border border-[#27272a] rounded-xl overflow-hidden shadow-lg">
-                <div class="px-5 py-4 border-b border-[#27272a] flex justify-between items-center">
-                    <h3 class="text-sm font-semibold text-gray-200">Global Economy Rankings</h3>
-                    <button onclick="window.refreshLeaderboard()" class="text-gray-400 hover:text-white text-xs font-medium transition flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Refresh Data
-                    </button>
-                </div>
-                <ul id="leaderboardList" class="divide-y divide-[#27272a] text-sm max-h-[600px] overflow-y-auto">
-                    <li class="py-6 text-gray-500 text-center">Processing network balances...</li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="tab-analytics" class="tab-content hidden max-w-5xl mx-auto">
-            <h2 class="text-2xl font-bold text-white mb-6">Network Analytics Overview</h2>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-[#161619] border border-[#27272a] p-5 rounded-xl">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Registered Nodes</p>
-                    <p id="totalPlayers" class="text-3xl font-bold text-gray-100">0</p>
-                </div>
-                <div class="bg-[#161619] border border-[#27272a] p-5 rounded-xl">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Market Liquidity</p>
-                    <p id="totalPebbles" class="text-3xl font-bold text-gray-100">0</p>
-                </div>
-                <div class="bg-[#161619] border border-[#27272a] p-5 rounded-xl">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Suspended Nodes</p>
-                    <p id="totalBanned" class="text-3xl font-bold text-rose-500">0</p>
-                </div>
-                <div class="bg-[#161619] border border-[#27272a] p-5 rounded-xl">
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Privileged Tokens</p>
-                    <p id="totalAdmins" class="text-3xl font-bold text-purple-400">0</p>
-                </div>
-            </div>
-
-            <div class="bg-[#161619] border border-[#27272a] p-6 rounded-xl shadow-lg">
-                <h3 class="text-sm font-semibold text-gray-200 mb-1">Global Broadcast Injection</h3>
-                <p class="text-xs text-gray-500 mb-4">Push an immediate system overlay message to all currently connected clients.</p>
-                <div class="flex gap-3">
-                    <input id="broadcastInput" type="text" class="flex-1 p-2.5 bg-[#0f1014] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200 transition" placeholder="Enter transmission payload...">
-                    <button onclick="window.sendGlobalBroadcast()" class="bg-[#fd366e] text-white font-medium px-6 rounded-lg hover:bg-rose-600 transition text-sm">Transmit</button>
+                <div class="pt-4 border-t border-slate-800 mt-2">
+                    <button onclick="window.saveCurrentProjectSettings()" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-500 transition text-sm shadow-md">Commit Parameters</button>
                 </div>
             </div>
         </div>
-
     </main>
 </div>
 
-<div id="loginOverlay" class="fixed inset-0 bg-[#000000] flex items-center justify-center z-50">
-    <div class="w-full max-w-md p-8 flex flex-col items-center">
-        <div class="w-12 h-12 bg-[#fd366e] rounded-xl flex items-center justify-center text-white font-bold text-xl mb-8 shadow-[0_0_15px_rgba(253,54,110,0.5)]">
-            C
-        </div>
+<div id="createProjectModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-md shadow-2xl animate-slide">
+        <h3 class="text-2xl font-black text-white mb-2">Initialize Architecture</h3>
+        <p class="text-slate-400 text-sm mb-6">Allocate a new database instance and credential set.</p>
         
-        <h2 class="text-2xl font-bold text-white mb-2 text-center">Sign in to your account</h2>
-        <p class="text-sm text-gray-400 mb-8 text-center">Enter your credentials to access the console</p>
+        <input id="newProjName" type="text" class="w-full p-3 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-orange-500 text-white transition" placeholder="Project Name Designation">
+        <input id="newProjLogo" type="text" class="w-full p-3 mb-6 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-orange-500 text-white transition" placeholder="Logo Link URL (Optional)">
         
-        <div class="w-full space-y-4 mb-6">
-            <button onclick="window.mockOAuth('GitHub')" class="w-full bg-[#161619] border border-[#27272a] hover:bg-[#27272a] text-gray-200 font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-3 text-sm">
-                <svg class="w-5 h-5 text-gray-200" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path></svg>
-                Continue with GitHub
-            </button>
-            <button onclick="window.mockOAuth('Google')" class="w-full bg-[#161619] border border-[#27272a] hover:bg-[#27272a] text-gray-200 font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-3 text-sm">
-                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                Continue with Google
-            </button>
+        <div class="flex gap-3">
+            <button onclick="window.submitCreateProject()" class="flex-1 bg-orange-500 font-bold p-3 rounded-xl text-sm hover:bg-orange-600 transition text-white shadow-md">Generate Code</button>
+            <button onclick="document.getElementById('createProjectModal').classList.add('hidden')" class="bg-slate-800 font-bold px-6 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Cancel</button>
         </div>
+    </div>
+</div>
 
-        <div class="w-full flex items-center mb-6">
-            <div class="flex-1 border-t border-[#27272a]"></div>
-            <span class="px-3 text-xs text-gray-500 uppercase font-medium">or</span>
-            <div class="flex-1 border-t border-[#27272a]"></div>
-        </div>
+<div id="provisionModal" class="fixed inset-0 bg-slate-950/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-md shadow-2xl animate-slide">
+        <h3 class="text-2xl font-black text-white mb-2">Manual Provision</h3>
+        <p class="text-slate-400 text-sm mb-6">Inject a new player record into the database.</p>
         
-        <div class="w-full flex flex-col gap-4">
-            <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5">Email</label>
-                <input type="email" class="w-full p-2.5 bg-[#161619] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200 transition" placeholder="admin@domain.com">
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
-                <input id="loginPassword" type="password" class="w-full p-2.5 bg-[#161619] border border-[#27272a] rounded-lg text-sm focus:border-[#fd366e] outline-none text-gray-200 transition" placeholder="••••••••">
-            </div>
-            <button onclick="window.tryLogin()" class="w-full bg-[#fd366e] text-white font-medium py-2.5 rounded-lg hover:bg-rose-600 transition text-sm mt-2">Sign in</button>
+        <input id="provPlayerId" type="text" class="w-full p-3 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-blue-500 text-white transition" placeholder="Target PUID String">
+        <input id="provPlayerName" type="text" class="w-full p-3 mb-6 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 text-white transition" placeholder="Name Override (Optional)">
+        
+        <div class="flex gap-3">
+            <button onclick="window.executeProvision()" class="flex-1 bg-blue-600 font-bold p-3 rounded-xl text-sm hover:bg-blue-500 transition text-white shadow-md">Inject Record</button>
+            <button onclick="document.getElementById('provisionModal').classList.add('hidden')" class="bg-slate-800 font-bold px-6 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Cancel</button>
         </div>
     </div>
 </div>
 
 <script>
-const WORKER_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
-const SECRET_KEY = "cfut_l6hPB6ziiSWsOFGRpvmWhNV0gLzvHlIj3IrbYt3155b03bd0"; 
+const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev/api"; 
 
-window.currentUserEmail = "";
-window.globalCatalog = [];
-window.fullPlayerCache = [];
+let activeUser = localStorage.getItem("cvr_oauth_user") || "";
+let activeProject = null;
+let projectsArray = [];
+let fullPlayerCache = [];
+let globalCatalog = [];
+
+window.onload = function() {
+    if (activeUser) {
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("userDisplayTag").innerText = activeUser;
+        window.loadProjects();
+    }
+};
+
+window.showToast = function(msg) {
+    let t = document.createElement('div');
+    t.className = 'toast fixed bottom-6 right-6 bg-slate-800 border border-slate-700 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-bold flex items-center gap-3 z-[100]';
+    t.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3100);
+}
+
+window.copyToClipboard = function(elementId) {
+    const el = document.getElementById(elementId);
+    el.select();
+    document.execCommand("copy");
+    window.showToast("Data copied to clipboard.");
+}
+
+window.toggleKeyVisibility = function(elementId) {
+    const el = document.getElementById(elementId);
+    el.type = el.type === "password" ? "text" : "password";
+}
+
+window.processOAuth = function(provider) {
+    const mockEmail = provider === "Google" ? "developer@gmail.com" : "github_dev_acc";
+    localStorage.setItem("cvr_oauth_user", mockEmail);
+    activeUser = mockEmail;
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("userDisplayTag").innerText = activeUser;
+    window.showToast(`Authenticated via ${provider}`);
+    window.loadProjects();
+};
+
+window.logout = function() {
+    localStorage.removeItem("cvr_oauth_user");
+    location.reload();
+};
+
+window.loadProjects = async function() {
+    let stored = localStorage.getItem(`cvr_projects_${activeUser}`);
+    if(stored) {
+        projectsArray = JSON.parse(stored);
+    } else {
+        projectsArray = [];
+    }
+    window.renderProjectsSidebar();
+    
+    if(projectsArray.length > 0) {
+        if(!activeProject) window.selectProject(projectsArray[0]);
+    } else {
+        activeProject = null;
+        document.getElementById("noProjectOverlay").classList.remove("hidden");
+    }
+};
+
+window.saveProjectsLocally = function() {
+    localStorage.setItem(`cvr_projects_${activeUser}`, JSON.stringify(projectsArray));
+}
+
+window.renderProjectsSidebar = function() {
+    const cont = document.getElementById("projectsListContainer");
+    cont.innerHTML = "";
+    if(projectsArray.length === 0) {
+        cont.innerHTML = `<p class="text-[10px] text-slate-600 italic px-2">No structures allocated</p>`;
+        return;
+    }
+    projectsArray.forEach(p => {
+        let isSel = activeProject && activeProject.id === p.id;
+        let btn = document.createElement("button");
+        btn.className = `w-full text-left p-2 rounded-lg flex items-center gap-3 text-xs font-bold transition ${isSel ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'}`;
+        btn.onclick = () => window.selectProject(p);
+        btn.innerHTML = `<img src="${p.logo}" class="w-5 h-5 rounded object-cover border border-slate-700"> <span class="truncate">${p.name}</span>`;
+        cont.appendChild(btn);
+    });
+};
+
+window.selectProject = function(proj) {
+    activeProject = proj;
+    document.getElementById("noProjectOverlay").classList.add("hidden");
+    window.renderProjectsSidebar();
+    
+    document.getElementById("overviewProjId").value = proj.id;
+    document.getElementById("overviewEndpoint").value = proj.endpoint;
+    document.getElementById("overviewApiKey").value = proj.apiKey;
+    
+    document.getElementById("projSettingNameInput").value = proj.name;
+    document.getElementById("projSettingLogoInput").value = proj.logo;
+    
+    window.switchTab("overview");
+    window.fetchProjectData();
+};
+
+window.showCreateProjectModal = function() {
+    document.getElementById("createProjectModal").classList.remove("hidden");
+};
+
+window.submitCreateProject = function() {
+    const name = document.getElementById("newProjName").value.trim();
+    const logo = document.getElementById("newProjLogo").value.trim() || "https://placehold.co/100x100/1e293b/ffffff?text=C";
+    if (!name) return;
+    
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let randUser = "";
+    for (let i = 0; i < 6; i++) randUser += chars.charAt(Math.floor(Math.random() * chars.length));
+    let randToken = "";
+    for (let i = 0; i < 16; i++) randToken += chars.toLowerCase().charAt(Math.floor(Math.random() * chars.length));
+    
+    const newProj = {
+        id: `F09Dg#${randUser}DVBP`,
+        endpoint: `https://api.clouor.vr/${randToken}`,
+        apiKey: `cvr_live_${randToken}${randUser.toLowerCase()}`,
+        name: name,
+        logo: logo
+    };
+    
+    projectsArray.push(newProj);
+    window.saveProjectsLocally();
+    
+    document.getElementById("createProjectModal").classList.add("hidden");
+    document.getElementById("newProjName").value = "";
+    document.getElementById("newProjLogo").value = "";
+    
+    window.selectProject(newProj);
+    window.showToast("Architecture allocation complete.");
+};
+
+window.saveCurrentProjectSettings = function() {
+    if(!activeProject) return;
+    const name = document.getElementById("projSettingNameInput").value.trim();
+    const logo = document.getElementById("projSettingLogoInput").value.trim();
+    
+    let idx = projectsArray.findIndex(p => p.id === activeProject.id);
+    if(idx > -1) {
+        projectsArray[idx].name = name;
+        projectsArray[idx].logo = logo;
+        window.saveProjectsLocally();
+        window.selectProject(projectsArray[idx]);
+        window.showToast("Parameters committed successfully.");
+    }
+};
+
+window.switchTab = function(tabId) {
+    document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
+    document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+    
+    const titles = {
+        'overview': 'Overview',
+        'players': 'Player Control',
+        'allplayers': 'Database Registry',
+        'cosmetics': 'Asset Catalog',
+        'projectsettings': 'Project Settings'
+    };
+    document.getElementById('currentTabTitle').innerText = titles[tabId] || 'Dashboard';
+
+    document.querySelectorAll("#mainNav button").forEach(b => {
+        b.className = "text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200";
+    });
+    const activeBtn = document.getElementById(`btn-${tabId}`);
+    if (activeBtn) {
+        const isOrange = tabId === 'overview';
+        activeBtn.className = `text-left px-3 py-2.5 rounded-lg font-bold transition text-sm flex items-center gap-3 ${isOrange ? 'bg-orange-500/10 text-orange-500' : 'bg-blue-600/10 text-blue-500'}`;
+    }
+};
 
 async function apiCall(payload) {
-    if (!payload) return;
+    if (!activeProject) return null;
     try {
-        let res = await fetch(WORKER_URL, {
+        let res = await fetch(WORKER_BASE_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": SECRET_KEY },
+            headers: { 
+                "Content-Type": "application/json", 
+                "Authorization": activeProject.apiKey,
+                "x-project-id": activeProject.id
+            },
             body: JSON.stringify(payload)
         }).catch(() => null);
         if (!res) return null;
@@ -486,503 +476,193 @@ async function apiCall(payload) {
     }
 }
 
-window.showToast = function(msg) {
-    let t = document.createElement('div');
-    t.className = 'toast fixed bottom-6 right-6 bg-[#161619] border border-[#27272a] text-gray-200 px-4 py-3 rounded-lg shadow-xl text-sm font-medium flex items-center gap-3 z-50';
-    t.innerHTML = `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ${msg}`;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3100);
-}
+window.fetchProjectData = async function() {
+    let res = await apiCall({ action: 'get_all' });
+    if (!res) {
+        fullPlayerCache = [];
+        globalCatalog = [];
+    } else {
+        fullPlayerCache = res.players || [];
+        globalCatalog = res.catalog || [];
+    }
+    window.renderAllPlayers();
+    window.renderCosmetics();
+};
 
-window.copyToClipboard = function(text) {
-    navigator.clipboard.writeText(text);
-    window.showToast("Copied to clipboard");
-}
-
-window.toggleSecretVisibility = function() {
-    let el = document.getElementById('secretKeyDisplay');
-    if(el.type === 'password') el.type = 'text';
-    else el.type = 'password';
-}
-
-window.mockOAuth = function(provider) {
-    alert(`The ${provider} OAuth integration is currently unconfigured. Please use the system password.`);
-}
-
-window.tryLogin = async function() {
-    let pass = document.getElementById('loginPassword').value.trim();
-    if(!pass) { alert('Please enter your credentials.'); return; }
+window.renderAllPlayers = function() {
+    const list = document.getElementById("allList");
+    if(!list) return;
+    list.innerHTML = "";
     
-    // Master bypass
-    if (pass === 'clouorvr2026') {
-        localStorage.setItem('cvr_saved_pass', pass);
-        localStorage.setItem('cvr_saved_email', 'schatziheiko1984@gmail.com');
-        window.currentUserEmail = 'schatziheiko1984@gmail.com';
-        document.getElementById('loginOverlay').classList.add('hidden');
-        window.setupSecurityUI();
-        window.showToast("Authentication successful");
-        window.loadAllPlayers();
-    } else {
-        alert('Access denied. Invalid credentials.');
-    }
-}
-
-window.onload = function() {
-    let saved = localStorage.getItem('cvr_saved_pass');
-    if(saved === 'clouorvr2026') {
-        window.currentUserEmail = localStorage.getItem('cvr_saved_email') || 'schatziheiko1984@gmail.com';
-        document.getElementById('loginOverlay').classList.add('hidden');
-        window.setupSecurityUI();
-        window.loadAllPlayers();
-    }
-}
-
-window.setupSecurityUI = function() {
-    let isOwner = window.currentUserEmail === 'schatziheiko1984@gmail.com';
-    if (isOwner) {
-        document.getElementById('ownerSection').classList.remove('hidden');
-        document.getElementById('ownerSection').classList.add('flex');
-        let btn = document.getElementById('ownerDeleteBtn');
-        if (btn) btn.classList.remove('hidden');
-    } else {
-        document.getElementById('ownerSection').classList.add('hidden');
-        document.getElementById('ownerSection').classList.remove('flex');
-        let btn = document.getElementById('ownerDeleteBtn');
-        if (btn) btn.classList.add('hidden');
-    }
-}
-
-window.authorizeEmail = async function() {
-    let em = document.getElementById('authEmailInput').value.trim();
-    if(!em) return;
-    let res = await apiCall({ action: 'add_allowed_email', email: em });
-    if(res) {
-        window.showToast("Member successfully authorized");
-        document.getElementById('authEmailInput').value = '';
-    }
-}
-
-window.deletePlayerAccount = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("No profile selected."); return; }
-    if(confirm("Warning: Are you sure you want to permanently delete this profile from the database?")) {
-        await apiCall({ action: 'delete_player', id: id });
-        window.showToast("Profile record deleted");
-        document.getElementById('playerStats').classList.add('hidden');
-        await window.loadAllPlayers();
-    }
-}
-
-window.createNewPlayer = async function() {
-    let id = document.getElementById('newPlayerId').value.trim();
-    let name = document.getElementById('newPlayerName').value.trim();
-    if(!id) { alert('A target PUID string is required.'); return; }
-    let check = await apiCall({ action: 'get_player', type: 'id', query: id });
-    if (check && check.found) {
-        alert("A profile with this identifier already exists.");
+    let concurrentCount = 0;
+    
+    if(fullPlayerCache.length === 0) {
+        list.innerHTML = `<li class="py-8 text-slate-500 text-center">Dataset empty</li>`;
+        document.getElementById('liveConcurrent').innerText = "0";
         return;
     }
-    if(!name) { name = "Chimp"; }
-    let res = await apiCall({ action: 'joined', id: id, name: name });
-    if(res && res.ok) {
-        document.getElementById('newPlayerId').value = '';
-        document.getElementById('newPlayerName').value = '';
-        window.showToast("Profile record provisioned");
-        await window.loadAllPlayers();
+    
+    fullPlayerCache.forEach(p => {
+        let isOnline = false;
+        if (p.lastSeen) {
+            let lastActive = new Date(p.lastSeen).getTime();
+            if (Date.now() - lastActive < 45000) { isOnline = true; concurrentCount++; }
+        }
+        
+        let statusMarker = isOnline ? '<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block mr-3 shadow-[0_0_8px_rgba(16,185,129,0.7)]"></span>' : '<span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block mr-3"></span>';
+        let isBanned = p.isBanned ? '<span class="bg-red-500/20 text-red-400 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2">BANNED</span>' : '';
+        let owner = p.isOwner ? '<span class="bg-orange-500/20 text-orange-500 text-[9px] font-bold px-1.5 py-0.5 rounded ml-2">OWNER</span>' : '';
+        
+        list.innerHTML += `<li class="py-3 px-5 flex justify-between items-center cursor-pointer hover:bg-slate-800 transition" onclick="window.loadPlayerProfile('${p.id}')">
+        <span class="flex items-center">${statusMarker} <span class="font-bold text-slate-200">${p.name}</span> ${owner} ${isBanned}</span>
+        <span class="text-slate-500 text-[10px] font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">${p.id}</span></li>`;
+    });
+    
+    document.getElementById('liveConcurrent').innerText = concurrentCount;
+};
+
+window.renderCosmetics = function() {
+    let clist = document.getElementById('globalCosmeticList');
+    if(!clist) return;
+    clist.innerHTML = '';
+    if(globalCatalog.length > 0) {
+        globalCatalog.forEach(c => {
+            clist.innerHTML += `<li class="py-3 px-4 flex justify-between items-center hover:bg-slate-800 transition rounded">
+                <span class="text-cyan-400 font-bold text-sm">${c.itemName} <span class="text-slate-500 text-[9px] ml-1 uppercase border border-slate-700 px-1 rounded">${c.cosmeticSlot}</span></span>
+                <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-[10px] font-black uppercase transition">Delete</button>
+            </li>`;
+        });
+    } else {
+        clist.innerHTML = '<li class="py-6 text-slate-600 text-center">Empty schema</li>';
     }
 }
 
-window.switchTab = function(tabName) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById('tab-' + tabName).classList.remove('hidden');
-    
-    // Title mapping
-    const titles = {
-        'overview': 'Project Overview',
-        'players': 'Player Control',
-        'allplayers': 'Database Registry',
-        'cosmetics': 'Asset Catalog',
-        'titledata': 'Platform Settings',
-        'news': 'News Broadcast',
-        'leaderboards': 'Leaderboards',
-        'analytics': 'Network Analytics'
-    };
-    document.getElementById('currentTabTitle').innerText = titles[tabName];
-
-    ['overview','players','allplayers','cosmetics','titledata','news','leaderboards','analytics'].forEach(t => {
-        let btn = document.getElementById('btn-' + t);
-        if(btn) {
-            if(t === tabName) {
-                btn.className = 'text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 bg-[#27272a]/50 text-[#fd366e]';
-            } else {
-                btn.className = 'text-left px-3 py-2 rounded-lg font-medium transition text-sm flex items-center gap-2 text-gray-400 hover:bg-[#27272a]/30 hover:text-gray-200';
-            }
-        }
-    });
-    if(tabName === 'leaderboards') window.refreshLeaderboard();
-}
-
-window.loadPlayerById = async function(playerId) {
+let selectedPlayer = null;
+window.loadPlayerProfile = function(pid) {
+    let p = fullPlayerCache.find(x => x.id === pid);
+    if(!p) return;
+    selectedPlayer = p;
     window.switchTab('players');
-    document.getElementById('playerId').value = playerId.trim();
-    document.getElementById('searchType').value = 'id';
-    await window.searchPlayer();
-}
-
-window.searchPlayer = async function() {
-    let input = document.getElementById('playerId').value.trim();
-    let type = document.getElementById('searchType').value;
-    if (!input) return;
-    let res = await apiCall({ action: 'get_player', type, query: input });
-    if (res && res.found) window.renderPlayer(res.data);
-    else { alert('No matches found for this query.'); document.getElementById('playerStats').classList.add('hidden'); }
-}
-
-window.renderPlayer = function(p) {
     document.getElementById('playerStats').classList.remove('hidden');
     document.getElementById('displayName').innerText = p.name;
     document.getElementById('displayId').innerText = p.id;
-    document.getElementById('pebbleCount').innerHTML = `${p.pebbles ?? 0} <span class="text-sm font-medium text-gray-500">PB</span>`;
-    
-    let fj = new Date(p.firstJoined);
-    let ls = new Date(p.lastSeen);
-    document.getElementById('displayFirstJoined').innerText = p.firstJoined ? fj.toLocaleDateString() : 'Unknown';
-    document.getElementById('displayLastSeen').innerText = p.lastSeen ? ls.toLocaleDateString() + ' ' + ls.toLocaleTimeString() : 'Unknown';
-    
-    if (p.adminNickname) {
-        document.getElementById('displayNickname').innerText = p.adminNickname;
-        document.getElementById('displayNicknameLine').classList.remove('hidden');
-    } else document.getElementById('displayNicknameLine').classList.add('hidden');
+    document.getElementById('pebbleCount').innerText = p.pebbles || 0;
     
     document.getElementById('ownerBadge').classList.toggle('hidden', !p.isOwner);
-    document.getElementById('ownerBtn').innerText = p.isOwner ? 'Revoke Owner Status' : 'Grant Owner Status';
     document.getElementById('adminBadge').classList.toggle('hidden', !p.isAdmin);
-    document.getElementById('adminBtn').innerText = p.isAdmin ? 'Revoke Staff Role' : 'Grant Staff Role';
     document.getElementById('banBadge').classList.toggle('hidden', !p.isBanned);
-    document.getElementById('banBtn').innerText = p.isBanned ? 'Lift Suspension' : 'Enforce Suspension';
-    
-    let pinnedList = JSON.parse(localStorage.getItem('cvr_pinned_players') || '[]');
-    let isPinned = pinnedList.includes(p.id);
-    document.getElementById('pinnedBadge').classList.toggle('hidden', !isPinned);
     
     let tagsContainer = document.getElementById('playerTagsContainer');
     tagsContainer.innerHTML = '';
     if(p.tags && p.tags.length > 0) {
         p.tags.forEach(tag => {
-            tagsContainer.innerHTML += `<span class="bg-[#27272a] text-gray-300 text-[10px] font-medium px-2 py-0.5 rounded flex items-center gap-1">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-gray-500 hover:text-red-400 ml-1 transition">×</button></span>`;
+            tagsContainer.innerHTML += `<span class="bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-red-400 hover:text-red-300 ml-1">x</button></span>`;
         });
     } else {
-        tagsContainer.innerHTML = '<span class="text-gray-600 text-xs italic">No associated tags</span>';
+        tagsContainer.innerHTML = '<span class="text-slate-600 text-xs italic">Unassigned</span>';
     }
-    
-    let intDataContainer = document.getElementById('internalDataContainer');
-    intDataContainer.innerHTML = '';
-    if(p.internalData && Object.keys(p.internalData).length > 0) {
-        for (let key in p.internalData) {
-            intDataContainer.innerHTML += `<div class="flex justify-between items-center bg-[#0f1014] px-2 py-1.5 rounded"><span class="text-gray-400">${key}:</span><span class="text-gray-200">${p.internalData[key]}</span></div>`;
-        }
-    } else {
-        intDataContainer.innerHTML = '<div class="text-gray-600 text-center mt-6 italic">Storage configuration empty</div>';
-    }
-    
-    let cosList = document.getElementById('cosList');
-    let ownedCount = document.getElementById('cosmeticsOwnedCount');
-    let ownedTags = document.getElementById('cosmeticsOwnedTags');
-    
-    // Needed to map variables properly since ID names slightly changed for aesthetic
-    let cListEl = document.getElementById('cosmeticList');
-    cListEl.innerHTML = '';
-    ownedTags.innerHTML = '';
-    
-    if (p.cosmetics && p.cosmetics.length > 0) {
-        ownedCount.innerText = `Total: ${p.cosmetics.length}`;
-        p.cosmetics.forEach(i => {
-            cListEl.innerHTML += `<li class="flex justify-between items-center bg-[#0f1014] border border-[#27272a] p-2 rounded text-xs">
-            <span class="text-gray-300">${i}</span><button onclick="window.quickRevoke('${i}')" class="text-gray-500 font-medium hover:text-red-400 transition">Revoke</button></li>`;
-            ownedTags.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[9px] font-medium">${i}</span>`;
-        });
-    } else {
-        ownedCount.innerText = 'Total: 0';
-        ownedTags.innerHTML = '<span class="text-gray-600 text-[10px]">Empty</span>';
-        cListEl.innerHTML = `<li class="text-gray-600 italic text-center py-4">No assets unlocked</li>`;
-    }
-    window.updateCosmeticDropdown();
-}
+};
 
-window.updateCosmeticDropdown = function() {
-    let sel = document.getElementById('cosmeticId');
-    if(!sel) return;
-    sel.innerHTML = '<option value="" disabled selected>Select catalog item...</option>';
-    let groups = {};
-    (window.globalCatalog || []).forEach(c => {
-        if(!groups[c.cosmeticSlot]) groups[c.cosmeticSlot] = [];
-        groups[c.cosmeticSlot].push(c);
-    });
-    for (let slot in groups) {
-        let optgroup = document.createElement('optgroup');
-        optgroup.label = slot;
-        groups[slot].forEach(c => {
-            let opt = document.createElement('option');
-            opt.value = `${c.cosmeticSlot}:${c.itemName}`;
-            opt.innerText = `${c.itemName} (${c.price} PB)`;
-            optgroup.appendChild(opt);
-        });
-        sel.appendChild(optgroup);
-    }
-}
+window.searchPlayer = function() {
+    let input = document.getElementById('playerId').value.trim().toLowerCase();
+    let type = document.getElementById('searchType').value;
+    if (!input) return;
+    let p = fullPlayerCache.find(x => type === 'id' ? x.id.toLowerCase() === input : (x.name && x.name.toLowerCase().includes(input)));
+    if (p) window.loadPlayerProfile(p.id);
+    else { alert('Zero indexed matches.'); document.getElementById('playerStats').classList.add('hidden'); }
+};
 
 window.modifyPebbles = async function(isAdding) {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
+    if(!selectedPlayer) return;
     let amt = parseInt(document.getElementById('pebbleAmount').value);
     if (isNaN(amt)) return;
-    await apiCall({ action: 'edit_pebbles', id, amount: isAdding ? amt : -amt });
-    window.showToast(`Balance successfully modified`);
-    await window.refreshCurrentPlayer();
-}
+    let res = await apiCall({ action: 'edit_pebbles', id: selectedPlayer.id, amount: isAdding ? amt : -amt });
+    if(res && res.player) {
+        window.fetchProjectData();
+        window.loadPlayerProfile(selectedPlayer.id);
+        window.showToast("Economy matrix updated.");
+    }
+};
 
 window.setPebbles = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
+    if(!selectedPlayer) return;
     let amt = parseInt(document.getElementById('pebbleAmount').value);
     if (isNaN(amt)) return;
-    await apiCall({ action: 'set_pebbles', id, amount: amt });
-    window.showToast(`Balance explicitly updated`);
-    await window.refreshCurrentPlayer();
-}
+    let res = await apiCall({ action: 'set_pebbles', id: selectedPlayer.id, amount: amt });
+    if(res && res.player) {
+        window.fetchProjectData();
+        window.loadPlayerProfile(selectedPlayer.id);
+        window.showToast("Economy value explicitly set.");
+    }
+};
 
 window.changeName = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
+    if(!selectedPlayer) return;
     let name = document.getElementById('newName').value.trim();
     if (!name) return;
-    await apiCall({ action: 'set_name', id, value: name });
-    document.getElementById('newName').value = '';
-    window.showToast(`Identity configuration updated`);
-    await window.refreshCurrentPlayer();
-}
-
-window.addPlayerTag = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) return;
-    let tag = document.getElementById('newTagInput').value.trim();
-    if(!tag) return;
-    await apiCall({ action: 'add_tag', id, value: tag });
-    document.getElementById('newTagInput').value = '';
-    window.showToast(`Metadata tag appended`);
-    await window.refreshCurrentPlayer();
-}
-
-window.removePlayerTag = async function(tag) {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) return;
-    await apiCall({ action: 'remove_tag', id, value: tag });
-    window.showToast(`Metadata tag removed`);
-    await window.refreshCurrentPlayer();
-}
-
-window.setInternalData = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) return;
-    let k = prompt("Provide storage key identifier:");
-    if(!k) return;
-    let v = prompt("Provide value string:");
-    if(!v) return;
-    await apiCall({ action: 'set_internal_data', id, key: k, value: v });
-    window.showToast(`Internal data configuration updated`);
-    await window.refreshCurrentPlayer();
-}
-
-window.kickPlayer = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
-    let res = await apiCall({ action: 'kick_player', id: id });
-    if(!res || res.error || res.status === 404) {
-        res = await apiCall({ action: 'add_cloud_command', targetId: id, command: 'kick', value: 'true' });
+    let res = await apiCall({ action: 'set_name', id: selectedPlayer.id, value: name });
+    if(res && res.player) {
+        document.getElementById('newName').value = '';
+        window.fetchProjectData();
+        window.loadPlayerProfile(selectedPlayer.id);
+        window.showToast("Identity configuration updated.");
     }
-    window.showToast('Disconnection signal transmitted');
-}
-
-window.togglePin = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) return;
-    let pinnedList = JSON.parse(localStorage.getItem('cvr_pinned_players') || '[]');
-    if(pinnedList.includes(id)) {
-        pinnedList = pinnedList.filter(x => x !== id);
-    } else {
-        pinnedList.push(id);
-    }
-    localStorage.setItem('cvr_pinned_players', JSON.stringify(pinnedList));
-    await apiCall({ action: 'add_cloud_command', targetId: id, command: 'pin', value: 'true' });
-    window.refreshCurrentPlayer();
-    window.loadAllPlayers();
-}
+};
 
 window.toggleOwner = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert('Please load a target profile.'); return; }
-    let pw = prompt('Administrator Security Token required:');
-    if (pw !== 'monke2026') { alert('Security Token rejected.'); return; }
-    
-    let isCurrentlyOwner = document.getElementById('ownerBtn').innerText.includes('Revoke');
-    
-    // While the backend command is toggle/grant, we process it locally for the UI based on state
-    await apiCall({ action: 'add_cloud_command', targetId: id, command: isCurrentlyOwner ? 'revoke_owner' : 'grant_owner', value: 'true' });
-    
-    try {
-        let idx = window.fullPlayerCache.findIndex(p => p.id === id);
-        if (idx !== -1) window.fullPlayerCache[idx].isOwner = !isCurrentlyOwner;
-    } catch (e) {}
-    
-    window.showToast(`Owner token ${isCurrentlyOwner ? 'revoked' : 'granted'}`);
-    await window.refreshCurrentPlayer();
-    await window.loadAllPlayers();
-}
+    if(!selectedPlayer) return;
+    let newVal = selectedPlayer.isOwner ? "false" : "true";
+    let res = await apiCall({ action: "add_cloud_command", targetId: selectedPlayer.id, command: "grant_owner", value: newVal });
+    if(res) {
+        window.fetchProjectData();
+        setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
+        window.showToast("Owner token configuration toggled.");
+    }
+};
 
 window.toggleAdmin = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
-    await apiCall({ action: 'toggle_admin', id });
-    window.showToast(`Staff role configuration altered`);
-    await window.refreshCurrentPlayer();
-}
+    if(!selectedPlayer) return;
+    let res = await apiCall({ action: 'toggle_admin', id: selectedPlayer.id });
+    if(res) {
+        window.fetchProjectData();
+        setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
+        window.showToast("Staff token configuration toggled.");
+    }
+};
 
 window.toggleBan = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
-    await apiCall({ action: 'toggle_ban', id });
-    await apiCall({ action: 'add_cloud_command', targetId: id, command: 'ban', value: 'true' });
-    window.showToast(`Suspension configuration altered`);
-    await window.refreshCurrentPlayer();
-}
-
-window.grantPebblesToAll = async function() {
-    let amt = parseInt(prompt('Specify distribution amount for all profiles:'));
-    if (isNaN(amt)) return;
-    if (!confirm(`Are you sure you want to deploy ${amt} PB across the entire database?`)) return;
-    for (let i = 0; i < window.fullPlayerCache.length; i++) {
-        const p = window.fullPlayerCache[i];
-        if (!p || !p.id) continue;
-        await apiCall({ action: 'edit_pebbles', id: p.id, amount: amt });
-        await new Promise(r => setTimeout(r, 40));
+    if(!selectedPlayer) return;
+    let res = await apiCall({ action: 'toggle_ban', id: selectedPlayer.id });
+    if(res) {
+        window.fetchProjectData();
+        setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
+        window.showToast("Suspension configuration toggled.");
     }
-    window.showToast(`Global distribution completed`);
-    await window.loadAllPlayers();
-}
+};
 
-window.wipeCosmetics = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
-    await apiCall({ action: 'wipe_cosmetics', id });
-    window.showToast(`Inventory flushed successfully`);
-    await window.refreshCurrentPlayer();
-}
+window.kickPlayer = async function() {
+    if(!selectedPlayer) return;
+    await apiCall({ action: 'add_cloud_command', targetId: selectedPlayer.id, command: 'kick', value: 'true' });
+    window.showToast("Force drop signal transmitted.");
+};
 
-window.manageCosmetic = async function(isGiving) {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
-    let cos = document.getElementById('cosmeticId').value;
-    if (!cos) return;
-    await apiCall({ action: isGiving ? 'give_cosmetic' : 'revoke_cosmetic', id, value: cos });
-    window.showToast(`Asset transaction logged`);
-    await window.refreshCurrentPlayer();
-}
+window.showProvisionModal = function() {
+    document.getElementById("provisionModal").classList.remove("hidden");
+};
 
-window.quickRevoke = async function(value) {
-    let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Please load a target profile."); return; }
-    await apiCall({ action: 'revoke_cosmetic', id, value });
-    window.showToast(`Asset revoked from profile`);
-    await window.refreshCurrentPlayer();
-}
-
-window.refreshCurrentPlayer = async function() {
-    let id = document.getElementById('displayId').innerText.trim();
-    if (!id) return;
-    let res = await apiCall({ action: 'get_player', type: 'id', query: id });
-    if (res && res.found) window.renderPlayer(res.data);
-}
-
-window.createCosmetic = async function() {
-    let id = document.getElementById('newCosId').value;
-    let name = document.getElementById('newCosName').value.trim();
-    let slot = document.getElementById('newCosSlot').value;
-    let price = document.getElementById('newCosPrice').value;
-    if(!id || !name || !price) { alert('All fields are required.'); return; }
-    await apiCall({ action: 'add_cosmetic', id, name, slot, price });
-    document.getElementById('newCosId').value = '';
-    document.getElementById('newCosName').value = '';
-    document.getElementById('newCosPrice').value = '';
-    window.showToast(`Schema committed to catalog`);
-    window.cancelCosmeticEdit();
-    await window.loadAllPlayers(); 
-}
-
-window.editCosmetic = function(id, encodedName, slot, price) {
-    const name = decodeURIComponent(encodedName);
-    document.getElementById('newCosId').value = id;
-    document.getElementById('newCosName').value = name;
-    document.getElementById('newCosSlot').value = slot;
-    document.getElementById('newCosPrice').value = price;
-    document.getElementById('updateCosmeticBtn').classList.remove('hidden');
-    document.getElementById('cancelEditCosmeticBtn').classList.remove('hidden');
-}
-
-window.updateCosmetic = async function() {
-    let id = document.getElementById('newCosId').value;
-    let name = document.getElementById('newCosName').value.trim();
-    let slot = document.getElementById('newCosSlot').value;
-    let price = document.getElementById('newCosPrice').value;
-    if(!id || !name || !price) { alert('All fields are required.'); return; }
-    await apiCall({ action: 'remove_comm_cosmetic', name });
-    await apiCall({ action: 'add_cosmetic', id, name, slot, price });
-    document.getElementById('newCosId').value = '';
-    document.getElementById('newCosName').value = '';
-    document.getElementById('newCosPrice').value = '';
-    window.showToast(`Asset configuration updated`);
-    window.cancelCosmeticEdit();
-    await window.loadAllPlayers();
-}
-
-window.cancelCosmeticEdit = function() {
-    document.getElementById('newCosId').value = '';
-    document.getElementById('newCosName').value = '';
-    document.getElementById('newCosPrice').value = '';
-    document.getElementById('updateCosmeticBtn').classList.add('hidden');
-    document.getElementById('cancelEditCosmeticBtn').classList.add('hidden');
-}
-
-window.deleteCosmetic = async function(name) {
-    await apiCall({ action: 'remove_comm_cosmetic', name });
-    window.showToast(`Asset removed from cloud catalog`);
-    await window.loadAllPlayers();
-}
-
-window.saveTitleData = async function() {
-    let motd = document.getElementById('titleMotd').value;
-    let mult = document.getElementById('titleMultiplier').value;
-    let ver = document.getElementById('titleVersion').value;
-    await apiCall({ action: 'set_title_data', data: { motd: motd, multiplier: mult, version: ver } });
-    window.showToast('Global variables synchronized');
-}
-
-window.publishNews = async function() {
-    let title = document.getElementById('newsTitle').value;
-    let body = document.getElementById('newsBody').value;
-    if(!title || !body) return;
-    await apiCall({ action: 'publish_news', title, body });
-    window.showToast('Transmission dispatched successfully');
-    document.getElementById('newsTitle').value = '';
-    document.getElementById('newsBody').value = '';
-}
-
-window.sendGlobalBroadcast = async function() {
-    let msg = document.getElementById('broadcastInput').value.trim();
-    if(!msg) return;
-    await apiCall({ action: 'global_broadcast', value: msg });
-    document.getElementById('broadcastInput').value = '';
-    window.showToast('Message injected into global streams');
-}
+window.executeProvision = async function() {
+    let id = document.getElementById('provPlayerId').value.trim();
+    let name = document.getElementById('provPlayerName').value.trim();
+    if(!id) return;
+    let res = await apiCall({ action: 'joined', id: id, name: name || "Chimp" });
+    if(res) {
+        document.getElementById("provisionModal").classList.add("hidden");
+        document.getElementById('provPlayerId').value = "";
+        document.getElementById('provPlayerName').value = "";
+        window.fetchProjectData();
+        window.showToast("Record provisioned successfully.");
+    }
+};
 
 window.applyQuickFilter = function() {
     let val = document.getElementById('quickFilterInput').value.toLowerCase();
@@ -992,131 +672,38 @@ window.applyQuickFilter = function() {
         if(text.includes(val)) li.classList.remove('hidden');
         else li.classList.add('hidden');
     });
-}
+};
 
 window.clearQuickFilter = function() {
     document.getElementById('quickFilterInput').value = '';
     window.applyQuickFilter();
-}
+};
 
-window.refreshLeaderboard = function() {
-    let list = document.getElementById('leaderboardList');
-    if(!list) return;
-    list.innerHTML = '';
-    let sortedPlayers = [...window.fullPlayerCache].sort((a, b) => (b.pebbles || 0) - (a.pebbles || 0)).slice(0, 50);
-    
-    if(sortedPlayers.length === 0) {
-        list.innerHTML = '<li class="py-6 text-gray-500 text-center">Dataset empty</li>';
-        return;
+window.createCosmetic = async function() {
+    let id = document.getElementById('newCosId').value;
+    let name = document.getElementById('newCosName').value.trim();
+    let slot = document.getElementById('newCosSlot').value;
+    let price = document.getElementById('newCosPrice').value;
+    if(!id || !name || !price) return;
+    let res = await apiCall({ action: 'add_cosmetic', id, name, slot, price });
+    if(res) {
+        document.getElementById('newCosId').value = '';
+        document.getElementById('newCosName').value = '';
+        document.getElementById('newCosPrice').value = '';
+        window.fetchProjectData();
+        window.showToast("Asset schema written.");
     }
-    
-    sortedPlayers.forEach((p, index) => {
-        let rankColor = index === 0 ? 'text-amber-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-400' : 'text-gray-600';
-        let nickStr = p.adminNickname ? ` <span class="text-xs text-rose-400 ml-1.5 font-mono">[${p.adminNickname}]</span>` : '';
-        
-        list.innerHTML += `<li class="py-3 px-5 flex justify-between items-center hover:bg-[#27272a]/30 cursor-pointer transition" onclick="window.loadPlayerById('${p.id}')">
-        <div class="flex items-center gap-4">
-            <span class="font-bold text-sm w-6 text-center ${rankColor}">#${index + 1}</span>
-            <span class="font-medium text-gray-200">${p.name}${nickStr}</span>
-        </div>
-        <div class="font-medium text-gray-300 bg-[#27272a]/50 px-2.5 py-1 rounded-md text-xs border border-[#27272a]">${p.pebbles || 0} PB</div>
-        </li>`;
-    });
-}
+};
 
-window.loadAllPlayers = async function() {
-    let res = await apiCall({ action: 'get_all' });
-    if (!res) return;
-    window.globalCatalog = res.catalog || [];
-    window.fullPlayerCache = res.players || [];
-    
-    let clist = document.getElementById('globalCosmeticList');
-    if(clist) {
-        clist.innerHTML = '';
-        if(window.globalCatalog.length > 0) {
-            window.globalCatalog.forEach(c => {
-                clist.innerHTML += `<li class="py-3 px-5 flex justify-between items-center hover:bg-[#27272a]/30 transition">
-                    <span class="text-gray-200 font-medium text-sm flex items-center gap-3">
-                        ${c.itemName} 
-                        <span class="text-gray-400 text-[10px] uppercase border border-[#27272a] bg-[#0f1014] px-1.5 py-0.5 rounded">${c.cosmeticSlot}</span>
-                    </span>
-                    <div class="flex gap-4">
-                        <button onclick="window.editCosmetic('${c.id}','${encodeURIComponent(c.itemName)}','${c.cosmeticSlot}','${c.price}')" class="text-gray-400 hover:text-white text-[11px] font-medium transition">Edit</button>
-                        <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-gray-500 hover:text-red-400 text-[11px] font-medium transition">Delete</button>
-                    </div>
-                </li>`;
-            });
-        } else clist.innerHTML = '<li class="py-6 text-gray-500 text-center">Empty cloud configurations</li>';
+window.deleteCosmetic = async function(name) {
+    let res = await apiCall({ action: 'remove_comm_cosmetic', name });
+    if(res) {
+        window.fetchProjectData();
+        window.showToast("Asset removed from catalog.");
     }
-    
-    if(res.titleData) {
-        let motdInput = document.getElementById('titleMotd');
-        let multInput = document.getElementById('titleMultiplier');
-        let verInput = document.getElementById('titleVersion');
-        if(motdInput && res.titleData.motd) motdInput.value = res.titleData.motd;
-        if(multInput && res.titleData.multiplier) multInput.value = res.titleData.multiplier;
-        if(verInput && res.titleData.version) verInput.value = res.titleData.version;
-    }
-    
-    let list = document.getElementById('allList');
-    if(!list) return;
-    list.innerHTML = '';
-    
-    let concurrentCount = 0;
-    let pebbles = 0, banned = 0, admins = 0;
-    
-    if (res.players && res.players.length > 0) {
-        let pinnedList = JSON.parse(localStorage.getItem('cvr_pinned_players') || '[]');
-        res.players.sort((a, b) => {
-            let aP = pinnedList.includes(a.id) ? 1 : 0;
-            let bP = pinnedList.includes(b.id) ? 1 : 0;
-            return bP - aP;
-        });
-        
-        res.players.forEach(p => {
-            let isBanned = p.isBanned ? '<span class="bg-red-500/10 text-red-400 border border-red-500/20 text-[9px] font-medium px-1.5 rounded ml-2">Suspended</span>' : '';
-            let admin = p.isAdmin ? '<span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[9px] font-medium px-1.5 rounded ml-2">Staff</span>' : '';
-            let owner = p.isOwner ? '<span class="bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[9px] font-medium px-1.5 rounded ml-2">Owner</span>' : '';
-            let pinBadge = pinnedList.includes(p.id) ? '<span class="text-blue-400 text-[9px] font-medium ml-2 border border-blue-500/20 px-1.5 rounded">Pinned</span>' : '';
-            let nickStr = p.adminNickname ? ` <span class="text-xs text-rose-400 ml-2 font-mono">[${p.adminNickname}]</span>` : '';
-            
-            let tagsHTML = '';
-            if(p.tags && p.tags.length > 0) {
-                p.tags.forEach(t => tagsHTML += `<span class="text-gray-400 bg-[#0f1014] text-[9px] uppercase border border-[#27272a] px-1.5 rounded ml-2 hidden sm:inline-block">${t}</span>`);
-            }
-            
-            let isOnline = false;
-            if (p.lastSeen) {
-                let lastActive = new Date(p.lastSeen).getTime();
-                if (Date.now() - lastActive < 30000) { isOnline = true; concurrentCount++; }
-            }
-            
-            let statusMarker = isOnline ? '<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-3 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></span>' : '<span class="w-2 h-2 rounded-full bg-gray-600 inline-block mr-3"></span>';
-            
-            list.innerHTML += `<li class="py-3 px-5 flex justify-between items-center cursor-pointer hover:bg-[#27272a]/30 transition" onclick="window.loadPlayerById('${p.id}')">
-            <span class="flex items-center">${statusMarker} <span class="font-medium text-gray-200">${p.name}${nickStr}</span> ${tagsHTML} ${owner} ${admin} ${isBanned} ${pinBadge}</span>
-            <span class="text-gray-500 text-[10px] font-mono hidden md:block bg-[#0f1014] px-2 py-0.5 rounded border border-[#27272a]">${p.id}</span></li>`;
-            
-            pebbles += p.pebbles || 0;
-            if (p.isBanned) banned++;
-            if (p.isAdmin) admins++;
-        });
-    }
-    
-    document.getElementById('liveConcurrent').innerText = concurrentCount;
-    document.getElementById('totalPlayers').innerText = res.players ? res.players.length : 0;
-    document.getElementById('totalPebbles').innerText = pebbles;
-    document.getElementById('totalBanned').innerText = banned;
-    document.getElementById('totalAdmins').innerText = admins;
-    
-    window.updateCosmeticDropdown();
-    if(!document.getElementById('tab-leaderboards').classList.contains('hidden')) {
-        window.refreshLeaderboard();
-    }
-}
+};
 
-window.loadAllPlayers();
-setInterval(window.loadAllPlayers, 10000);
+setInterval(window.fetchProjectData, 15000);
 </script>
 </body>
 </html>
