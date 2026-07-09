@@ -5,165 +5,153 @@
 <title>Chimps Live Engine</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #111827; }
-  ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0b10; }
+  ::-webkit-scrollbar-thumb { background: #222533; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #31354a; }
 </style>
 </head>
-<body class="bg-gray-950 text-gray-200 flex h-screen font-sans select-none overflow-hidden antialiased">
+<body class="bg-[#090a0f] text-[#e2e4ed] flex h-screen font-sans select-none overflow-hidden antialiased">
 
-<!-- Sidebar -->
-<div class="w-72 bg-gray-900 p-6 flex flex-col gap-3 shadow-2xl border-r border-gray-800 overflow-y-auto z-10">
-    <h1 class="text-2xl font-black text-orange-500 mb-2 tracking-wide border-b border-gray-800 pb-4 flex items-center justify-between">
-        <span>Dashboard</span>
-        <span class="text-[10px] bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-1 rounded animate-pulse">LIVE</span>
+<div class="w-64 bg-[#0e1017] p-5 flex flex-col gap-4 border-r border-[#1b1d26] overflow-y-auto z-10">
+    <h1 class="text-xl font-black text-orange-500 tracking-wider border-b border-[#1b1d26] pb-3 flex items-center justify-between">
+        <span>CHIMPS ENGINE</span>
+        <span class="text-[9px] bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded animate-pulse font-mono">LIVE</span>
     </h1>
 
-    <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 mb-4 text-center">
+    <div class="bg-[#06070a] p-3 rounded-xl border border-[#1b1d26] text-center">
         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Active Game Room</p>
-        <p id="liveConcurrent" class="text-3xl font-black text-green-400 mt-1">0 <span class="text-xs font-normal text-gray-500">online</span></p>
+        <p id="liveConcurrent" class="text-2xl font-black text-green-400 mt-0.5">0 <span class="text-xs font-normal text-gray-500">online</span></p>
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex flex-col gap-2">
-        <button onclick="window.switchTab('players')" id="btn-players" class="text-left bg-orange-600 p-3 rounded-lg font-bold hover:bg-orange-500 transition shadow-md text-sm">Player Control</button>
-        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition text-sm">Database Registry</button>
-        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition text-sm">Cosmetics Registry</button>
-        <button onclick="window.switchTab('titledata')" id="btn-titledata" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition text-sm">Global Title Data</button>
-        <button onclick="window.switchTab('news')" id="btn-news" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition text-sm">Title News</button>
-        <button onclick="window.switchTab('leaderboards')" id="btn-leaderboards" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition text-sm">Leaderboards</button>
-        <button onclick="window.switchTab('analytics')" id="btn-analytics" class="text-left bg-gray-800 p-3 rounded-lg font-bold hover:bg-orange-600 transition text-sm">Network Analytics</button>
+    <nav class="flex flex-col gap-1.5">
+        <button onclick="window.switchTab('players')" id="btn-players" class="text-left bg-orange-600 p-2.5 rounded-lg font-bold hover:bg-orange-500 transition text-xs text-white">Player Control</button>
+        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left bg-[#131622] p-2.5 rounded-lg font-bold hover:bg-orange-600 transition text-xs text-gray-400">Database Registry</button>
+        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left bg-[#131622] p-2.5 rounded-lg font-bold hover:bg-orange-600 transition text-xs text-gray-400">Cosmetics Registry</button>
+        <button onclick="window.switchTab('titledata')" id="btn-titledata" class="text-left bg-[#131622] p-2.5 rounded-lg font-bold hover:bg-orange-600 transition text-xs text-gray-400">Global Title Data</button>
+        <button onclick="window.switchTab('news')" id="btn-news" class="text-left bg-[#131622] p-2.5 rounded-lg font-bold hover:bg-orange-600 transition text-xs text-gray-400">Title News</button>
+        <button onclick="window.switchTab('leaderboards')" id="btn-leaderboards" class="text-left bg-[#131622] p-2.5 rounded-lg font-bold hover:bg-orange-600 transition text-xs text-gray-400">Leaderboards</button>
+        <button onclick="window.switchTab('analytics')" id="btn-analytics" class="text-left bg-[#131622] p-2.5 rounded-lg font-bold hover:bg-orange-600 transition text-xs text-gray-400">Network Analytics</button>
     </nav>
 
-    <!-- Manual Account -->
-    <div class="mt-auto border-t border-gray-800 pt-5 flex flex-col gap-2">
-        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Manual Account Creator</p>
-        <input id="newPlayerId" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition" placeholder="Target PUID String">
-        <input id="newPlayerName" type="text" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition" placeholder="Leave empty for random">
-        <button onclick="window.createNewPlayer()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold py-2.5 rounded-lg hover:bg-orange-600 hover:text-white transition mt-1">Commit Profile</button>
+    <div class="mt-auto border-t border-[#1b1d26] pt-4 flex flex-col gap-2">
+        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Manual Creator</p>
+        <input id="newPlayerId" type="text" class="p-2 bg-[#06070a] border border-[#1b1d26] rounded-lg text-[11px] font-mono focus:border-orange-500 outline-none text-gray-300 transition" placeholder="Target PUID String">
+        <input id="newPlayerName" type="text" class="p-2 bg-[#06070a] border border-[#1b1d26] rounded-lg text-[11px] font-mono focus:border-orange-500 outline-none text-gray-300 transition" placeholder="Random Name Option">
+        <button onclick="window.createNewPlayer()" class="bg-orange-600/10 text-orange-400 border border-orange-500/20 text-xs font-bold py-2 rounded-lg hover:bg-orange-600 hover:text-white transition">Commit Profile</button>
     </div>
 
-    <!-- Owner Section -->
-    <div id="ownerSection" class="hidden border-t border-gray-800 pt-4 flex flex-col gap-2">
-        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Authorize Dashboard</p>
-        <input id="authEmailInput" type="email" class="p-2.5 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition" placeholder="staff@gmail.com">
-        <button onclick="window.authorizeEmail()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs font-bold py-2.5 rounded-lg hover:bg-blue-600 hover:text-white transition mt-1">Allow Access</button>
+    <div id="ownerSection" class="hidden border-t border-[#1b1d26] pt-3 flex flex-col gap-2">
+        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Authorize Access</p>
+        <input id="authEmailInput" type="email" class="p-2 bg-[#06070a] border border-[#1b1d26] rounded-lg text-[11px] font-mono focus:border-orange-500 outline-none text-gray-300 transition" placeholder="staff@gmail.com">
+        <button onclick="window.authorizeEmail()" class="bg-blue-600/10 text-blue-400 border border-blue-500/20 text-xs font-bold py-2 rounded-lg hover:bg-blue-600 hover:text-white transition">Allow Email</button>
     </div>
 </div>
 
-<!-- Main Content Area -->
-<div class="flex-1 p-10 overflow-y-auto bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-gray-950 to-gray-950">
+<div class="flex-1 p-8 overflow-y-auto bg-gradient-to-b from-[#0d0f17] to-[#090a0f]">
     
-    <!-- Player Control Tab -->
     <div id="tab-players" class="tab-content block max-w-5xl mx-auto">
-        <h2 class="text-3xl font-black mb-8 tracking-tight text-white drop-shadow-md">Client Data <span class="text-orange-500">Verification</span></h2>
+        <h2 class="text-2xl font-black mb-6 tracking-tight text-white">Client Data <span class="text-orange-500">Verification</span></h2>
         
-        <div class="flex gap-3 mb-8 bg-gray-900/50 p-3 rounded-xl border border-gray-800 backdrop-blur-sm shadow-lg">
-            <select id="searchType" class="p-3 rounded-lg bg-gray-950 border border-gray-700 outline-none font-bold text-sm text-gray-300">
+        <div class="flex gap-2 mb-6 bg-[#0e1017] p-2 rounded-xl border border-[#1b1d26] shadow-xl">
+            <select id="searchType" class="p-2.5 rounded-lg bg-[#06070a] border border-[#1b1d26] font-bold text-xs text-gray-300 outline-none">
                 <option value="id">Player PUID</option>
-                <option value="name">Account Identity Name</option>
+                <option value="name">Account Name</option>
             </select>
-            <input type="text" id="playerId" class="flex-1 p-3 rounded-lg bg-gray-950 border border-gray-700 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 font-mono text-sm transition" placeholder="Enter search parameters...">
-            <button onclick="window.searchPlayer()" class="bg-orange-600 font-black px-8 rounded-lg hover:bg-orange-500 transition text-sm uppercase tracking-wider text-white shadow-md">Query</button>
+            <input type="text" id="playerId" class="flex-1 p-2.5 rounded-lg bg-[#06070a] border border-[#1b1d26] outline-none focus:border-orange-500 font-mono text-xs transition text-gray-200" placeholder="Enter search parameters...">
+            <button onclick="window.searchPlayer()" class="bg-orange-600 font-bold px-6 rounded-lg hover:bg-orange-500 transition text-xs uppercase tracking-wider text-white shadow-md">Query</button>
         </div>
 
-        <div id="playerStats" class="hidden bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-2xl relative">
-            <div class="absolute top-8 right-8 flex gap-2">
-                <span id="ownerBadge" class="hidden bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">OWNER</span>
-                <span id="adminBadge" class="hidden bg-purple-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">ADMIN</span>
-                <span id="banBadge" class="hidden bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">BANNED</span>
-                <span id="pinnedBadge" class="hidden bg-blue-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">PINNED</span>
+        <div id="playerStats" class="hidden bg-[#0e1017] p-6 rounded-xl border border-[#1b1d26] shadow-2xl relative">
+            <div class="absolute top-6 right-6 flex gap-1.5">
+                <span id="ownerBadge" class="hidden bg-orange-600 text-white text-[9px] font-black px-2 py-0.5 rounded">OWNER</span>
+                <span id="adminBadge" class="hidden bg-purple-600 text-white text-[9px] font-black px-2 py-0.5 rounded">ADMIN</span>
+                <span id="banBadge" class="hidden bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded">BANNED</span>
+                <span id="pinnedBadge" class="hidden bg-blue-500 text-white text-[9px] font-black px-2 py-0.5 rounded">PINNED</span>
             </div>
 
-            <h3 class="text-4xl font-black text-white mb-1" id="displayName">Player</h3>
-            <p id="displayNicknameLine" class="text-orange-400 text-sm font-bold mb-2 hidden">
+            <h3 class="text-2xl font-black text-white" id="displayName">Player</h3>
+            <p id="displayNicknameLine" class="text-orange-400 text-xs font-bold mt-1 hidden">
                 Custom Nickname: <span id="displayNickname" class="text-orange-300"></span>
             </p>
-            <p class="text-gray-500 font-mono text-xs mb-6 bg-gray-950 inline-block px-3 py-1 rounded-md border border-gray-800">PUID: <span id="displayId" class="text-gray-300 font-bold"></span></p>
+            <p class="text-gray-500 font-mono text-[10px] mt-1.5 bg-[#06070a] inline-block px-2 py-0.5 rounded border border-[#1b1d26]">PUID: <span id="displayId" class="text-gray-300 font-bold"></span></p>
 
-            <div class="mb-8 bg-gray-950 p-4 rounded-xl border border-gray-800 text-xs font-mono text-gray-400 grid grid-cols-2 gap-4">
-                <div>First Authenticated: <span id="displayFirstJoined" class="text-white font-bold ml-2"></span></div>
-                <div>Last Dynamic Check: <span id="displayLastSeen" class="text-white font-bold ml-2"></span></div>
+            <div class="mt-4 bg-[#06070a] p-3 rounded-lg border border-[#1b1d26] text-[11px] font-mono text-gray-400 grid grid-cols-2 gap-2">
+                <div>First Authenticated: <span id="displayFirstJoined" class="text-gray-200 font-bold ml-1"></span></div>
+                <div>Last Dynamic Check: <span id="displayLastSeen" class="text-gray-200 font-bold ml-1"></span></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Economy -->
-                <div class="bg-gray-950 p-5 rounded-xl border border-gray-800 flex flex-col justify-between shadow-inner">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+                <div class="bg-[#06070a] p-4 rounded-lg border border-[#1b1d26] flex flex-col justify-between">
                     <div>
-                        <h4 class="font-bold text-gray-500 mb-2 uppercase text-[10px] tracking-wider flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-yellow-500"></div> Pebbles Transaction</h4>
-                        <p class="text-4xl font-black text-yellow-400 mb-4" id="pebbleCount">0</p>
-                        <input type="number" id="pebbleAmount" class="w-full p-2.5 bg-gray-900 border border-gray-700 rounded-lg text-center font-bold focus:border-yellow-500 outline-none mb-3 text-sm transition" value="100">
+                        <h4 class="font-bold text-gray-500 text-[9px] uppercase tracking-wider flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> Pebbles Balance</h4>
+                        <p class="text-3xl font-black text-yellow-400 mt-2 mb-3" id="pebbleCount">0</p>
+                        <input type="number" id="pebbleAmount" class="w-full p-2 bg-[#0e1017] border border-[#1b1d26] rounded-lg text-center font-bold focus:border-yellow-500 outline-none text-xs transition text-white" value="100">
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <div class="flex gap-2">
-                            <button onclick="window.modifyPebbles(true)" class="bg-green-600/20 text-green-400 border border-green-500/30 w-full py-2 rounded-lg hover:bg-green-600 hover:text-white font-bold text-xs transition">Add</button>
-                            <button onclick="window.modifyPebbles(false)" class="bg-red-600/20 text-red-400 border border-red-500/30 w-full py-2 rounded-lg hover:bg-red-600 hover:text-white font-bold text-xs transition">Deduct</button>
+                    <div class="flex flex-col gap-1.5 mt-3">
+                        <div class="flex gap-1.5">
+                            <button onclick="window.modifyPebbles(true)" class="bg-green-600/10 text-green-400 border border-green-500/20 w-full py-1.5 rounded-lg hover:bg-green-600 hover:text-white font-bold text-[11px] transition">Add</button>
+                            <button onclick="window.modifyPebbles(false)" class="bg-red-600/10 text-red-400 border border-red-500/20 w-full py-1.5 rounded-lg hover:bg-red-600 hover:text-white font-bold text-[11px] transition">Deduct</button>
                         </div>
-                        <button onclick="window.setPebbles()" class="bg-gray-800 border border-gray-700 w-full py-2 rounded-lg hover:bg-gray-700 text-xs font-bold transition text-white">Set Exact Balance</button>
+                        <button onclick="window.setPebbles()" class="bg-[#131622] border border-[#1b1d26] w-full py-1.5 rounded-lg hover:bg-[#1c2032] text-[11px] font-bold transition text-white">Set Exact</button>
                     </div>
                 </div>
 
-                <!-- Customization -->
-                <div class="bg-gray-950 p-5 rounded-xl border border-gray-800 flex flex-col justify-between shadow-inner">
+                <div class="bg-[#06070a] p-4 rounded-lg border border-[#1b1d26] flex flex-col justify-between">
                     <div>
-                        <h4 class="font-bold text-gray-500 mb-3 uppercase text-[10px] tracking-wider">Identity Customization</h4>
-                        <input type="text" id="newName" class="w-full p-2.5 bg-gray-900 border border-gray-700 rounded-lg font-mono text-xs mb-2 outline-none focus:border-orange-500 transition" placeholder="New structural name...">
-                        <button onclick="window.changeName()" class="bg-orange-600 font-bold py-2 w-full rounded-lg hover:bg-orange-500 text-xs transition mb-5 text-white">Apply Nickname</button>
+                        <h4 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider">Identity Settings</h4>
+                        <input type="text" id="newName" class="w-full p-2 mt-2 bg-[#0e1017] border border-[#1b1d26] rounded-lg font-mono text-xs outline-none focus:border-orange-500 text-white transition" placeholder="New structural name...">
+                        <button onclick="window.changeName()" class="bg-orange-600 font-bold py-1.5 mt-1.5 w-full rounded-lg hover:bg-orange-500 text-[11px] transition text-white">Set Nickname</button>
                         
-                        <h4 class="font-bold text-gray-500 mb-3 uppercase text-[10px] tracking-wider">Player Tags</h4>
-                        <div class="flex gap-2 mb-3">
-                            <input type="text" id="newTagInput" class="w-full p-2.5 bg-gray-900 border border-gray-700 rounded-lg font-mono text-xs outline-none focus:border-blue-500 transition" placeholder="e.g. VIP">
-                            <button onclick="window.addPlayerTag()" class="bg-blue-600 px-4 font-bold rounded-lg hover:bg-blue-500 text-lg transition text-white">+</button>
+                        <h4 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider mt-4">Tags</h4>
+                        <div class="flex gap-1.5 mt-2">
+                            <input type="text" id="newTagInput" class="w-full p-2 bg-[#0e1017] border border-[#1b1d26] rounded-lg font-mono text-xs outline-none focus:border-blue-500 text-white transition" placeholder="e.g. VIP">
+                            <button onclick="window.addPlayerTag()" class="bg-blue-600 px-3 font-bold rounded-lg hover:bg-blue-500 transition text-white text-sm">+</button>
                         </div>
-                        <div id="playerTagsContainer" class="flex flex-wrap gap-1.5 mt-2"></div>
+                        <div id="playerTagsContainer" class="flex flex-wrap gap-1 mt-2"></div>
                     </div>
                 </div>
 
-                <!-- Enforcement -->
-                <div class="bg-gray-950 p-5 rounded-xl border border-gray-800 flex flex-col justify-between shadow-inner">
+                <div class="bg-[#06070a] p-4 rounded-lg border border-[#1b1d26] flex flex-col justify-between">
                     <div>
-                        <h4 class="font-bold text-gray-500 mb-3 uppercase text-[10px] tracking-wider">Network Enforcement</h4>
-                        <div class="flex flex-col gap-2.5">
-                            <button onclick="window.togglePin()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 font-bold py-2 rounded-lg hover:bg-blue-600 hover:text-white text-xs transition">Toggle Pin State</button>
-                            <button onclick="window.kickPlayer()" class="bg-yellow-600/20 text-yellow-400 border border-yellow-500/30 font-bold py-2 rounded-lg hover:bg-yellow-600 hover:text-gray-950 text-xs transition">Kick Network Client</button>
-                            <button id="ownerBtn" onclick="window.toggleOwner()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 font-bold py-2 rounded-lg hover:bg-orange-600 hover:text-white text-xs transition">Alter Owner Token</button>
-                            <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-purple-600/20 text-purple-400 border border-purple-500/30 font-bold py-2 rounded-lg hover:bg-purple-600 hover:text-white text-xs transition">Alter Admin Token</button>
-                            <button id="banBtn" onclick="window.toggleBan()" class="bg-red-600/20 text-red-400 border border-red-500/30 font-bold py-2 rounded-lg hover:bg-red-600 hover:text-white text-xs transition">Alter Ban Token</button>
-                            <button id="ownerDeleteBtn" onclick="window.deletePlayerAccount()" class="hidden bg-red-700 font-bold py-2 rounded-lg hover:bg-red-600 text-xs transition text-white mt-2">DELETE ACCOUNT</button>
+                        <h4 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider">Moderation Controls</h4>
+                        <div class="flex flex-col gap-1.5 mt-2">
+                            <button onclick="window.togglePin()" class="bg-blue-600/10 text-blue-400 border border-blue-500/20 font-bold py-1.5 rounded-lg hover:bg-blue-600 hover:text-white text-[11px] transition">Toggle Pin</button>
+                            <button onclick="window.kickPlayer()" class="bg-yellow-600/10 text-yellow-400 border border-yellow-500/20 font-bold py-1.5 rounded-lg hover:bg-yellow-600 hover:text-black text-[11px] transition">Kick Connection</button>
+                            <button id="ownerBtn" onclick="window.toggleOwner()" class="bg-orange-600/10 text-orange-400 border border-orange-500/20 font-bold py-1.5 rounded-lg hover:bg-orange-600 hover:text-white text-[11px] transition">Alter Owner</button>
+                            <button id="adminBtn" onclick="window.toggleAdmin()" class="bg-purple-600/10 text-purple-400 border border-purple-500/20 font-bold py-1.5 rounded-lg hover:bg-purple-600 hover:text-white text-[11px] transition">Alter Admin</button>
+                            <button id="banBtn" onclick="window.toggleBan()" class="bg-red-600/10 text-red-400 border border-red-500/20 font-bold py-1.5 rounded-lg hover:bg-red-600 hover:text-white text-[11px] transition">Alter Ban</button>
+                            <button id="ownerDeleteBtn" onclick="window.deletePlayerAccount()" class="hidden bg-red-700 font-bold py-1.5 rounded-lg hover:bg-red-600 text-[11px] transition text-white mt-1">DELETE PROFILE</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Inventory & Data -->
-                <div class="bg-gray-950 p-5 rounded-xl border border-gray-800 col-span-1 md:col-span-3 shadow-inner">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Internal Data -->
+                <div class="bg-[#06070a] p-4 rounded-lg border border-[#1b1d26] col-span-1 md:col-span-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <div class="flex justify-between items-center mb-3">
-                                <h4 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Internal Data</h4>
-                                <button onclick="window.setInternalData()" class="text-blue-400 text-xs font-bold hover:text-blue-300 transition">+ Add Key</button>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider">Internal Config Storage</h4>
+                                <button onclick="window.setInternalData()" class="text-blue-400 text-[11px] font-bold hover:text-blue-300 transition">+ Add Storage Key</button>
                             </div>
-                            <div id="internalDataContainer" class="flex flex-col gap-2 mb-4 h-32 overflow-y-auto bg-gray-900 p-3 rounded-lg border border-gray-700 font-mono text-xs"></div>
+                            <div id="internalDataContainer" class="flex flex-col gap-1.5 h-28 overflow-y-auto bg-[#0e1017] p-2.5 rounded-lg border border-[#1b1d26] font-mono text-[11px]"></div>
                         </div>
 
-                        <!-- Cosmetics -->
                         <div>
-                            <div class="flex justify-between items-center mb-3">
-                                <h4 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Asset Inventory</h4>
-                                <button onclick="window.wipeCosmetics()" class="text-red-400 text-xs font-bold hover:text-red-300 transition">Flush Inventory</button>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider">Asset Inventory</h4>
+                                <button onclick="window.wipeCosmetics()" class="text-red-400 text-[11px] font-bold hover:text-red-300 transition">Wipe Profile Unlocks</button>
                             </div>
-                            <div class="flex items-center justify-between mb-3 text-xs text-gray-400 font-mono bg-gray-900 p-2 rounded border border-gray-800">
+                            <div class="flex items-center justify-between mb-2 text-[11px] text-gray-400 font-mono bg-[#0e1017] p-1.5 rounded border border-[#1b1d26]">
                                 <p id="cosmeticsOwnedCount" class="font-bold">Owned: 0</p>
                                 <div id="cosmeticsOwnedTags" class="flex flex-wrap gap-1"></div>
                             </div>
-                            <ul id="cosmeticList" class="text-xs font-mono text-gray-300 mb-3 list-none h-24 overflow-y-auto bg-gray-900 p-2 rounded-lg border border-gray-700 flex flex-col gap-1.5"></ul>
-                            <div class="flex gap-2">
-                                <select id="cosmeticId" class="flex-1 p-2 bg-gray-900 border border-gray-700 rounded-lg font-mono text-xs outline-none focus:border-blue-500 transition">
+                            <ul id="cosmeticList" class="text-[11px] font-mono text-gray-300 mb-2 list-none h-20 overflow-y-auto bg-[#0e1017] p-2 rounded-lg border border-[#1b1d26] flex flex-col gap-1"></ul>
+                            <div class="flex gap-1.5">
+                                <select id="cosmeticId" class="flex-1 p-2 bg-[#0e1017] border border-[#1b1d26] rounded-lg font-mono text-xs outline-none focus:border-blue-500 text-white transition">
                                     <option value="" disabled selected>Select from cloud...</option>
                                 </select>
-                                <button onclick="window.manageCosmetic(true)" class="bg-blue-600 text-white font-bold px-4 rounded-lg hover:bg-blue-500 text-xs transition">Grant</button>
-                                <button onclick="window.manageCosmetic(false)" class="bg-red-950/50 text-red-400 border border-red-900/40 font-bold px-4 rounded-lg hover:bg-red-900 transition text-xs">Remove</button>
+                                <button onclick="window.manageCosmetic(true)" class="bg-blue-600 text-white font-bold px-3 rounded-lg hover:bg-blue-500 text-xs transition">Grant</button>
+                                <button onclick="window.manageCosmetic(false)" class="bg-red-950/40 text-red-400 border border-red-900/30 font-bold px-3 rounded-lg hover:bg-red-900 transition text-xs">Strip</button>
                             </div>
                         </div>
                     </div>
@@ -172,155 +160,139 @@
         </div>
     </div>
 
-    <!-- Database Tab -->
     <div id="tab-allplayers" class="tab-content hidden max-w-5xl mx-auto">
-        <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">Global <span class="text-orange-500">Player Array</span></h2>
-        <div class="flex gap-3 mb-6 bg-gray-900/50 p-3 rounded-xl border border-gray-800 backdrop-blur-sm">
-            <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-3 bg-gray-950 border border-gray-700 rounded-lg text-sm font-mono focus:border-orange-500 outline-none transition" placeholder="Quick filter by name, tag, or PUID...">
-            <button onclick="window.clearQuickFilter()" class="bg-gray-800 text-sm px-6 rounded-lg hover:bg-gray-700 font-bold text-white transition">Clear</button>
-            <button onclick="window.grantPebblesToAll()" class="bg-yellow-600 text-gray-900 text-sm px-6 rounded-lg hover:bg-yellow-500 font-black transition shadow-md">Mass Reward PB</button>
+        <h2 class="text-2xl font-black mb-5 text-white">Global <span class="text-orange-500">Player Base Array</span></h2>
+        <div class="flex gap-2 mb-5 bg-[#0e1017] p-2 rounded-xl border border-[#1b1d26]">
+            <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" placeholder="Filter parameters by string names, special permissions or structural IDs...">
+            <button onclick="window.clearQuickFilter()" class="bg-[#131622] text-xs px-4 rounded-lg hover:bg-[#1c2032] font-bold text-white transition">Clear</button>
+            <button onclick="window.grantPebblesToAll()" class="bg-yellow-600 text-black text-xs px-4 rounded-lg hover:bg-yellow-500 font-black transition">Mass Reward PB</button>
         </div>
-        <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-            <ul id="allList" class="divide-y divide-gray-800/50 font-mono text-sm max-h-[650px] overflow-y-auto pr-3">
-                <li class="py-4 text-gray-500 italic text-center">Scanning remote master branch...</li>
+        <div class="bg-[#0e1017] p-4 rounded-xl border border-[#1b1d26] shadow-xl">
+            <ul id="allList" class="divide-y divide-[#1b1d26]/40 font-mono text-xs max-h-[550px] overflow-y-auto pr-2">
+                <li class="py-4 text-gray-500 italic text-center">Scanning remote database array...</li>
             </ul>
         </div>
     </div>
 
-    <!-- Cosmetics Registry Tab -->
     <div id="tab-cosmetics" class="tab-content hidden max-w-5xl mx-auto">
-        <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">Global <span class="text-orange-500">Cosmetics Registry</span></h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-                <h3 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-5">Create New Asset</h3>
-                <input id="newCosId" type="number" class="w-full p-3 mb-4 bg-gray-950 border border-gray-700 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition" placeholder="Item ID (e.g. 101)">
-                <input id="newCosName" type="text" class="w-full p-3 mb-4 bg-gray-950 border border-gray-700 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition" placeholder="Item Name (e.g. TopHat)">
-                <select id="newCosSlot" class="w-full p-3 mb-4 bg-gray-950 border border-gray-700 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition text-gray-300">
+        <h2 class="text-2xl font-black mb-5 text-white">Global <span class="text-orange-500">Cosmetics Catalog</span></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="bg-[#0e1017] p-5 rounded-xl border border-[#1b1d26] shadow-xl">
+                <h3 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider mb-4">Register Asset Payload</h3>
+                <input id="newCosId" type="number" class="w-full p-2.5 mb-3 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" placeholder="Item Custom ID Key">
+                <input id="newCosName" type="text" class="w-full p-2.5 mb-3 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" placeholder="Asset Layout Name String">
+                <select id="newCosSlot" class="w-full p-2.5 mb-3 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition text-gray-300">
                     <option value="HeadCos">HeadCos</option>
                     <option value="FaceCos">FaceCos</option>
                     <option value="BodyCos">BodyCos</option>
                     <option value="LeftCos">LeftCos</option>
                     <option value="RightCos">RightCos</option>
                 </select>
-                <input id="newCosPrice" type="number" class="w-full p-3 mb-5 bg-gray-950 border border-gray-700 rounded-lg text-xs font-mono focus:border-orange-500 outline-none transition" placeholder="Price (Pebbles)">
-                <div class="flex flex-col gap-2">
-                    <button onclick="window.createCosmetic()" class="bg-orange-600 font-bold py-3 w-full rounded-lg hover:bg-orange-500 text-xs transition text-white shadow-md">Commit Cosmetic to Cloud</button>
-                    <button id="updateCosmeticBtn" onclick="window.updateCosmetic()" class="bg-yellow-600 text-gray-900 font-black py-3 w-full rounded-lg hover:bg-yellow-500 text-xs transition hidden shadow-md">Update Asset</button>
-                    <button id="cancelEditCosmeticBtn" onclick="window.cancelCosmeticEdit()" class="bg-gray-800 text-gray-300 py-3 w-full rounded-lg hover:bg-gray-700 text-xs font-bold transition hidden">Cancel Edit</button>
+                <input id="newCosPrice" type="number" class="w-full p-2.5 mb-4 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" placeholder="Price Matrix Value">
+                <div class="flex flex-col gap-1.5">
+                    <button onclick="window.createCosmetic()" class="bg-orange-600 font-bold py-2.5 w-full rounded-lg hover:bg-orange-500 text-xs transition text-white">Write Item Structure</button>
+                    <button id="updateCosmeticBtn" onclick="window.updateCosmetic()" class="bg-yellow-600 text-black font-black py-2.5 w-full rounded-lg hover:bg-yellow-500 text-xs transition hidden">Modify Item Structure</button>
+                    <button id="cancelEditCosmeticBtn" onclick="window.cancelCosmeticEdit()" class="bg-[#131622] text-gray-400 py-2.5 w-full rounded-lg hover:bg-[#1c2032] text-xs font-bold transition hidden">Abort Data Edit</button>
                 </div>
             </div>
-            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col">
-                <h3 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-5">Registered Cloud Assets</h3>
-                <ul id="globalCosmeticList" class="divide-y divide-gray-800/50 font-mono text-sm flex-1 overflow-y-auto pr-2 bg-gray-950 p-4 rounded-xl border border-gray-800">
-                    <li class="py-4 text-gray-500 italic text-center">Scanning remote catalog...</li>
+            <div class="bg-[#0e1017] p-5 rounded-xl border border-[#1b1d26] shadow-xl flex flex-col">
+                <h3 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider mb-4">Cloud Catalogs</h3>
+                <ul id="globalCosmeticList" class="divide-y divide-[#1b1d26]/40 font-mono text-xs flex-1 overflow-y-auto pr-1 bg-[#06070a] p-3 rounded-lg border border-[#1b1d26]">
+                    <li class="py-4 text-gray-500 italic text-center">Scanning remote cloud configurations...</li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Title Data Tab -->
-    <div id="tab-titledata" class="tab-content hidden max-w-4xl mx-auto">
-        <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">Global <span class="text-orange-500">Title Data</span></h2>
-        <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
-            <h3 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-6">Server Configurations</h3>
-            <div class="mb-5">
-                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Message of the Day (MOTD)</label>
-                <input id="titleMotd" type="text" class="w-full p-3.5 bg-gray-950 border border-gray-700 rounded-lg text-sm font-mono focus:border-orange-500 outline-none transition" placeholder="Welcome!">
+    <div id="tab-titledata" class="tab-content hidden max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black mb-5 text-white">Global <span class="text-orange-500">Configurations</span></h2>
+        <div class="bg-[#0e1017] p-6 rounded-xl border border-[#1b1d26] shadow-xl">
+            <h3 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider mb-4">Core Environmental Values</h3>
+            <div class="mb-4">
+                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1.5">Network Broadcast Header (MOTD)</label>
+                <input id="titleMotd" type="text" class="w-full p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" placeholder="Data payload text string...">
             </div>
-            <div class="grid grid-cols-2 gap-5 mb-5">
+            <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Pebble Multiplier</label>
-                    <input id="titleMultiplier" type="number" step="0.1" class="w-full p-3.5 bg-gray-950 border border-gray-700 rounded-lg text-sm font-mono focus:border-orange-500 outline-none transition" value="1.0">
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1.5">Economy Multiplier Float</label>
+                    <input id="titleMultiplier" type="number" step="0.1" class="w-full p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" value="1.0">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Required Client Version</label>
-                    <input id="titleVersion" type="text" class="w-full p-3.5 bg-gray-950 border border-gray-700 rounded-lg text-sm font-mono focus:border-orange-500 outline-none transition" value="1.0.0">
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-1.5">Required Application Build</label>
+                    <input id="titleVersion" type="text" class="w-full p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" value="1.0.0">
                 </div>
             </div>
-            <div class="mb-8 flex items-center gap-3 bg-gray-950 p-4 rounded-xl border border-gray-800">
-                <input id="titleMaintenance" type="checkbox" class="w-5 h-5 accent-orange-500 bg-gray-900 border-gray-700 rounded cursor-pointer">
-                <label for="titleMaintenance" class="text-xs font-bold text-red-400 uppercase cursor-pointer">Enable Server Maintenance Mode</label>
-            </div>
-            <button onclick="window.saveTitleData()" class="bg-orange-600 text-white font-black py-4 px-8 rounded-xl hover:bg-orange-500 text-sm transition shadow-lg w-full">Commit Settings to Cloud</button>
+            <button onclick="window.saveTitleData()" class="bg-orange-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-500 text-xs transition shadow-md w-full">Deploy System Configs</button>
         </div>
     </div>
 
-    <!-- News Tab -->
-    <div id="tab-news" class="tab-content hidden max-w-4xl mx-auto">
-        <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">Title <span class="text-orange-500">News</span></h2>
-        <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
-            <h3 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-6">Publish Global Broadcast</h3>
-            <input id="newsTitle" type="text" class="w-full p-3.5 bg-gray-950 border border-gray-700 rounded-lg text-sm font-bold focus:border-orange-500 outline-none mb-4 transition" placeholder="Headline...">
-            <textarea id="newsBody" class="w-full p-3.5 bg-gray-950 border border-gray-700 rounded-xl text-sm font-mono focus:border-orange-500 outline-none mb-6 h-40 transition resize-none" placeholder="Write article content here..."></textarea>
-            <button onclick="window.publishNews()" class="bg-blue-600 text-white font-black py-4 px-8 rounded-xl hover:bg-blue-500 text-sm transition shadow-lg w-full">Broadcast to All Clients</button>
+    <div id="tab-news" class="tab-content hidden max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black mb-5 text-white">Title <span class="text-orange-500">News</span></h2>
+        <div class="bg-[#0e1017] p-6 rounded-xl border border-[#1b1d26] shadow-xl">
+            <h3 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider mb-4">Broadcast Global Article</h3>
+            <input id="newsTitle" type="text" class="w-full p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-bold focus:border-orange-500 outline-none mb-3 text-white transition" placeholder="Headline Structure...">
+            <textarea id="newsBody" class="w-full p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none mb-4 h-32 transition resize-none text-white" placeholder="Core payload text bodies..."></textarea>
+            <button onclick="window.publishNews()" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500 text-xs transition w-full">Commit News Data</button>
         </div>
     </div>
 
-    <!-- Leaderboards Tab -->
-    <div id="tab-leaderboards" class="tab-content hidden max-w-4xl mx-auto">
-        <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">Economy <span class="text-orange-500">Leaderboards</span></h2>
-        <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider">Top Pebble Holders</h3>
-                <button onclick="window.refreshLeaderboard()" class="text-blue-400 hover:text-blue-300 text-xs font-bold transition flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Refresh
-                </button>
+    <div id="tab-leaderboards" class="tab-content hidden max-w-3xl mx-auto">
+        <h2 class="text-2xl font-black mb-5 text-white">Economy <span class="text-orange-500">Leaderboards</span></h2>
+        <div class="bg-[#0e1017] p-6 rounded-xl border border-[#1b1d26] shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider">Top Wealth Metrics</h3>
+                <button onclick="window.refreshLeaderboard()" class="text-blue-400 hover:text-blue-300 text-xs font-bold transition flex items-center gap-1">Refresh</button>
             </div>
-            <ul id="leaderboardList" class="divide-y divide-gray-800/50 font-mono text-sm max-h-[600px] overflow-y-auto pr-3 bg-gray-950 p-4 rounded-xl border border-gray-800">
-                <li class="py-6 text-gray-500 italic text-center">Fetching economic data...</li>
+            <ul id="leaderboardList" class="divide-y divide-[#1b1d26]/40 font-mono text-xs max-h-[500px] overflow-y-auto pr-2 bg-[#06070a] p-3 rounded-lg border border-[#1b1d26]">
+                <li class="py-6 text-gray-500 italic text-center">Reading financial balances...</li>
             </ul>
         </div>
     </div>
 
-    <!-- Analytics Tab -->
     <div id="tab-analytics" class="tab-content hidden max-w-5xl mx-auto">
-        <h2 class="text-3xl font-black mb-6 text-white drop-shadow-md">Live <span class="text-orange-500">Traffic Statistics</span></h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center shadow-lg hover:border-orange-500/50 transition">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Discovered Profiles</h3>
-                <p id="totalPlayers" class="text-4xl font-black text-orange-500">0</p>
+        <h2 class="text-2xl font-black mb-5 text-white">Live <span class="text-orange-500">Traffic Data</span></h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+            <div class="bg-[#0e1017] border border-[#1b1d26] p-4 rounded-xl text-center">
+                <h3 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Stored Profiles</h3>
+                <p id="totalPlayers" class="text-2xl font-black text-orange-500">0</p>
             </div>
-            <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center shadow-lg hover:border-yellow-500/50 transition">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Circulating Currency</h3>
-                <p id="totalPebbles" class="text-4xl font-black text-yellow-400">0</p>
+            <div class="bg-[#0e1017] border border-[#1b1d26] p-4 rounded-xl text-center">
+                <h3 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Circulating Currency</h3>
+                <p id="totalPebbles" class="text-2xl font-black text-yellow-400">0</p>
             </div>
-            <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center shadow-lg hover:border-red-500/50 transition">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Active Blacklists</h3>
-                <p id="totalBanned" class="text-4xl font-black text-red-500">0</p>
+            <div class="bg-[#0e1017] border border-[#1b1d26] p-4 rounded-xl text-center">
+                <h3 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Blacklisted Nodes</h3>
+                <p id="totalBanned" class="text-2xl font-black text-red-500">0</p>
             </div>
-            <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl text-center shadow-lg hover:border-purple-500/50 transition">
-                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Elevated Credentials</h3>
-                <p id="totalAdmins" class="text-4xl font-black text-purple-500">0</p>
-            </div>
-        </div>
-
-        <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl shadow-xl mb-6">
-            <h3 class="font-bold text-gray-500 uppercase text-[10px] tracking-wider mb-5">Global Broadcast System</h3>
-            <div class="flex gap-3">
-                <input id="broadcastInput" type="text" class="flex-1 p-3.5 bg-gray-950 border border-gray-700 rounded-xl text-sm font-mono focus:border-orange-500 outline-none transition" placeholder="Enter override message to send to all active clients...">
-                <button onclick="window.sendGlobalBroadcast()" class="bg-red-600 text-white font-black px-8 rounded-xl hover:bg-red-500 transition text-sm uppercase tracking-wider shadow-md">Execute</button>
+            <div class="bg-[#0e1017] border border-[#1b1d26] p-4 rounded-xl text-center">
+                <h3 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Privileged Access Tokens</h3>
+                <p id="totalAdmins" class="text-2xl font-black text-purple-500">0</p>
             </div>
         </div>
 
-        <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl shadow-xl">
-            <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">System Events</h3>
-            <div id="systemLog" class="h-48 bg-gray-950 rounded-xl p-4 font-mono text-xs text-green-400/90 overflow-y-auto border border-gray-800/50 shadow-inner">
-                <div>> System status initialized ready :D</div>
+        <div class="bg-[#0e1017] border border-[#1b1d26] p-5 rounded-xl shadow-xl mb-5">
+            <h3 class="font-bold text-gray-500 uppercase text-[9px] tracking-wider mb-3">Intercept Drop Channel</h3>
+            <div class="flex gap-2">
+                <input id="broadcastInput" type="text" class="flex-1 p-2.5 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-white transition" placeholder="Inject real-time string messages across active client systems...">
+                <button onclick="window.sendGlobalBroadcast()" class="bg-red-600 text-white font-bold px-5 rounded-lg hover:bg-red-500 text-xs uppercase tracking-wider transition">Inject</button>
+            </div>
+        </div>
+
+        <div class="bg-[#0e1017] border border-[#1b1d26] p-4 rounded-xl">
+            <h3 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-2">Process Logs</h3>
+            <div id="systemLog" class="h-40 bg-[#06070a] rounded-lg p-3 font-mono text-[11px] text-green-400/90 overflow-y-auto border border-[#1b1d26]/60 shadow-inner">
+                <div>> Engine interface ready :D</div>
             </div>
         </div>
     </div>
 
 </div>
 
-<!-- Login Overlay -->
-<div id="loginOverlay" class="fixed inset-0 bg-gray-950/90 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity">
-    <div class="bg-gray-900 p-10 rounded-2xl border border-gray-800 w-[400px] shadow-2xl flex flex-col gap-6 transform scale-100 transition-transform">
-        <h2 class="text-2xl font-black text-white text-center tracking-wide">System <span class="text-orange-500">Auth</span></h2>
-        <div class="flex flex-col gap-2">
-            <input id="loginPassword" type="password" class="p-3.5 bg-gray-950 border border-gray-700 rounded-xl text-sm font-mono focus:border-orange-500 outline-none transition text-center" placeholder="Master Password">
-        </div>
-        <button onclick="window.tryLogin()" class="bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-500 transition text-sm uppercase tracking-wider shadow-lg mt-2">Authenticate</button>
+<div id="loginOverlay" class="fixed inset-0 bg-[#06070a]/95 backdrop-blur-md flex items-center justify-center z-50">
+    <div class="bg-[#0e1017] p-8 rounded-xl border border-[#1b1d26] w-[360px] shadow-2xl flex flex-col gap-4">
+        <h2 class="text-xl font-black text-white text-center tracking-wide">SYSTEM <span class="text-orange-500">AUTH</span></h2>
+        <input id="loginPassword" type="password" class="p-3 bg-[#06070a] border border-[#1b1d26] rounded-lg text-xs font-mono focus:border-orange-500 outline-none text-center text-white" placeholder="Master Core Entry Signature">
+        <button onclick="window.tryLogin()" class="bg-orange-600 text-white font-bold py-2.5 rounded-lg hover:bg-orange-500 text-xs uppercase tracking-wider transition mt-1">Verify Credentials</button>
     </div>
 </div>
 
@@ -357,7 +329,7 @@ window.tryLogin = async function() {
         window.currentUserEmail = 'schatziheiko1984@gmail.com';
         document.getElementById('loginOverlay').classList.add('hidden');
         window.setupSecurityUI();
-        window.logEvent("Authenticated with master password system :D");
+        window.logEvent("Access token accepted :D");
         window.loadAllPlayers();
     } else {
         alert('access denied >:(');
@@ -392,17 +364,17 @@ window.authorizeEmail = async function() {
     if(!em) return;
     let res = await apiCall({ action: 'add_allowed_email', email: em });
     if(res) {
-        alert('email successfully allowed :D');
+        alert('email approved :D');
         document.getElementById('authEmailInput').value = '';
     }
 }
 
 window.deletePlayerAccount = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("no player loaded :3"); return; }
-    if(confirm("delete this profile entirely from database? >:D")) {
+    if(!id) { alert("no profile selected :3"); return; }
+    if(confirm("wipe profile from network? >:D")) {
         await apiCall({ action: 'delete_player', id: id });
-        alert('account removed :D');
+        alert('account dropped :D');
         document.getElementById('playerStats').classList.add('hidden');
         await window.loadAllPlayers();
     }
@@ -411,10 +383,10 @@ window.deletePlayerAccount = async function() {
 window.createNewPlayer = async function() {
     let id = document.getElementById('newPlayerId').value.trim();
     let name = document.getElementById('newPlayerName').value.trim();
-    if(!id) { alert('PUID block is required :3'); return; }
+    if(!id) { alert('PUID needed :3'); return; }
     let check = await apiCall({ action: 'get_player', type: 'id', query: id });
     if (check && check.found) {
-        alert("player account already exists in database registry! linking aborted >:D");
+        alert("profile exists already >:D");
         return;
     }
     if(!name) { name = "Chimp"; }
@@ -422,7 +394,7 @@ window.createNewPlayer = async function() {
     if(res && res.ok) {
         document.getElementById('newPlayerId').value = '';
         document.getElementById('newPlayerName').value = '';
-        window.logEvent("Committed brand new player profile: " + name + " -> " + id + " :3");
+        window.logEvent("Created profile: " + name + " -> " + id + " :3");
         await window.loadAllPlayers();
     }
 }
@@ -432,7 +404,7 @@ window.switchTab = function(tabName) {
     document.getElementById('tab-' + tabName).classList.remove('hidden');
     ['players','allplayers','cosmetics','titledata','news','leaderboards','analytics'].forEach(t => {
         let btn = document.getElementById('btn-' + t);
-        if(btn) btn.className = 'text-left p-3 rounded-lg font-bold transition text-sm ' + (t === tabName ? 'bg-orange-600 hover:bg-orange-500 shadow-md text-white' : 'bg-gray-800 hover:bg-orange-600 text-gray-300');
+        if(btn) btn.className = 'text-left p-2.5 rounded-lg font-bold transition text-xs ' + (t === tabName ? 'bg-orange-600 text-white' : 'bg-[#131622] text-gray-400 hover:bg-orange-600 hover:text-white');
     });
     if(tabName === 'leaderboards') window.refreshLeaderboard();
 }
@@ -450,7 +422,7 @@ window.searchPlayer = async function() {
     if (!input) return;
     let res = await apiCall({ action: 'get_player', type, query: input });
     if (res && res.found) window.renderPlayer(res.data);
-    else { alert('Zero indexed matches :('); document.getElementById('playerStats').classList.add('hidden'); }
+    else { alert('not found :('); document.getElementById('playerStats').classList.add('hidden'); }
 }
 
 window.renderPlayer = function(p) {
@@ -469,9 +441,9 @@ window.renderPlayer = function(p) {
     document.getElementById('ownerBadge').classList.toggle('hidden', !p.isOwner);
     document.getElementById('ownerBtn').innerText = p.isOwner ? 'Revoke Owner Status' : 'Grant Owner Status';
     document.getElementById('adminBadge').classList.toggle('hidden', !p.isAdmin);
-    document.getElementById('adminBtn').innerText = p.isAdmin ? 'Revoke Access Status' : 'Grant Staff Access';
+    document.getElementById('adminBtn').innerText = p.isAdmin ? 'Revoke Admin' : 'Grant Admin';
     document.getElementById('banBadge').classList.toggle('hidden', !p.isBanned);
-    document.getElementById('banBtn').innerText = p.isBanned ? 'Lift Blacklist Token' : 'Deploy Blacklist Token';
+    document.getElementById('banBtn').innerText = p.isBanned ? 'Lift Ban' : 'Deploy Ban';
     
     let pinnedList = JSON.parse(localStorage.getItem('cvr_pinned_players') || '[]');
     let isPinned = pinnedList.includes(p.id);
@@ -481,20 +453,20 @@ window.renderPlayer = function(p) {
     tagsContainer.innerHTML = '';
     if(p.tags && p.tags.length > 0) {
         p.tags.forEach(tag => {
-            tagsContainer.innerHTML += `<span class="bg-gray-800 border border-gray-700 text-gray-300 text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-red-400 hover:text-red-300 ml-1">x</button></span>`;
+            tagsContainer.innerHTML += `<span class="bg-[#131622] border border-[#1b1d26] text-gray-300 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-red-400 hover:text-red-300 ml-1">x</button></span>`;
         });
     } else {
-        tagsContainer.innerHTML = '<span class="text-gray-600 text-xs italic">No tags assigned</span>';
+        tagsContainer.innerHTML = '<span class="text-gray-600 text-xs italic">No tags</span>';
     }
     
     let intDataContainer = document.getElementById('internalDataContainer');
     intDataContainer.innerHTML = '';
     if(p.internalData && Object.keys(p.internalData).length > 0) {
         for (let key in p.internalData) {
-            intDataContainer.innerHTML += `<div class="flex justify-between items-center bg-gray-800/50 p-1.5 rounded"><span class="text-gray-400">${key}:</span><span class="text-gray-200">${p.internalData[key]}</span></div>`;
+            intDataContainer.innerHTML += `<div class="flex justify-between items-center bg-[#0d0f17] p-1 rounded"><span class="text-gray-400">${key}:</span><span class="text-gray-200">${p.internalData[key]}</span></div>`;
         }
     } else {
-        intDataContainer.innerHTML = '<div class="text-gray-600 text-center mt-4 italic">No internal keys</div>';
+        intDataContainer.innerHTML = '<div class="text-gray-600 text-center mt-4 italic">Empty</div>';
     }
     
     let cosList = document.getElementById('cosmeticList');
@@ -504,16 +476,16 @@ window.renderPlayer = function(p) {
     ownedTags.innerHTML = '';
     
     if (p.cosmetics && p.cosmetics.length > 0) {
-        ownedCount.innerText = `Owned: ${p.cosmetics.length}`;
+        ownedCount.innerText = `Count: ${p.cosmetics.length}`;
         p.cosmetics.forEach(i => {
-            cosList.innerHTML += `<li class="flex justify-between items-center bg-gray-950 border border-gray-800 p-2 rounded-lg text-xs">
-            <span class="text-gray-300">${i}</span><button onclick="window.quickRevoke('${i}')" class="text-red-400 font-bold hover:text-red-300">Remove</button></li>`;
-            ownedTags.innerHTML += `<span class="px-2 py-1 rounded bg-green-700/20 border border-green-700/50 text-green-400 text-[10px] uppercase font-bold">${i}</span>`;
+            cosList.innerHTML += `<li class="flex justify-between items-center bg-[#06070a] border border-[#1b1d26] p-1.5 rounded text-xs">
+            <span class="text-gray-300">${i}</span><button onclick="window.quickRevoke('${i}')" class="text-red-400 font-bold hover:text-red-300">Strip</button></li>`;
+            ownedTags.innerHTML += `<span class="px-1.5 py-0.5 rounded bg-green-500/10 border border-green-500/20 text-green-400 text-[9px] uppercase font-bold">${i}</span>`;
         });
     } else {
-        ownedCount.innerText = 'Owned: 0';
+        ownedCount.innerText = 'Count: 0';
         ownedTags.innerHTML = '<span class="text-gray-600 text-[10px]">None</span>';
-        cosList.innerHTML = `<li class="text-gray-600 italic text-center py-6">No assets configured.</li>`;
+        cosList.innerHTML = `<li class="text-gray-600 italic text-center py-4">No assets unlocked</li>`;
     }
     window.updateCosmeticDropdown();
 }
@@ -542,32 +514,32 @@ window.updateCosmeticDropdown = function() {
 
 window.modifyPebbles = async function(isAdding) {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     let amt = parseInt(document.getElementById('pebbleAmount').value);
     if (isNaN(amt)) return;
     await apiCall({ action: 'edit_pebbles', id, amount: isAdding ? amt : -amt });
-    window.logEvent(`Pebbles modified for ${id} by ${isAdding ? '+' : '-'}${amt}`);
+    window.logEvent(`Balance shifted for ${id} by ${isAdding ? '+' : '-'}${amt}`);
     await window.refreshCurrentPlayer();
 }
 
 window.setPebbles = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     let amt = parseInt(document.getElementById('pebbleAmount').value);
     if (isNaN(amt)) return;
     await apiCall({ action: 'set_pebbles', id, amount: amt });
-    window.logEvent(`Pebbles set to ${amt} for ${id}`);
+    window.logEvent(`Balance set to ${amt} for ${id}`);
     await window.refreshCurrentPlayer();
 }
 
 window.changeName = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     let name = document.getElementById('newName').value.trim();
     if (!name) return;
     await apiCall({ action: 'set_name', id, value: name });
     document.getElementById('newName').value = '';
-    window.logEvent(`Nickname changed for ${id} to ${name}`);
+    window.logEvent(`Identity updated for ${id} to ${name}`);
     await window.refreshCurrentPlayer();
 }
 
@@ -578,7 +550,7 @@ window.addPlayerTag = async function() {
     if(!tag) return;
     await apiCall({ action: 'add_tag', id, value: tag });
     document.getElementById('newTagInput').value = '';
-    window.logEvent(`Tag [${tag}] added to ${id}`);
+    window.logEvent(`Tag [${tag}] appended to ${id}`);
     await window.refreshCurrentPlayer();
 }
 
@@ -593,24 +565,24 @@ window.removePlayerTag = async function(tag) {
 window.setInternalData = async function() {
     let id = document.getElementById('displayId').innerText.trim();
     if(!id) return;
-    let k = prompt("enter key name:");
+    let k = prompt("storage key name:");
     if(!k) return;
-    let v = prompt("enter value:");
+    let v = prompt("value string:");
     if(!v) return;
     await apiCall({ action: 'set_internal_data', id, key: k, value: v });
-    window.logEvent(`Internal data [${k}] set for ${id}`);
+    window.logEvent(`Internal data modified for ${id}`);
     await window.refreshCurrentPlayer();
 }
 
 window.kickPlayer = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
-    window.logEvent("Sending network drop intercept package to client: " + id);
+    if(!id) { alert("Load target profile :3"); return; }
+    window.logEvent("Dispatched drop signal to " + id);
     let res = await apiCall({ action: 'kick_player', id: id });
     if(!res || res.error || res.status === 404) {
         res = await apiCall({ action: 'add_cloud_command', targetId: id, command: 'kick', value: 'true' });
     }
-    alert('Kick payload dispatched :D');
+    alert('Signal dispatched :D');
 }
 
 window.togglePin = async function() {
@@ -619,10 +591,10 @@ window.togglePin = async function() {
     let pinnedList = JSON.parse(localStorage.getItem('cvr_pinned_players') || '[]');
     if(pinnedList.includes(id)) {
         pinnedList = pinnedList.filter(x => x !== id);
-        window.logEvent(`Unpinned player ${id}`);
+        window.logEvent(`Unpinned player node ${id}`);
     } else {
         pinnedList.push(id);
-        window.logEvent(`Pinned player ${id}`);
+        window.logEvent(`Pinned player node ${id}`);
     }
     localStorage.setItem('cvr_pinned_players', JSON.stringify(pinnedList));
     await apiCall({ action: 'add_cloud_command', targetId: id, command: 'pin', value: 'true' });
@@ -632,75 +604,73 @@ window.togglePin = async function() {
 
 window.toggleOwner = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert('Load a player first! :3'); return; }
-    let pw = prompt('Enter owner PIN:');
-    if (pw !== 'monke2026') { alert('Wrong PIN'); return; }
+    if(!id) { alert('Load target profile :3'); return; }
+    let pw = prompt('Security Token Key:');
+    if (pw !== 'monke2026') { alert('Rejected'); return; }
     await apiCall({ action: 'add_cloud_command', targetId: id, command: 'grant_owner', value: 'true' });
     try {
         let idx = window.fullPlayerCache.findIndex(p => p.id === id);
-        if (idx !== -1) {
-            window.fullPlayerCache[idx].isOwner = true;
-        }
+        if (idx !== -1) window.fullPlayerCache[idx].isOwner = true;
     } catch (e) {}
-    window.logEvent(`Owner token requested for ${id}`);
+    window.logEvent(`Owner access shift requested for ${id}`);
     await window.refreshCurrentPlayer();
     await window.loadAllPlayers();
 }
 
 window.toggleAdmin = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     await apiCall({ action: 'toggle_admin', id });
-    window.logEvent(`Admin token toggled for ${id}`);
+    window.logEvent(`Admin permission toggled for ${id}`);
     await window.refreshCurrentPlayer();
 }
 
 window.toggleBan = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     await apiCall({ action: 'toggle_ban', id });
     await apiCall({ action: 'add_cloud_command', targetId: id, command: 'ban', value: 'true' });
-    window.logEvent(`Ban token toggled for ${id}`);
+    window.logEvent(`Ban token altered for ${id}`);
     await window.refreshCurrentPlayer();
 }
 
 window.grantPebblesToAll = async function() {
-    let amt = parseInt(prompt('Amount of Pebbles to give each player:'));
+    let amt = parseInt(prompt('Pebble grant value:'));
     if (isNaN(amt)) return;
-    if (!confirm(`Give ${amt} pebbles to all ${window.fullPlayerCache.length} players?`)) return;
+    if (!confirm(`Deploy ${amt} to total databases?`)) return;
     for (let i = 0; i < window.fullPlayerCache.length; i++) {
         const p = window.fullPlayerCache[i];
         if (!p || !p.id) continue;
         await apiCall({ action: 'edit_pebbles', id: p.id, amount: amt });
-        await new Promise(r => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 40));
     }
-    window.logEvent(`Granted ${amt} pebbles to all players`);
+    window.logEvent(`Mass credit value deployed: ${amt}`);
     await window.loadAllPlayers();
 }
 
 window.wipeCosmetics = async function() {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     await apiCall({ action: 'wipe_cosmetics', id });
-    window.logEvent(`Cosmetics flushed for ${id}`);
+    window.logEvent(`Asset database wiped for ${id}`);
     await window.refreshCurrentPlayer();
 }
 
 window.manageCosmetic = async function(isGiving) {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     let cos = document.getElementById('cosmeticId').value;
     if (!cos) return;
     await apiCall({ action: isGiving ? 'give_cosmetic' : 'revoke_cosmetic', id, value: cos });
-    window.logEvent(`Cosmetic ${cos} ${isGiving ? 'granted to' : 'revoked from'} ${id}`);
+    window.logEvent(`Asset inventory modified: ${cos}`);
     await window.refreshCurrentPlayer();
 }
 
 window.quickRevoke = async function(value) {
     let id = document.getElementById('displayId').innerText.trim();
-    if(!id) { alert("Load a player first! :3"); return; }
+    if(!id) { alert("Load target profile :3"); return; }
     await apiCall({ action: 'revoke_cosmetic', id, value });
-    window.logEvent(`Cosmetic ${value} revoked from ${id}`);
+    window.logEvent(`Asset dropped instantly: ${value}`);
     await window.refreshCurrentPlayer();
 }
 
@@ -716,12 +686,12 @@ window.createCosmetic = async function() {
     let name = document.getElementById('newCosName').value.trim();
     let slot = document.getElementById('newCosSlot').value;
     let price = document.getElementById('newCosPrice').value;
-    if(!id || !name || !price) { alert('fill all inputs :3'); return; }
+    if(!id || !name || !price) { alert('inputs required :3'); return; }
     await apiCall({ action: 'add_cosmetic', id, name, slot, price });
     document.getElementById('newCosId').value = '';
     document.getElementById('newCosName').value = '';
     document.getElementById('newCosPrice').value = '';
-    window.logEvent(`New cosmetic created: ${name}`);
+    window.logEvent(`Asset structure logged: ${name}`);
     window.cancelCosmeticEdit();
     await window.loadAllPlayers(); 
 }
@@ -741,13 +711,13 @@ window.updateCosmetic = async function() {
     let name = document.getElementById('newCosName').value.trim();
     let slot = document.getElementById('newCosSlot').value;
     let price = document.getElementById('newCosPrice').value;
-    if(!id || !name || !price) { alert('fill all inputs :3'); return; }
+    if(!id || !name || !price) { alert('inputs required :3'); return; }
     await apiCall({ action: 'remove_comm_cosmetic', name });
     await apiCall({ action: 'add_cosmetic', id, name, slot, price });
     document.getElementById('newCosId').value = '';
     document.getElementById('newCosName').value = '';
     document.getElementById('newCosPrice').value = '';
-    window.logEvent(`Cosmetic updated: ${name}`);
+    window.logEvent(`Asset catalog modified: ${name}`);
     window.cancelCosmeticEdit();
     await window.loadAllPlayers();
 }
@@ -762,7 +732,7 @@ window.cancelCosmeticEdit = function() {
 
 window.deleteCosmetic = async function(name) {
     await apiCall({ action: 'remove_comm_cosmetic', name });
-    window.logEvent(`Cosmetic deleted: ${name}`);
+    window.logEvent(`Asset dropped from cloud registry: ${name}`);
     await window.loadAllPlayers();
 }
 
@@ -770,10 +740,9 @@ window.saveTitleData = async function() {
     let motd = document.getElementById('titleMotd').value;
     let mult = document.getElementById('titleMultiplier').value;
     let ver = document.getElementById('titleVersion').value;
-    let maint = document.getElementById('titleMaintenance').checked;
-    await apiCall({ action: 'set_title_data', data: { motd: motd, multiplier: mult, version: ver, maintenance: maint } });
-    window.logEvent(`Global Title Data updated -> MOTD: ${motd} | Mult: ${mult} | Maint: ${maint}`);
-    alert('Title Data Saved :D');
+    await apiCall({ action: 'set_title_data', data: { motd: motd, multiplier: mult, version: ver } });
+    window.logEvent(`Title variables synchronized`);
+    alert('Variables deployed :D');
 }
 
 window.publishNews = async function() {
@@ -781,8 +750,8 @@ window.publishNews = async function() {
     let body = document.getElementById('newsBody').value;
     if(!title || !body) return;
     await apiCall({ action: 'publish_news', title, body });
-    window.logEvent(`News published: ${title}`);
-    alert('News Article live :D');
+    window.logEvent(`Article published: ${title}`);
+    alert('News article updated :D');
     document.getElementById('newsTitle').value = '';
     document.getElementById('newsBody').value = '';
 }
@@ -792,14 +761,14 @@ window.sendGlobalBroadcast = async function() {
     if(!msg) return;
     await apiCall({ action: 'global_broadcast', value: msg });
     document.getElementById('broadcastInput').value = '';
-    window.logEvent(`Global Broadcast Dispatched: ${msg}`);
-    alert('Broadcast sent to all rooms :D');
+    window.logEvent(`Broadcast intercept executed: ${msg}`);
+    alert('Broadcast active across arrays :D');
 }
 
 window.logEvent = function(msg) {
     let log = document.getElementById('systemLog');
     if(log) {
-        log.innerHTML += `<div class="mb-1 text-[11px]"><span class="text-gray-500 mr-2">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
+        log.innerHTML += `<div class="mb-0.5 opacity-80"><span class="text-gray-500 mr-1.5">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
         log.scrollTop = log.scrollHeight;
     }
 }
@@ -826,23 +795,23 @@ window.refreshLeaderboard = function() {
     let sortedPlayers = [...window.fullPlayerCache].sort((a, b) => (b.pebbles || 0) - (a.pebbles || 0)).slice(0, 50);
     
     if(sortedPlayers.length === 0) {
-        list.innerHTML = '<li class="py-6 text-gray-500 italic text-center">No players found :(</li>';
+        list.innerHTML = '<li class="py-4 text-gray-500 italic text-center">Empty dataset</li>';
         return;
     }
     
     sortedPlayers.forEach((p, index) => {
-        let rankColor = index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : index === 2 ? 'text-orange-700' : 'text-gray-600';
-        let nickStr = p.adminNickname ? ` <span class="text-xs text-orange-400 ml-2 font-mono">[${p.adminNickname}]</span>` : '';
+        let rankColor = index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-orange-600' : 'text-gray-600';
+        let nickStr = p.adminNickname ? ` <span class="text-xs text-orange-400 ml-1.5 font-mono">[${p.adminNickname}]</span>` : '';
         
-        list.innerHTML += `<li class="py-4 flex justify-between items-center hover:bg-gray-800/50 px-4 cursor-pointer transition rounded-xl" onclick="window.loadPlayerById('${p.id}')">
-        <div class="flex items-center gap-5">
-            <span class="font-black text-xl w-8 text-center ${rankColor}">#${index + 1}</span>
-            <span class="font-bold text-gray-200 text-base">${p.name}${nickStr}</span>
+        list.innerHTML += `<li class="py-2.5 flex justify-between items-center hover:bg-[#131622]/40 px-3 cursor-pointer transition rounded-lg" onclick="window.loadPlayerById('${p.id}')">
+        <div class="flex items-center gap-4">
+            <span class="font-black text-sm w-6 text-center ${rankColor}">#${index + 1}</span>
+            <span class="font-bold text-gray-300">${p.name}${nickStr}</span>
         </div>
-        <div class="font-black text-yellow-400 bg-yellow-400/10 px-3 py-1.5 rounded-lg border border-yellow-400/20">${p.pebbles || 0} PB</div>
+        <div class="font-bold text-yellow-400 bg-yellow-400/5 px-2 py-1 rounded text-xs border border-yellow-400/10">${p.pebbles || 0} PB</div>
         </li>`;
     });
-    window.logEvent("Economy Leaderboards refreshed");
+    window.logEvent("Leaderboard arrays sorted");
 }
 
 window.loadAllPlayers = async function() {
@@ -856,20 +825,18 @@ window.loadAllPlayers = async function() {
         clist.innerHTML = '';
         if(window.globalCatalog.length > 0) {
             window.globalCatalog.forEach(c => {
-                clist.innerHTML += `<li class="py-3 flex justify-between items-center hover:bg-gray-900 px-2 rounded transition"><span class="text-green-400 font-bold">${c.itemName} <span class="text-gray-500 text-[10px] ml-1 uppercase border border-gray-700 px-1 rounded">${c.cosmeticSlot}</span></span><div class="flex gap-3"><button onclick="window.editCosmetic('${c.id}','${encodeURIComponent(c.itemName)}','${c.cosmeticSlot}','${c.price}')" class="text-blue-400 hover:text-blue-300 text-[10px] font-black uppercase">EDIT</button><button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-[10px] font-black uppercase">DELETE</button></div></li>`;
+                clist.innerHTML += `<li class="py-2 flex justify-between items-center hover:bg-[#131622]/40 px-2 rounded transition"><span class="text-green-400 font-bold text-[11px]">${c.itemName} <span class="text-gray-500 text-[9px] ml-1 uppercase border border-[#1b1d26] px-1 rounded">${c.cosmeticSlot}</span></span><div class="flex gap-2.5"><button onclick="window.editCosmetic('${c.id}','${encodeURIComponent(c.itemName)}','${c.cosmeticSlot}','${c.price}')" class="text-blue-400 text-[10px] font-bold">EDIT</button><button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 text-[10px] font-bold">DROP</button></div></li>`;
             });
-        } else clist.innerHTML = '<li class="py-6 text-gray-600 text-center italic">no cloud cosmetics found.</li>';
+        } else clist.innerHTML = '<li class="py-4 text-gray-600 text-center italic">Empty cloud catalogs</li>';
     }
     
     if(res.titleData) {
         let motdInput = document.getElementById('titleMotd');
         let multInput = document.getElementById('titleMultiplier');
         let verInput = document.getElementById('titleVersion');
-        let maintInput = document.getElementById('titleMaintenance');
         if(motdInput && res.titleData.motd) motdInput.value = res.titleData.motd;
         if(multInput && res.titleData.multiplier) multInput.value = res.titleData.multiplier;
         if(verInput && res.titleData.version) verInput.value = res.titleData.version;
-        if(maintInput && res.titleData.maintenance !== undefined) maintInput.checked = res.titleData.maintenance;
     }
     
     let list = document.getElementById('allList');
@@ -888,15 +855,15 @@ window.loadAllPlayers = async function() {
         });
         
         res.players.forEach(p => {
-            let isBanned = p.isBanned ? '<span class="bg-red-500/20 text-red-500 border border-red-500/50 text-[10px] font-bold px-1.5 py-0.5 rounded ml-2">BANNED</span>' : '';
-            let admin = p.isAdmin ? '<span class="bg-purple-500/20 text-purple-400 border border-purple-500/50 text-[10px] font-bold px-1.5 py-0.5 rounded ml-2">STAFF</span>' : '';
-            let owner = p.isOwner ? '<span class="bg-orange-500/20 text-orange-500 border border-orange-500/50 text-[10px] font-bold px-1.5 py-0.5 rounded ml-2">OWNER</span>' : '';
-            let pinBadge = pinnedList.includes(p.id) ? '<span class="text-blue-400 text-[10px] font-bold ml-2">[PINNED]</span>' : '';
+            let isBanned = p.isBanned ? '<span class="bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-bold px-1 rounded ml-1">BANNED</span>' : '';
+            let admin = p.isAdmin ? '<span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[9px] font-bold px-1 rounded ml-1">STAFF</span>' : '';
+            let owner = p.isOwner ? '<span class="bg-orange-500/10 text-orange-500 border border-orange-500/20 text-[9px] font-bold px-1 rounded ml-1">OWNER</span>' : '';
+            let pinBadge = pinnedList.includes(p.id) ? '<span class="text-blue-400 text-[9px] font-bold ml-1">[PINNED]</span>' : '';
             let nickStr = p.adminNickname ? ` <span class="text-xs text-orange-400 ml-1 font-mono">[${p.adminNickname}]</span>` : '';
             
             let tagsHTML = '';
             if(p.tags && p.tags.length > 0) {
-                p.tags.forEach(t => tagsHTML += `<span class="text-gray-400 bg-gray-800 text-[10px] uppercase border border-gray-700 px-1.5 py-0.5 rounded ml-2 hidden sm:inline-block">${t}</span>`);
+                p.tags.forEach(t => tagsHTML += `<span class="text-gray-400 bg-[#131622] text-[9px] uppercase border border-[#1b1d26] px-1 rounded ml-1 hidden sm:inline-block">${t}</span>`);
             }
             
             let isOnline = false;
@@ -905,11 +872,11 @@ window.loadAllPlayers = async function() {
                 if (Date.now() - lastActive < 30000) { isOnline = true; concurrentCount++; }
             }
             
-            let statusMarker = isOnline ? '<span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block mr-3 shadow-[0_0_10px_rgba(34,197,94,0.8)]"></span>' : '<span class="w-2.5 h-2.5 rounded-full bg-gray-700 inline-block mr-3 border border-gray-600"></span>';
+            let statusMarker = isOnline ? '<span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-2 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>' : '<span class="w-2 h-2 rounded-full bg-gray-700 inline-block mr-2 border border-gray-600"></span>';
             
-            list.innerHTML += `<li class="py-3 flex justify-between items-center cursor-pointer hover:bg-gray-800/50 px-4 transition rounded-xl" onclick="window.loadPlayerById('${p.id}')">
-            <span class="flex items-center">${statusMarker} <span class="font-bold text-gray-200">${p.name}${nickStr}</span> ${tagsHTML} ${owner} ${admin} ${isBanned} ${pinBadge}</span>
-            <span class="text-gray-500 text-[10px] font-mono hidden md:block bg-gray-950 px-2 py-1 rounded border border-gray-800">${p.id}</span></li>`;
+            list.innerHTML += `<li class="py-2.5 flex justify-between items-center cursor-pointer hover:bg-[#131622]/40 px-3 transition rounded-lg" onclick="window.loadPlayerById('${p.id}')">
+            <span class="flex items-center">${statusMarker} <span class="font-bold text-gray-300">${p.name}${nickStr}</span> ${tagsHTML} ${owner} ${admin} ${isBanned} ${pinBadge}</span>
+            <span class="text-gray-500 text-[10px] font-mono hidden md:block bg-[#06070a] px-1.5 py-0.5 rounded border border-[#1b1d26]">${p.id}</span></li>`;
             
             pebbles += p.pebbles || 0;
             if (p.isBanned) banned++;
@@ -917,7 +884,7 @@ window.loadAllPlayers = async function() {
         });
     }
     
-    document.getElementById('liveConcurrent').innerHTML = `${concurrentCount} <span class="text-sm font-normal text-gray-500 tracking-normal">online</span>`;
+    document.getElementById('liveConcurrent').innerHTML = `${concurrentCount} <span class="text-xs font-normal text-gray-500">online</span>`;
     document.getElementById('totalPlayers').innerText = res.players ? res.players.length : 0;
     document.getElementById('totalPebbles').innerText = pebbles;
     document.getElementById('totalBanned').innerText = banned;
