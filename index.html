@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:,">
-<title>Chimps VR — Field Console</title>
+<title>ClouorVR — Field Console</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -45,8 +45,6 @@
 
   .toast { animation: riseIn 0.25s forwards, fadeIn 0.25s forwards, fadeIn 0.25s reverse forwards 2.6s; }
 
-  /* Keycard: the signature element. Styled like a real access badge, because
-     that's literally what a project's endpoint/id/key are. */
   .keycard {
     position: relative;
     background: linear-gradient(155deg, #171f19 0%, #10140f 100%);
@@ -99,13 +97,12 @@
 </head>
 <body class="min-h-screen flex overflow-hidden" style="height:100vh;">
 
-<!-- ============================== LOGIN SCREEN ============================== -->
 <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: radial-gradient(circle at 30% 20%, #16201a 0%, #0c100e 60%);">
   <div class="panel rounded-3xl w-full max-w-sm p-9 rise" style="box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);">
     <div class="flex items-center gap-3 mb-8">
       <div class="w-11 h-11 rounded-xl flex items-center justify-center font-display font-bold text-lg" style="background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(232,163,61,0.25);">C</div>
       <div>
-        <div class="font-display font-bold text-lg leading-tight">Chimps VR</div>
+        <div class="font-display font-bold text-lg leading-tight">ClouorVR</div>
         <div class="text-[11px] font-mono tracking-widest" style="color: var(--text-faint);">FIELD CONSOLE</div>
       </div>
     </div>
@@ -129,12 +126,11 @@
   </div>
 </div>
 
-<!-- ============================== SIDEBAR ============================== -->
 <div class="w-72 panel border-r flex flex-col shrink-0" style="border-color: var(--hairline-soft);">
   <div class="p-5 border-b flex items-center gap-3" style="border-color: var(--hairline-soft);">
     <div class="w-9 h-9 rounded-lg flex items-center justify-center font-display font-bold" style="background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(232,163,61,0.25);">C</div>
     <div class="min-w-0">
-      <div class="font-display font-bold text-sm leading-tight">Chimps VR</div>
+      <div class="font-display font-bold text-sm leading-tight">ClouorVR</div>
       <div id="userDisplayTag" class="text-[10px] font-mono truncate" style="color: var(--text-faint);"></div>
     </div>
   </div>
@@ -161,7 +157,6 @@
   </div>
 </div>
 
-<!-- ============================== MAIN ============================== -->
 <div class="flex-1 flex flex-col overflow-hidden">
   <header class="h-16 border-b flex items-center px-8 justify-between shrink-0" style="border-color: var(--hairline-soft);">
     <h2 id="currentTabTitle" class="font-display font-bold text-xl">Overview</h2>
@@ -181,7 +176,6 @@
       <button onclick="showCreateProjectModal()" class="btn-accent font-bold py-3 px-7 rounded-xl transition text-sm">Create a project</button>
     </div>
 
-    <!-- OVERVIEW -->
     <div id="tab-overview" class="tab-content max-w-4xl mx-auto rise">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
         <div class="panel rounded-2xl p-7">
@@ -226,7 +220,6 @@
       </div>
     </div>
 
-    <!-- PLAYER LOOKUP -->
     <div id="tab-players" class="tab-content hidden max-w-4xl mx-auto rise">
       <div class="flex gap-3 mb-7 panel p-2.5 rounded-xl">
         <select id="searchType" class="p-3 rounded-lg input-field font-semibold text-sm">
@@ -287,7 +280,6 @@
       </div>
     </div>
 
-    <!-- ALL PLAYERS -->
     <div id="tab-allplayers" class="tab-content hidden max-w-4xl mx-auto rise">
       <div class="flex gap-3 mb-7 panel p-2.5 rounded-xl">
         <input type="text" id="quickFilterInput" oninput="applyQuickFilter()" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="Filter by name, ID, or tag...">
@@ -301,7 +293,6 @@
       </div>
     </div>
 
-    <!-- CATALOG -->
     <div id="tab-cosmetics" class="tab-content hidden max-w-4xl mx-auto rise">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-1 panel p-7 rounded-2xl h-fit">
@@ -327,7 +318,6 @@
       </div>
     </div>
 
-    <!-- PROJECT SETTINGS -->
     <div id="tab-projectsettings" class="tab-content hidden max-w-3xl mx-auto rise">
       <h1 class="font-display font-bold text-2xl mb-7">Project settings</h1>
       <div class="panel p-8 rounded-2xl flex flex-col gap-5 mb-6">
@@ -350,7 +340,6 @@
       </div>
     </div>
 
-    <!-- ACCESS (owner only) -->
     <div id="tab-access" class="tab-content hidden max-w-3xl mx-auto rise">
       <h1 class="font-display font-bold text-2xl mb-2">Dashboard access</h1>
       <p class="text-sm mb-7" style="color: var(--text-dim);">Anyone signed in below can open this console with their Google or GitHub account. You're the owner and always have access.</p>
@@ -372,7 +361,6 @@
   </main>
 </div>
 
-<!-- ============================== MODALS ============================== -->
 <div id="createProjectModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(12,16,14,0.85);">
   <div class="panel rounded-2xl w-full max-w-sm p-7 rise">
     <h3 class="font-display font-bold text-lg mb-5">New project</h3>
@@ -398,14 +386,8 @@
 </div>
 
 <script>
-// =========================================================================
-// CONFIGURATION — point this at your deployed Worker.
-// =========================================================================
 const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 
-// =========================================================================
-// STATE
-// =========================================================================
 let sessionToken = localStorage.getItem("cvr_session") || null;
 let currentUser = null;
 let activeProject = null;
@@ -415,9 +397,6 @@ let globalCatalog = [];
 let selectedPlayer = null;
 let pollHandle = null;
 
-// =========================================================================
-// BOOT / AUTH
-// =========================================================================
 window.onload = async function () {
   const hash = new URLSearchParams(location.hash.replace(/^#/, ""));
   if (hash.get("session")) {
@@ -430,7 +409,7 @@ window.onload = async function () {
     history.replaceState(null, "", location.pathname);
   }
 
-  if (!sessionToken) return; // stay on login screen
+  if (!sessionToken) return;
 
   const who = await apiCall({ action: "whoami" }, { skipProjectId: true });
   if (!who || !who.authenticated) {
@@ -473,9 +452,6 @@ function enterDashboard() {
   pollHandle = setInterval(fetchProjectData, 5000);
 }
 
-// =========================================================================
-// API
-// =========================================================================
 async function apiCall(payload, opts = {}) {
   try {
     const body = { ...payload };
@@ -493,9 +469,6 @@ async function apiCall(payload, opts = {}) {
   }
 }
 
-// =========================================================================
-// TOAST / UTIL
-// =========================================================================
 function showToast(msg) {
   const t = document.createElement("div");
   t.className = "toast fixed bottom-8 right-8 panel px-5 py-3.5 rounded-xl text-sm font-semibold flex items-center gap-3 z-[100]";
@@ -516,9 +489,6 @@ function toggleKeyVisibility(elementId) {
   el.type = el.type === "password" ? "text" : "password";
 }
 
-// =========================================================================
-// PROJECTS
-// =========================================================================
 async function loadProjects() {
   const res = await apiCall({ action: "get_projects" }, { skipProjectId: true });
   projectsArray = (res && res.projects) || [];
@@ -612,9 +582,6 @@ async function deleteCurrentProject() {
   }
 }
 
-// =========================================================================
-// TABS
-// =========================================================================
 function switchTab(tabId) {
   document.querySelectorAll(".tab-content").forEach((el) => el.classList.add("hidden"));
   document.getElementById(`tab-${tabId}`).classList.remove("hidden");
@@ -632,9 +599,6 @@ function switchTab(tabId) {
   if (tabId === "access") loadAllowedEmails();
 }
 
-// =========================================================================
-// PLAYER DATA
-// =========================================================================
 async function fetchProjectData() {
   if (!activeProject) return;
   const res = await apiCall({ action: "get_all", limit: 500 });
@@ -798,25 +762,25 @@ async function removePlayerTag(tag) {
 async function toggleOwner() {
   if (!selectedPlayer) return;
   const res = await apiCall({ action: "toggle_owner", id: selectedPlayer.id });
-  if (res) { fetchProjectData(); showToast("Owner access updated — takes effect instantly in-game."); }
+  if (res) { fetchProjectData(); showToast("Owner access updated."); }
 }
 
 async function toggleAdmin() {
   if (!selectedPlayer) return;
   const res = await apiCall({ action: "toggle_admin", id: selectedPlayer.id });
-  if (res) { fetchProjectData(); showToast("Staff role updated — takes effect instantly in-game."); }
+  if (res) { fetchProjectData(); showToast("Staff role updated."); }
 }
 
 async function toggleBan() {
   if (!selectedPlayer) return;
   const res = await apiCall({ action: "toggle_ban", id: selectedPlayer.id });
-  if (res) { fetchProjectData(); showToast("Ban status updated — takes effect instantly in-game."); }
+  if (res) { fetchProjectData(); showToast("Ban status updated."); }
 }
 
 async function kickPlayer() {
   if (!selectedPlayer) return;
   await apiCall({ action: "add_cloud_command", targetId: selectedPlayer.id, command: "kick", value: "true" });
-  showToast("Kick sent — the player will be dropped within a few seconds.");
+  showToast("Kick sent.");
 }
 
 function showProvisionModal() { document.getElementById("provisionModal").classList.remove("hidden"); }
@@ -868,16 +832,13 @@ async function deleteCosmetic(name) {
   if (res) { fetchProjectData(); showToast("Cosmetic removed."); }
 }
 
-// =========================================================================
-// ACCESS (owner only)
-// =========================================================================
 async function loadAllowedEmails() {
   const res = await apiCall({ action: "get_allowed_emails" }, { skipProjectId: true });
   const list = document.getElementById("allowedEmailsList");
   const allowed = (res && res.allowed) || [];
   list.innerHTML = "";
   if (allowed.length === 0) {
-    list.innerHTML = `<li class="py-8 text-center" style="color: var(--text-faint);">No one added yet — you're the only one with access.</li>`;
+    list.innerHTML = `<li class="py-8 text-center" style="color: var(--text-faint);">No one added yet.</li>`;
     return;
   }
   allowed.forEach((entry) => {
