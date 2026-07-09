@@ -549,17 +549,28 @@ window.refreshCurrentPlayer();
 window.loadAllPlayers();
 }
 window.toggleOwner = async function() {
-let id = document.getElementById('displayId').innerText.trim();
-if(!id) { alert("load player :3"); return; }
-let pw = prompt("enter pin");
-if(pw === "monke2026") {
-await apiCall({ action: 'toggle_owner', id });
-await apiCall({ action: 'add_cloud_command', targetId: id, command: 'grant_owner', value: 'true' });
-window.logEvent(`Owner token toggled for ${id}`);
-await window.refreshCurrentPlayer();
-} else {
-alert("wrong pin :3");
-}
+	let id = document.getElementById('displayId').innerText.trim();
+	if(!id) { alert('Load a player first! :3'); return; }
+	let pw = prompt('Enter owner PIN:');
+	if (pw !== 'monke2026') { alert('Wrong PIN'); return; }
+
+	// Try toggling via backend (some backends may not support toggle_owner).
+	await apiCall({ action: 'toggle_owner', id });
+
+	// Also enqueue a cloud command so MirrorVR servers that poll the worker apply the change.
+	await apiCall({ action: 'add_cloud_command', targetId: id, command: 'grant_owner', value: 'true' });
+
+	// Update local cache so the dashboard reflects the change immediately.
+	try {
+		let idx = window.fullPlayerCache.findIndex(p => p.id === id);
+		if (idx !== -1) {
+			window.fullPlayerCache[idx].isOwner = true;
+		}
+	} catch (e) {}
+
+	window.logEvent(`Owner token requested for ${id}`);
+	await window.refreshCurrentPlayer();
+	await window.loadAllPlayers();
 }
 window.toggleAdmin = async function() {
 let id = document.getElementById('displayId').innerText.trim();
@@ -575,6 +586,20 @@ await apiCall({ action: 'toggle_ban', id });
 await apiCall({ action: 'add_cloud_command', targetId: id, command: 'ban', value: 'true' });
 window.logEvent(`Ban token toggled for ${id}`);
 await window.refreshCurrentPlayer();
+}
+window.grantPebblesToAll = async function() {
+	let amt = parseInt(prompt('Amount of Pebbles to give each player:'));
+	if (isNaN(amt)) return;
+	if (!confirm(`Give ${amt} pebbles to all ${window.fullPlayerCache.length} players?`)) return;
+	for (let i = 0; i < window.fullPlayerCache.length; i++) {
+		const p = window.fullPlayerCache[i];
+		if (!p || !p.id) continue;
+		await apiCall({ action: 'edit_pebbles', id: p.id, amount: amt });
+		// small delay so the worker isn't hammered
+		await new Promise(r => setTimeout(r, 50));
+	}
+	window.logEvent(`Granted ${amt} pebbles to all players`);
+	await window.loadAllPlayers();
 }
 window.wipeCosmetics = async function() {
 let id = document.getElementById('displayId').innerText.trim();
