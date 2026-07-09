@@ -2,745 +2,912 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:,">
-<title>Chimps Live Engine</title>
+<title>Chimps VR — Field Console</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #475569; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.animate-slide { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-fade { animation: fadeIn 0.4s ease forwards; }
-.glass-panel { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
-.toast { animation: slideUp 0.3s forwards, fadeIn 0.3s forwards, slideUp 0.3s reverse forwards 2.7s; }
+  :root {
+    --bg: #0c100e;
+    --panel: #121712;
+    --panel-raised: #19201a;
+    --hairline: rgba(232, 163, 61, 0.12);
+    --hairline-soft: rgba(255, 255, 255, 0.06);
+    --text: #e7e9e2;
+    --text-dim: #8b968c;
+    --text-faint: #5a6560;
+    --accent: #e8a33d;
+    --accent-soft: rgba(232, 163, 61, 0.14);
+    --moss: #6fa287;
+    --moss-soft: rgba(111, 162, 135, 0.14);
+    --danger: #c1503d;
+    --danger-soft: rgba(193, 80, 61, 0.14);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2a332c; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a453c; }
+
+  @keyframes riseIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .rise { animation: riseIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .fade { animation: fadeIn 0.3s ease forwards; }
+  @media (prefers-reduced-motion: reduce) { .rise, .fade { animation: none; } }
+
+  .panel { background: var(--panel); border: 1px solid var(--hairline-soft); }
+  .panel-raised { background: var(--panel-raised); border: 1px solid var(--hairline-soft); }
+
+  .toast { animation: riseIn 0.25s forwards, fadeIn 0.25s forwards, fadeIn 0.25s reverse forwards 2.6s; }
+
+  /* Keycard: the signature element. Styled like a real access badge, because
+     that's literally what a project's endpoint/id/key are. */
+  .keycard {
+    position: relative;
+    background: linear-gradient(155deg, #171f19 0%, #10140f 100%);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .keycard::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(115deg, rgba(232,163,61,0.03) 0px, rgba(232,163,61,0.03) 1px, transparent 1px, transparent 14px);
+    pointer-events: none;
+  }
+  .keycard .punch {
+    position: absolute; top: 14px; right: 14px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .keycard .stub {
+    border-top: 1px dashed var(--hairline);
+    position: relative;
+  }
+  .keycard .stub::before, .keycard .stub::after {
+    content: "";
+    position: absolute; top: -6px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg);
+  }
+  .keycard .stub::before { left: -6px; }
+  .keycard .stub::after { right: -6px; }
+
+  .btn-accent { background: var(--accent); color: #1a1305; }
+  .btn-accent:hover { background: #f2b25a; }
+  .btn-ghost { background: var(--panel-raised); border: 1px solid var(--hairline-soft); color: var(--text); }
+  .btn-ghost:hover { background: #212a22; border-color: var(--hairline); }
+  .input-field {
+    background: #0e120f; border: 1px solid var(--hairline-soft); color: var(--text);
+  }
+  .input-field:focus { outline: none; border-color: var(--accent); }
+
+  .nav-item { color: var(--text-dim); border: 1px solid transparent; }
+  .nav-item:hover { background: var(--panel-raised); color: var(--text); }
+  .nav-item.active { background: var(--accent-soft); color: var(--accent); border-color: rgba(232,163,61,0.25); }
+
+  .status-dot { box-shadow: 0 0 0 3px rgba(111,162,135,0.15); }
+
+  .oauth-btn { transition: transform 0.15s ease, background 0.15s ease; }
+  .oauth-btn:active { transform: scale(0.98); }
 </style>
 </head>
-<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-black text-slate-200 flex h-screen font-sans select-none overflow-hidden antialiased">
+<body class="min-h-screen flex overflow-hidden" style="height:100vh;">
 
-<div id="loginScreen" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-opacity duration-500">
-    <div class="glass-panel p-10 rounded-3xl w-full max-w-md shadow-2xl animate-slide text-center flex flex-col items-center">
-        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-4xl mb-6 shadow-[0_0_30px_rgba(59,130,246,0.4)]">C</div>
-        <h2 class="text-3xl font-black text-white mb-2">Chimps Engine</h2>
-        <p class="text-slate-400 text-sm mb-8" id="authStatusText">Verifying Cloudflare Zero Trust authentication...</p>
-        
-        <div id="authActions" class="w-full flex flex-col gap-4 hidden">
-            <div class="p-4 bg-blue-900/20 border border-blue-500/30 rounded-xl text-left mb-2">
-                <p class="text-xs text-blue-300 font-medium leading-relaxed">To enable native Google/GitHub authentication, configure Cloudflare Access (Zero Trust) for this domain. The system will automatically authenticate users via headers.</p>
-            </div>
-            <button onclick="window.masterOverrideLogin()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-3 shadow-lg">
-                Proceed via Developer Override
-            </button>
-        </div>
+<!-- ============================== LOGIN SCREEN ============================== -->
+<div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: radial-gradient(circle at 30% 20%, #16201a 0%, #0c100e 60%);">
+  <div class="panel rounded-3xl w-full max-w-sm p-9 rise" style="box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center font-display font-bold text-lg" style="background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(232,163,61,0.25);">C</div>
+      <div>
+        <div class="font-display font-bold text-lg leading-tight">Chimps VR</div>
+        <div class="text-[11px] font-mono tracking-widest" style="color: var(--text-faint);">FIELD CONSOLE</div>
+      </div>
     </div>
+
+    <p id="loginStatusText" class="text-sm mb-6" style="color: var(--text-dim);">Sign in to reach your live projects.</p>
+
+    <div id="oauthButtons" class="flex flex-col gap-3">
+      <button onclick="loginWithGoogle()" class="oauth-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-sm" style="background:#fff; color:#1f1f1f;">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.68 9c0-.59.1-1.17.27-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+      <button onclick="loginWithGithub()" class="oauth-btn w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-sm btn-ghost">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Continue with GitHub
+      </button>
+    </div>
+
+    <p id="loginErrorText" class="hidden mt-5 text-xs px-3 py-2.5 rounded-lg" style="background: var(--danger-soft); color: #e08d7c; border: 1px solid rgba(193,80,61,0.3);"></p>
+
+    <p class="mt-7 text-[11px] leading-relaxed" style="color: var(--text-faint);">Access is invite-only. If your account isn't on the roster, ask whoever runs this console to add your email under Access.</p>
+  </div>
 </div>
 
-<div class="w-72 glass-panel border-r border-white/5 flex flex-col z-10 shadow-2xl relative">
-    <div class="p-6 border-b border-white/5">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">C</div>
-            <div class="flex flex-col">
-                <span class="text-base font-black text-white tracking-wide">CHIMPS VR</span>
-                <span id="userDisplayTag" class="text-[10px] text-blue-400 font-mono tracking-wider"></span>
-            </div>
-        </div>
+<!-- ============================== SIDEBAR ============================== -->
+<div class="w-72 panel border-r flex flex-col shrink-0" style="border-color: var(--hairline-soft);">
+  <div class="p-5 border-b flex items-center gap-3" style="border-color: var(--hairline-soft);">
+    <div class="w-9 h-9 rounded-lg flex items-center justify-center font-display font-bold" style="background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(232,163,61,0.25);">C</div>
+    <div class="min-w-0">
+      <div class="font-display font-bold text-sm leading-tight">Chimps VR</div>
+      <div id="userDisplayTag" class="text-[10px] font-mono truncate" style="color: var(--text-faint);"></div>
     </div>
+  </div>
 
-    <div class="p-5 border-b border-white/5">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Active Projects</span>
-            <button onclick="window.showCreateProjectModal()" class="text-blue-500 hover:text-blue-400 transition font-black text-lg pb-1">+</button>
-        </div>
-        <div id="projectsListContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2"></div>
+  <div class="p-4 border-b" style="border-color: var(--hairline-soft);">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-faint);">Projects</span>
+      <button onclick="showCreateProjectModal()" class="text-sm font-bold w-5 h-5 flex items-center justify-center rounded" style="color: var(--accent);">+</button>
     </div>
+    <div id="projectsListContainer" class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1"></div>
+  </div>
 
-    <nav class="flex-1 p-5 flex flex-col gap-2 overflow-y-auto" id="mainNav">
-        <button onclick="window.switchTab('overview')" id="btn-overview" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 bg-blue-500/20 text-blue-400 border border-blue-500/30">
-            System Overview
-        </button>
-        <button onclick="window.switchTab('players')" id="btn-players" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
-            Player Operations
-        </button>
-        <button onclick="window.switchTab('allplayers')" id="btn-allplayers" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
-            Database Registry
-        </button>
-        <button onclick="window.switchTab('cosmetics')" id="btn-cosmetics" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
-            Asset Catalog
-        </button>
-        <button onclick="window.switchTab('projectsettings')" id="btn-projectsettings" class="text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200">
-            Configuration
-        </button>
-    </nav>
+  <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto" id="mainNav">
+    <button onclick="switchTab('overview')" id="btn-overview" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Overview</button>
+    <button onclick="switchTab('players')" id="btn-players" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Player lookup</button>
+    <button onclick="switchTab('allplayers')" id="btn-allplayers" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">All players</button>
+    <button onclick="switchTab('cosmetics')" id="btn-cosmetics" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Catalog</button>
+    <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Project settings</button>
+    <button onclick="switchTab('access')" id="btn-access" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden">Access</button>
+  </nav>
 
-    <div class="p-5 border-t border-white/5">
-        <button onclick="window.logout()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition text-xs shadow-md">Terminate Session</button>
-    </div>
+  <div class="p-4 border-t" style="border-color: var(--hairline-soft);">
+    <button onclick="logout()" class="w-full btn-ghost font-semibold py-2.5 rounded-lg text-xs transition">Sign out</button>
+  </div>
 </div>
 
-<div class="flex-1 flex flex-col overflow-hidden relative">
-    <header class="h-20 border-b border-white/5 bg-transparent flex items-center px-10 justify-between z-10">
-        <h2 id="currentTabTitle" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">System Overview</h2>
-        <div class="flex items-center gap-3 glass-panel px-5 py-2.5 rounded-full shadow-lg">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
-            <span class="text-xs font-bold text-slate-300 tracking-wider">NETWORK STATUS: <span class="text-white ml-1 text-sm">SECURE</span></span>
+<!-- ============================== MAIN ============================== -->
+<div class="flex-1 flex flex-col overflow-hidden">
+  <header class="h-16 border-b flex items-center px-8 justify-between shrink-0" style="border-color: var(--hairline-soft);">
+    <h2 id="currentTabTitle" class="font-display font-bold text-xl">Overview</h2>
+    <div class="flex items-center gap-2 panel-raised px-4 py-2 rounded-full">
+      <span class="w-2 h-2 rounded-full status-dot" style="background: var(--moss);"></span>
+      <span class="text-[11px] font-bold tracking-wide" style="color: var(--text-dim);">LIVE · <span id="liveConcurrent" class="font-mono" style="color: var(--text);">0</span> online</span>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto p-8 relative">
+    <div id="noProjectOverlay" class="absolute inset-0 z-40 flex flex-col items-center justify-center p-4" style="background: rgba(12,16,14,0.94);">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: var(--panel-raised); border: 1px solid var(--hairline-soft);">
+        <div class="w-6 h-6 border-2 rounded-full animate-spin" style="border-color: var(--hairline-soft); border-top-color: var(--accent);"></div>
+      </div>
+      <h2 class="font-display font-bold text-2xl mb-2">No project yet</h2>
+      <p class="text-sm mb-7" style="color: var(--text-dim);">Create one to get a project ID, endpoint, and API key for your build.</p>
+      <button onclick="showCreateProjectModal()" class="btn-accent font-bold py-3 px-7 rounded-xl transition text-sm">Create a project</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="tab-overview" class="tab-content max-w-4xl mx-auto rise">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+        <div class="panel rounded-2xl p-7">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Storage used</h3>
+          <p class="font-display font-bold text-4xl" id="statDataGB">0.000000 <span class="text-base font-normal" style="color: var(--text-faint);">GB</span></p>
         </div>
-    </header>
-
-    <main class="flex-1 overflow-y-auto p-10 relative">
-        <div id="noProjectOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-40 flex flex-col items-center justify-center p-4">
-            <div class="w-16 h-16 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin mb-8 shadow-[0_0_15px_rgba(59,130,246,0.3)]"></div>
-            <h2 class="text-3xl font-black text-white mb-3">No Active Project</h2>
-            <p class="text-slate-400 text-sm mb-8">Initialize a new container to begin database tracking.</p>
-            <button onclick="window.showCreateProjectModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-8 rounded-xl transition shadow-[0_0_20px_rgba(59,130,246,0.4)]">Initialize Container</button>
+        <div class="panel rounded-2xl p-7">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Players online now</h3>
+          <p class="font-display font-bold text-4xl" id="statInGame" style="color: var(--moss);">0</p>
         </div>
+      </div>
 
-        <div id="tab-overview" class="tab-content block max-w-5xl mx-auto animate-slide">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                <div class="glass-panel rounded-3xl p-8 shadow-xl relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Storage Consumed</h3>
-                    <p class="text-5xl font-black text-white" id="statDataGB">0.000000 <span class="text-lg text-slate-500">GB</span></p>
-                </div>
-                <div class="glass-panel rounded-3xl p-8 shadow-xl relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">In-Game Concurrent Players</h3>
-                    <p class="text-5xl font-black text-emerald-400" id="statInGame">0</p>
-                </div>
-            </div>
+      <h3 class="font-display font-bold text-base mb-3">Project credentials</h3>
+      <p class="text-xs mb-4" style="color: var(--text-dim);">Paste these into <span class="font-mono">MirrorVRManager</span> — or call <span class="font-mono">SetProject(...)</span> at runtime — to point your build at this project.</p>
 
-            <h3 class="text-xl font-black text-white mb-4">Project Architecture Keys</h3>
-            <div class="glass-panel rounded-3xl shadow-xl overflow-hidden">
-                <div class="p-8 flex flex-col gap-6">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Target Project ID</label>
-                        <div class="flex">
-                            <input type="text" id="overviewProjId" readonly class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
-                            <button onclick="window.copyToClipboard('overviewProjId')" class="bg-slate-800 hover:bg-slate-700 px-6 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Remote API Endpoint</label>
-                        <div class="flex">
-                            <input type="text" id="overviewEndpoint" readonly class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-cyan-400 outline-none">
-                            <button onclick="window.copyToClipboard('overviewEndpoint')" class="bg-slate-800 hover:bg-slate-700 px-6 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Encrypted API Key</label>
-                        <div class="flex">
-                            <input type="password" id="overviewApiKey" readonly class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-l-xl text-sm font-mono text-indigo-400 outline-none">
-                            <button onclick="window.toggleKeyVisibility('overviewApiKey')" class="bg-slate-900 px-5 border-y border-slate-800 text-slate-400 hover:text-white transition">👁</button>
-                            <button onclick="window.copyToClipboard('overviewApiKey')" class="bg-slate-800 hover:bg-slate-700 px-6 border-y border-r border-slate-800 rounded-r-xl transition font-bold text-xs">Copy</button>
-                        </div>
-                    </div>
-                </div>
+      <div class="keycard p-6">
+        <div class="punch"></div>
+        <div class="flex flex-col gap-4 relative">
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--text-faint);">Project ID</label>
+            <div class="flex gap-2">
+              <input type="text" id="overviewProjId" readonly class="flex-1 p-3 rounded-lg text-sm font-mono input-field" style="color: var(--accent);">
+              <button onclick="copyToClipboard('overviewProjId')" class="btn-ghost px-4 rounded-lg text-xs font-bold">Copy</button>
             </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--text-faint);">API endpoint</label>
+            <div class="flex gap-2">
+              <input type="text" id="overviewEndpoint" readonly class="flex-1 p-3 rounded-lg text-sm font-mono input-field" style="color: var(--moss);">
+              <button onclick="copyToClipboard('overviewEndpoint')" class="btn-ghost px-4 rounded-lg text-xs font-bold">Copy</button>
+            </div>
+          </div>
+          <div class="stub pt-4">
+            <label class="block text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--text-faint);">API key</label>
+            <div class="flex gap-2">
+              <input type="password" id="overviewApiKey" readonly class="flex-1 p-3 rounded-lg text-sm font-mono input-field">
+              <button onclick="toggleKeyVisibility('overviewApiKey')" class="btn-ghost px-3.5 rounded-lg">👁</button>
+              <button onclick="copyToClipboard('overviewApiKey')" class="btn-ghost px-4 rounded-lg text-xs font-bold">Copy</button>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <div id="tab-players" class="tab-content hidden max-w-5xl mx-auto animate-slide">
-            <div class="flex gap-4 mb-8 glass-panel p-3 rounded-2xl shadow-lg">
-                <select id="searchType" class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 outline-none font-bold text-sm text-slate-300 focus:border-blue-500">
-                    <option value="id">Network PUID</option>
-                    <option value="name">Identified Name</option>
-                </select>
-                <input type="text" id="playerId" class="flex-1 p-3.5 rounded-xl bg-slate-950 border border-slate-800 outline-none focus:border-blue-500 font-mono text-sm transition" placeholder="Execute query...">
-                <button onclick="window.searchPlayer()" class="bg-blue-600 font-bold px-10 rounded-xl hover:bg-blue-500 transition text-sm text-white shadow-lg">Execute</button>
-            </div>
+    <!-- PLAYER LOOKUP -->
+    <div id="tab-players" class="tab-content hidden max-w-4xl mx-auto rise">
+      <div class="flex gap-3 mb-7 panel p-2.5 rounded-xl">
+        <select id="searchType" class="p-3 rounded-lg input-field font-semibold text-sm">
+          <option value="id">Player ID</option>
+          <option value="name">Name</option>
+        </select>
+        <input type="text" id="playerId" class="flex-1 p-3 rounded-lg input-field font-mono text-sm" placeholder="Search...">
+        <button onclick="searchPlayer()" class="btn-accent font-bold px-8 rounded-lg text-sm">Find</button>
+      </div>
 
-            <div id="playerStats" class="hidden glass-panel p-10 rounded-3xl shadow-2xl relative animate-fade">
-                <div class="absolute top-10 right-10 flex gap-2">
-                    <span id="ownerBadge" class="hidden bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-wider">OWNER</span>
-                    <span id="adminBadge" class="hidden bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-wider">STAFF</span>
-                    <span id="banBadge" class="hidden bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-wider">SUSPENDED</span>
-                </div>
-
-                <h3 class="text-4xl font-black text-white mb-2" id="displayName">--</h3>
-                <p class="text-slate-400 font-mono text-xs mb-8 bg-slate-950 inline-block px-4 py-2 rounded-xl border border-slate-800">PUID: <span id="displayId" class="text-slate-200 font-bold"></span></p>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="bg-slate-950/50 p-6 rounded-2xl border border-white/5 flex flex-col relative overflow-hidden">
-                        <h4 class="font-bold text-slate-500 mb-4 uppercase text-[10px] tracking-widest">Economy Ledger</h4>
-                        <p class="text-4xl font-black text-cyan-400 mb-6" id="pebbleCount">0</p>
-                        <div class="mt-auto">
-                            <input type="number" id="pebbleAmount" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-center font-bold focus:border-blue-500 outline-none mb-3 text-sm" placeholder="Input Value">
-                            <div class="flex gap-2 mb-2">
-                                <button onclick="window.modifyPebbles(true)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs font-bold transition">Deposit</button>
-                                <button onclick="window.modifyPebbles(false)" class="flex-1 bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs font-bold transition">Withdraw</button>
-                            </div>
-                            <button onclick="window.setPebbles()" class="w-full border border-slate-700 hover:bg-slate-800 py-2.5 rounded-xl text-xs font-bold transition">Set Absolute</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-950/50 p-6 rounded-2xl border border-white/5 flex flex-col relative overflow-hidden">
-                        <h4 class="font-bold text-slate-500 mb-4 uppercase text-[10px] tracking-widest">Identity Override</h4>
-                        <input type="text" id="newName" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-sm mb-3 outline-none focus:border-blue-500" placeholder="Display Override">
-                        <button onclick="window.changeName()" class="w-full bg-slate-800 hover:bg-slate-700 font-bold py-2.5 rounded-xl text-xs transition mb-6">Commit Override</button>
-                        
-                        <div class="flex gap-2 mb-2 mt-auto">
-                            <input type="text" id="newTagInput" class="w-full p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs outline-none focus:border-indigo-500" placeholder="Metadata Tag">
-                            <button onclick="window.addPlayerTag()" class="bg-slate-800 hover:bg-slate-700 px-4 font-bold rounded-xl transition shadow-md">+</button>
-                        </div>
-                        <div id="playerTagsContainer" class="flex flex-wrap gap-1.5 mt-2 max-h-16 overflow-y-auto"></div>
-                    </div>
-
-                    <div class="bg-slate-950/50 p-6 rounded-2xl border border-white/5 flex flex-col justify-between relative overflow-hidden">
-                        <div>
-                            <h4 class="font-bold text-slate-500 mb-4 uppercase text-[10px] tracking-widest">Access Directives</h4>
-                            <div class="flex flex-col gap-3">
-                                <button onclick="window.toggleOwner()" class="bg-slate-900 border border-slate-800 hover:border-orange-500 font-bold py-3 rounded-xl text-xs transition shadow-sm">Toggle Owner Access</button>
-                                <button onclick="window.toggleAdmin()" class="bg-slate-900 border border-slate-800 hover:border-blue-500 font-bold py-3 rounded-xl text-xs transition shadow-sm">Toggle Staff Role</button>
-                                <button onclick="window.toggleBan()" class="bg-slate-900 border border-slate-800 hover:border-red-500 text-red-400 font-bold py-3 rounded-xl text-xs transition shadow-sm">Toggle Suspension</button>
-                                <button onclick="window.kickPlayer()" class="mt-3 text-slate-500 hover:text-slate-300 font-bold text-xs transition">Force Disconnect Term</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div id="playerStats" class="hidden panel p-8 rounded-2xl relative fade">
+        <div class="absolute top-8 right-8 flex gap-2">
+          <span id="ownerBadge" class="hidden text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider" style="background: var(--accent-soft); color: var(--accent);">OWNER</span>
+          <span id="adminBadge" class="hidden text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider" style="background: var(--moss-soft); color: var(--moss);">STAFF</span>
+          <span id="banBadge" class="hidden text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider" style="background: var(--danger-soft); color: #e08d7c;">BANNED</span>
         </div>
 
-        <div id="tab-allplayers" class="tab-content hidden max-w-5xl mx-auto animate-slide">
-            <div class="flex gap-4 mb-8 glass-panel p-3 rounded-2xl shadow-lg">
-                <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Filter arrays by string, tag, or identifier...">
-                <button onclick="window.clearQuickFilter()" class="bg-slate-800 px-8 rounded-xl hover:bg-slate-700 font-bold transition text-sm">Clear</button>
-                <button onclick="window.showProvisionModal()" class="bg-blue-600 text-white text-sm px-8 rounded-xl hover:bg-blue-500 font-bold transition shadow-lg">Manual Provision</button>
-            </div>
-            
-            <div class="glass-panel rounded-3xl shadow-2xl overflow-hidden">
-                <ul id="allList" class="divide-y divide-white/5 text-sm max-h-[600px] overflow-y-auto">
-                    <li class="py-10 text-slate-500 text-center font-medium">Awaiting array streaming...</li>
-                </ul>
-            </div>
-        </div>
+        <h3 class="font-display font-bold text-3xl mb-2" id="displayName">--</h3>
+        <p class="font-mono text-xs mb-7 inline-block px-3 py-1.5 rounded-lg panel-raised" style="color: var(--text-dim);">ID: <span id="displayId" style="color: var(--text);"></span></p>
 
-        <div id="tab-cosmetics" class="tab-content hidden max-w-5xl mx-auto animate-slide">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="md:col-span-1 glass-panel p-8 rounded-3xl shadow-2xl h-fit">
-                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-6">Commit Asset Schema</h3>
-                    <input id="newCosId" type="number" class="w-full p-3.5 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Unique Index ID">
-                    <input id="newCosName" type="text" class="w-full p-3.5 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Asset Display Name">
-                    <select id="newCosSlot" class="w-full p-3.5 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition text-slate-300">
-                        <option value="HeadCos">Attachment: Head</option>
-                        <option value="FaceCos">Attachment: Face</option>
-                        <option value="BodyCos">Attachment: Body</option>
-                        <option value="LeftCos">Attachment: Left Hand</option>
-                        <option value="RightCos">Attachment: Right Hand</option>
-                    </select>
-                    <input id="newCosPrice" type="number" class="w-full p-3.5 mb-8 bg-slate-950 border border-slate-800 rounded-xl text-sm focus:border-blue-500 outline-none transition" placeholder="Economy Value (PB)">
-                    <button onclick="window.createCosmetic()" class="bg-blue-600 font-bold py-3.5 w-full rounded-xl hover:bg-blue-500 text-sm transition text-white shadow-lg">Write to Database</button>
-                </div>
-                <div class="md:col-span-2 glass-panel p-8 rounded-3xl shadow-2xl flex flex-col">
-                    <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-6">Cloud Schema Catalog</h3>
-                    <ul id="globalCosmeticList" class="divide-y divide-white/5 text-sm flex-1 overflow-y-auto bg-slate-950 p-4 rounded-2xl border border-slate-800 shadow-inner">
-                        <li class="py-10 text-slate-600 text-center font-medium">Awaiting structure retrieval...</li>
-                    </ul>
-                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div class="panel-raised p-5 rounded-xl flex flex-col">
+            <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Pebbles</h4>
+            <p class="font-display font-bold text-3xl mb-5" id="pebbleCount" style="color: var(--accent);">0</p>
+            <div class="mt-auto">
+              <input type="number" id="pebbleAmount" class="w-full p-2.5 input-field rounded-lg text-center font-bold text-sm mb-2.5" placeholder="Amount">
+              <div class="flex gap-2 mb-2">
+                <button onclick="modifyPebbles(true)" class="flex-1 btn-ghost py-2 rounded-lg text-xs font-bold">Give</button>
+                <button onclick="modifyPebbles(false)" class="flex-1 btn-ghost py-2 rounded-lg text-xs font-bold">Take</button>
+              </div>
+              <button onclick="setPebblesExact()" class="w-full btn-ghost py-2 rounded-lg text-xs font-bold">Set exact amount</button>
             </div>
-        </div>
+          </div>
 
-        <div id="tab-projectsettings" class="tab-content hidden max-w-4xl mx-auto animate-slide">
-            <h1 class="text-3xl font-black text-white mb-8">Environment Parameters</h1>
-            <div class="glass-panel p-10 rounded-3xl shadow-2xl flex flex-col gap-6">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Project Designation String</label>
-                    <input id="projSettingNameInput" type="text" class="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-bold outline-none focus:border-blue-500 transition shadow-inner">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Asset Logo Remote URL</label>
-                    <input id="projSettingLogoInput" type="text" class="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-blue-500 transition shadow-inner">
-                </div>
-                <div class="pt-6 border-t border-white/5 mt-4">
-                    <button onclick="window.saveCurrentProjectSettings()" class="bg-blue-600 text-white font-bold py-4 px-10 rounded-xl hover:bg-blue-500 transition text-sm shadow-[0_0_20px_rgba(59,130,246,0.4)]">Update Architecture Settings</button>
-                </div>
+          <div class="panel-raised p-5 rounded-xl flex flex-col">
+            <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Identity</h4>
+            <input type="text" id="newName" class="w-full p-2.5 input-field rounded-lg text-sm mb-2.5" placeholder="Rename player">
+            <button onclick="changeName()" class="w-full btn-ghost font-bold py-2 rounded-lg text-xs mb-5">Rename</button>
+            <div class="flex gap-2 mb-2 mt-auto">
+              <input type="text" id="newTagInput" class="w-full p-2.5 input-field rounded-lg text-xs" placeholder="Add tag">
+              <button onclick="addPlayerTag()" class="btn-ghost px-3.5 font-bold rounded-lg">+</button>
             </div>
+            <div id="playerTagsContainer" class="flex flex-wrap gap-1.5 mt-2 max-h-16 overflow-y-auto"></div>
+          </div>
+
+          <div class="panel-raised p-5 rounded-xl flex flex-col justify-between">
+            <div>
+              <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Access</h4>
+              <div class="flex flex-col gap-2.5">
+                <button id="ownerToggleBtn" onclick="toggleOwner()" class="btn-ghost font-bold py-2.5 rounded-lg text-xs">Make owner</button>
+                <button id="adminToggleBtn" onclick="toggleAdmin()" class="btn-ghost font-bold py-2.5 rounded-lg text-xs">Make staff</button>
+                <button id="banToggleBtn" onclick="toggleBan()" class="btn-ghost font-bold py-2.5 rounded-lg text-xs" style="color: #e08d7c;">Ban player</button>
+                <button onclick="kickPlayer()" class="mt-1 font-bold text-xs transition text-center" style="color: var(--text-faint);">Kick now</button>
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
+
+    <!-- ALL PLAYERS -->
+    <div id="tab-allplayers" class="tab-content hidden max-w-4xl mx-auto rise">
+      <div class="flex gap-3 mb-7 panel p-2.5 rounded-xl">
+        <input type="text" id="quickFilterInput" oninput="applyQuickFilter()" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="Filter by name, ID, or tag...">
+        <button onclick="clearQuickFilter()" class="btn-ghost px-6 rounded-lg font-bold text-sm">Clear</button>
+        <button onclick="showProvisionModal()" class="btn-accent text-sm px-6 rounded-lg font-bold">Add manually</button>
+      </div>
+      <div class="panel rounded-2xl overflow-hidden">
+        <ul id="allList" class="divide-y text-sm max-h-[600px] overflow-y-auto" style="border-color: var(--hairline-soft);">
+          <li class="py-10 text-center font-medium" style="color: var(--text-faint);">Loading players...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="tab-cosmetics" class="tab-content hidden max-w-4xl mx-auto rise">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 panel p-7 rounded-2xl h-fit">
+          <h3 class="font-bold uppercase text-[10px] tracking-widest mb-5" style="color: var(--text-faint);">New cosmetic</h3>
+          <input id="newCosId" type="number" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Item ID">
+          <input id="newCosName" type="text" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Display name">
+          <select id="newCosSlot" class="w-full p-3 mb-3 input-field rounded-lg text-sm">
+            <option value="HeadCos">Slot: Head</option>
+            <option value="FaceCos">Slot: Face</option>
+            <option value="BodyCos">Slot: Body</option>
+            <option value="LeftCos">Slot: Left hand</option>
+            <option value="RightCos">Slot: Right hand</option>
+          </select>
+          <input id="newCosPrice" type="number" class="w-full p-3 mb-6 input-field rounded-lg text-sm" placeholder="Price in pebbles">
+          <button onclick="createCosmetic()" class="btn-accent font-bold py-3 w-full rounded-lg text-sm">Add to catalog</button>
+        </div>
+        <div class="md:col-span-2 panel p-7 rounded-2xl flex flex-col">
+          <h3 class="font-bold uppercase text-[10px] tracking-widest mb-5" style="color: var(--text-faint);">Catalog</h3>
+          <ul id="globalCosmeticList" class="divide-y text-sm flex-1 overflow-y-auto panel-raised p-2 rounded-xl" style="border-color: var(--hairline-soft);">
+            <li class="py-10 text-center font-medium" style="color: var(--text-faint);">No cosmetics yet.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT SETTINGS -->
+    <div id="tab-projectsettings" class="tab-content hidden max-w-3xl mx-auto rise">
+      <h1 class="font-display font-bold text-2xl mb-7">Project settings</h1>
+      <div class="panel p-8 rounded-2xl flex flex-col gap-5 mb-6">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-widest mb-2.5" style="color: var(--text-faint);">Project name</label>
+          <input id="projSettingNameInput" type="text" class="w-full p-3.5 input-field rounded-lg text-sm font-semibold">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-widest mb-2.5" style="color: var(--text-faint);">Logo URL</label>
+          <input id="projSettingLogoInput" type="text" class="w-full p-3.5 input-field rounded-lg text-sm font-mono">
+        </div>
+        <div class="pt-3">
+          <button onclick="saveCurrentProjectSettings()" class="btn-accent font-bold py-3 px-8 rounded-lg text-sm">Save changes</button>
+        </div>
+      </div>
+      <div class="rounded-2xl p-8" style="background: var(--danger-soft); border: 1px solid rgba(193,80,61,0.25);">
+        <h3 class="font-bold text-sm mb-1.5" style="color: #e08d7c;">Delete this project</h3>
+        <p class="text-xs mb-5" style="color: var(--text-dim);">Removes the project and its credentials. Player data stays in storage but becomes unreachable without the project ID.</p>
+        <button onclick="deleteCurrentProject()" class="font-bold py-2.5 px-6 rounded-lg text-xs" style="background: var(--danger); color: #1a0a06;">Delete project</button>
+      </div>
+    </div>
+
+    <!-- ACCESS (owner only) -->
+    <div id="tab-access" class="tab-content hidden max-w-3xl mx-auto rise">
+      <h1 class="font-display font-bold text-2xl mb-2">Dashboard access</h1>
+      <p class="text-sm mb-7" style="color: var(--text-dim);">Anyone signed in below can open this console with their Google or GitHub account. You're the owner and always have access.</p>
+      <div class="panel p-6 rounded-2xl mb-6">
+        <div class="flex gap-3">
+          <input id="newAllowedEmail" type="email" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="teammate@email.com">
+          <label class="flex items-center gap-2 text-xs font-semibold px-3" style="color: var(--text-dim);">
+            <input type="checkbox" id="newAllowedIsAdmin" checked> Staff
+          </label>
+          <button onclick="addAllowedEmail()" class="btn-accent font-bold px-7 rounded-lg text-sm">Grant access</button>
+        </div>
+      </div>
+      <div class="panel rounded-2xl overflow-hidden">
+        <ul id="allowedEmailsList" class="divide-y text-sm" style="border-color: var(--hairline-soft);">
+          <li class="py-8 text-center" style="color: var(--text-faint);">Loading...</li>
+        </ul>
+      </div>
+    </div>
+  </main>
 </div>
 
-<div id="createProjectModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-opacity">
-    <div class="glass-panel p-10 rounded-3xl w-full max-w-md shadow-2xl animate-slide text-center">
-        <h3 class="text-2xl font-black text-white mb-3">Allocate New Container</h3>
-        <p class="text-slate-400 text-sm mb-8">Provision a secure isolated environment segment.</p>
-        
-        <input id="newProjName" type="text" class="w-full p-4 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 text-white transition shadow-inner" placeholder="Environment Name">
-        <input id="newProjLogo" type="text" class="w-full p-4 mb-8 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-blue-500 text-white transition shadow-inner" placeholder="Optional Logo Target URL">
-        
-        <div class="flex gap-4">
-            <button onclick="window.submitCreateProject()" class="flex-1 bg-blue-600 font-bold p-3.5 rounded-xl text-sm hover:bg-blue-500 transition text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]">Generate Database</button>
-            <button onclick="document.getElementById('createProjectModal').classList.add('hidden')" class="bg-slate-800 font-bold px-8 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Abort</button>
-        </div>
+<!-- ============================== MODALS ============================== -->
+<div id="createProjectModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(12,16,14,0.85);">
+  <div class="panel rounded-2xl w-full max-w-sm p-7 rise">
+    <h3 class="font-display font-bold text-lg mb-5">New project</h3>
+    <input id="newProjName" type="text" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Project name">
+    <input id="newProjLogo" type="text" class="w-full p-3 mb-6 input-field rounded-lg text-sm" placeholder="Logo URL (optional)">
+    <div class="flex gap-3">
+      <button onclick="submitCreateProject()" class="flex-1 btn-accent font-bold py-3 rounded-lg text-sm">Create</button>
+      <button onclick="document.getElementById('createProjectModal').classList.add('hidden')" class="btn-ghost px-6 rounded-lg text-sm font-bold">Cancel</button>
     </div>
+  </div>
 </div>
 
-<div id="provisionModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-panel p-10 rounded-3xl w-full max-w-md shadow-2xl animate-slide text-center">
-        <h3 class="text-2xl font-black text-white mb-3">Manual Provisioning</h3>
-        <p class="text-slate-400 text-sm mb-8">Force a new record index into the database.</p>
-        
-        <input id="provPlayerId" type="text" class="w-full p-4 mb-4 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono outline-none focus:border-emerald-500 text-white transition shadow-inner" placeholder="Network Identifier (PUID)">
-        <input id="provPlayerName" type="text" class="w-full p-4 mb-8 bg-slate-950 border border-slate-800 rounded-xl text-sm outline-none focus:border-emerald-500 text-white transition shadow-inner" placeholder="Default Display Override">
-        
-        <div class="flex gap-4">
-            <button onclick="window.executeProvision()" class="flex-1 bg-emerald-600 font-bold p-3.5 rounded-xl text-sm hover:bg-emerald-500 transition text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]">Inject Data Block</button>
-            <button onclick="document.getElementById('provisionModal').classList.add('hidden')" class="bg-slate-800 font-bold px-8 rounded-xl text-sm text-slate-300 hover:bg-slate-700 transition">Abort</button>
-        </div>
+<div id="provisionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(12,16,14,0.85);">
+  <div class="panel rounded-2xl w-full max-w-sm p-7 rise">
+    <h3 class="font-display font-bold text-lg mb-5">Add a player manually</h3>
+    <input id="provPlayerId" type="text" class="w-full p-3 mb-3 input-field rounded-lg text-sm font-mono" placeholder="Player ID">
+    <input id="provPlayerName" type="text" class="w-full p-3 mb-6 input-field rounded-lg text-sm" placeholder="Display name (optional)">
+    <div class="flex gap-3">
+      <button onclick="executeProvision()" class="flex-1 font-bold py-3 rounded-lg text-sm" style="background: var(--moss); color: #0c1410;">Add player</button>
+      <button onclick="document.getElementById('provisionModal').classList.add('hidden')" class="btn-ghost px-6 rounded-lg text-sm font-bold">Cancel</button>
     </div>
+  </div>
 </div>
 
 <script>
-const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev/api"; 
+// =========================================================================
+// CONFIGURATION — point this at your deployed Worker.
+// =========================================================================
+const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 
-let activeUser = localStorage.getItem("cvr_override_user") || "";
+// =========================================================================
+// STATE
+// =========================================================================
+let sessionToken = localStorage.getItem("cvr_session") || null;
+let currentUser = null;
 let activeProject = null;
 let projectsArray = [];
 let fullPlayerCache = [];
 let globalCatalog = [];
-
-window.onload = async function() {
-    try {
-        let authReq = await fetch(WORKER_BASE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "auth_check" })
-        }).catch(() => null);
-        
-        if (authReq) {
-            let authRes = await authReq.json();
-            if (authRes.authenticated && authRes.email) {
-                activeUser = authRes.email;
-                document.getElementById("loginScreen").classList.add("hidden");
-                document.getElementById("userDisplayTag").innerText = activeUser;
-                window.showToast("Authenticated via Zero Trust Access");
-                window.loadProjects();
-                return;
-            }
-        }
-    } catch(e) {}
-    
-    if (activeUser) {
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("userDisplayTag").innerText = activeUser;
-        window.loadProjects();
-    } else {
-        document.getElementById("authStatusText").innerText = "Authentication Required";
-        document.getElementById("authActions").classList.remove("hidden");
-    }
-};
-
-window.masterOverrideLogin = function() {
-    const mockEmail = "developer_override@system";
-    localStorage.setItem("cvr_override_user", mockEmail);
-    activeUser = mockEmail;
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("userDisplayTag").innerText = activeUser;
-    window.showToast("Proceeding via Local Access Token");
-    window.loadProjects();
-};
-
-window.showToast = function(msg) {
-    let t = document.createElement('div');
-    t.className = 'toast fixed bottom-10 right-10 glass-panel text-white px-6 py-4 rounded-2xl shadow-2xl text-sm font-bold flex items-center gap-3 z-[100]';
-    t.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> ${msg}`;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3100);
-}
-
-window.copyToClipboard = function(elementId) {
-    const el = document.getElementById(elementId);
-    el.select();
-    document.execCommand("copy");
-    window.showToast("Copied to local clipboard cache.");
-}
-
-window.toggleKeyVisibility = function(elementId) {
-    const el = document.getElementById(elementId);
-    el.type = el.type === "password" ? "text" : "password";
-}
-
-window.logout = function() {
-    localStorage.removeItem("cvr_override_user");
-    location.reload();
-};
-
-window.loadProjects = async function() {
-    let stored = localStorage.getItem(`cvr_projects_${activeUser}`);
-    if(stored) {
-        projectsArray = JSON.parse(stored);
-    } else {
-        projectsArray = [];
-    }
-    window.renderProjectsSidebar();
-    
-    if(projectsArray.length > 0) {
-        if(!activeProject) window.selectProject(projectsArray[0]);
-    } else {
-        activeProject = null;
-        document.getElementById("noProjectOverlay").classList.remove("hidden");
-    }
-};
-
-window.saveProjectsLocally = function() {
-    localStorage.setItem(`cvr_projects_${activeUser}`, JSON.stringify(projectsArray));
-}
-
-window.renderProjectsSidebar = function() {
-    const cont = document.getElementById("projectsListContainer");
-    cont.innerHTML = "";
-    if(projectsArray.length === 0) {
-        cont.innerHTML = `<p class="text-[10px] text-slate-600 italic px-2 font-medium">No architecture deployed.</p>`;
-        return;
-    }
-    projectsArray.forEach(p => {
-        let isSel = activeProject && activeProject.id === p.id;
-        let btn = document.createElement("button");
-        btn.className = `w-full text-left p-2.5 rounded-xl flex items-center gap-3 text-xs font-bold transition ${isSel ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30 shadow-inner' : 'bg-transparent text-slate-400 border border-transparent hover:bg-white/5'}`;
-        btn.onclick = () => window.selectProject(p);
-        btn.innerHTML = `<img src="${p.logo}" class="w-6 h-6 rounded-md object-cover shadow-sm"> <span class="truncate">${p.name}</span>`;
-        cont.appendChild(btn);
-    });
-};
-
-window.selectProject = function(proj) {
-    activeProject = proj;
-    document.getElementById("noProjectOverlay").classList.add("hidden");
-    window.renderProjectsSidebar();
-    
-    document.getElementById("overviewProjId").value = proj.id;
-    document.getElementById("overviewEndpoint").value = proj.endpoint;
-    document.getElementById("overviewApiKey").value = proj.apiKey;
-    document.getElementById("projSettingNameInput").value = proj.name;
-    document.getElementById("projSettingLogoInput").value = proj.logo;
-    
-    window.switchTab("overview");
-    window.fetchProjectData();
-};
-
-window.showCreateProjectModal = function() {
-    document.getElementById("createProjectModal").classList.remove("hidden");
-};
-
-window.submitCreateProject = function() {
-    const name = document.getElementById("newProjName").value.trim();
-    const logo = document.getElementById("newProjLogo").value.trim() || "https://placehold.co/150x150/1e293b/3b82f6?text=C";
-    if (!name) return;
-    
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let randUser = "";
-    for (let i = 0; i < 6; i++) randUser += chars.charAt(Math.floor(Math.random() * chars.length));
-    let randToken = "";
-    for (let i = 0; i < 16; i++) randToken += chars.toLowerCase().charAt(Math.floor(Math.random() * chars.length));
-    
-    const newProj = {
-        id: `F09Dg#${randUser}DVBP`,
-        endpoint: `https://api.clouor.vr/api/${randToken}`,
-        apiKey: `cvr_live_${randToken}${randUser.toLowerCase()}`,
-        name: name,
-        logo: logo
-    };
-    
-    projectsArray.push(newProj);
-    window.saveProjectsLocally();
-    
-    document.getElementById("createProjectModal").classList.add("hidden");
-    document.getElementById("newProjName").value = "";
-    document.getElementById("newProjLogo").value = "";
-    
-    window.selectProject(newProj);
-    window.showToast("Database container allocated.");
-};
-
-window.saveCurrentProjectSettings = function() {
-    if(!activeProject) return;
-    const name = document.getElementById("projSettingNameInput").value.trim();
-    const logo = document.getElementById("projSettingLogoInput").value.trim();
-    
-    let idx = projectsArray.findIndex(p => p.id === activeProject.id);
-    if(idx > -1) {
-        projectsArray[idx].name = name;
-        projectsArray[idx].logo = logo;
-        window.saveProjectsLocally();
-        window.selectProject(projectsArray[idx]);
-        window.showToast("Environment parameters updated.");
-    }
-};
-
-window.switchTab = function(tabId) {
-    document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-    document.getElementById(`tab-${tabId}`).classList.remove("hidden");
-    
-    const titles = {
-        'overview': 'System Overview',
-        'players': 'Player Operations',
-        'allplayers': 'Database Registry',
-        'cosmetics': 'Asset Catalog',
-        'projectsettings': 'Configuration'
-    };
-    document.getElementById('currentTabTitle').innerText = titles[tabId];
-
-    document.querySelectorAll("#mainNav button").forEach(b => {
-        b.className = "text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent";
-    });
-    const activeBtn = document.getElementById(`btn-${tabId}`);
-    if (activeBtn) {
-        activeBtn.className = "text-left px-4 py-3 rounded-xl font-bold transition text-sm flex items-center gap-3 bg-blue-500/20 text-blue-400 border border-blue-500/30";
-    }
-};
-
-async function apiCall(payload) {
-    if (!activeProject) return null;
-    try {
-        let res = await fetch(WORKER_BASE_URL, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json", 
-                "Authorization": activeProject.apiKey,
-                "x-project-id": activeProject.id
-            },
-            body: JSON.stringify(payload)
-        }).catch(() => null);
-        if (!res) return null;
-        let text = await res.text();
-        return text ? JSON.parse(text) : null;
-    } catch(e) { 
-        return null; 
-    }
-}
-
-window.fetchProjectData = async function() {
-    let res = await apiCall({ action: 'get_all' });
-    if (!res) {
-        fullPlayerCache = [];
-        globalCatalog = [];
-        document.getElementById('statDataGB').innerHTML = `0.000000 <span class="text-lg text-slate-500">GB</span>`;
-    } else {
-        fullPlayerCache = res.players || [];
-        globalCatalog = res.catalog || [];
-        if(res.dataGB) {
-            document.getElementById('statDataGB').innerHTML = `${res.dataGB} <span class="text-lg text-slate-500">GB</span>`;
-        }
-    }
-    window.renderAllPlayers();
-    window.renderCosmetics();
-};
-
-window.renderAllPlayers = function() {
-    const list = document.getElementById("allList");
-    if(!list) return;
-    list.innerHTML = "";
-    
-    let concurrentCount = 0;
-    
-    if(fullPlayerCache.length === 0) {
-        list.innerHTML = `<li class="py-10 text-slate-500 text-center font-medium">Dataset configuration empty.</li>`;
-        document.getElementById('liveConcurrent').innerText = "0";
-        document.getElementById('statInGame').innerText = "0";
-        return;
-    }
-    
-    fullPlayerCache.forEach(p => {
-        let isOnline = false;
-        if (p.lastSeen) {
-            let lastActive = new Date(p.lastSeen).getTime();
-            if (Date.now() - lastActive < 45000) { isOnline = true; concurrentCount++; }
-        }
-        
-        let statusMarker = isOnline ? '<span class="w-3 h-3 rounded-full bg-emerald-500 inline-block mr-4 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>' : '<span class="w-3 h-3 rounded-full bg-white/10 inline-block mr-4"></span>';
-        let isBanned = p.isBanned ? '<span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] font-bold px-2 py-1 rounded-md ml-3">SUSPENDED</span>' : '';
-        let owner = p.isOwner ? '<span class="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[9px] font-bold px-2 py-1 rounded-md ml-3">OWNER</span>' : '';
-        
-        list.innerHTML += `<li class="py-4 px-6 flex justify-between items-center cursor-pointer hover:bg-white/5 transition" onclick="window.loadPlayerProfile('${p.id}')">
-        <span class="flex items-center">${statusMarker} <span class="font-bold text-slate-200">${p.name}</span> ${owner} ${isBanned}</span>
-        <span class="text-slate-500 text-[10px] font-mono bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">${p.id}</span></li>`;
-    });
-    
-    document.getElementById('liveConcurrent').innerText = concurrentCount;
-    document.getElementById('statInGame').innerText = concurrentCount;
-};
-
-window.renderCosmetics = function() {
-    let clist = document.getElementById('globalCosmeticList');
-    if(!clist) return;
-    clist.innerHTML = '';
-    if(globalCatalog.length > 0) {
-        globalCatalog.forEach(c => {
-            clist.innerHTML += `<li class="py-4 px-5 flex justify-between items-center hover:bg-white/5 transition rounded-xl">
-                <span class="text-blue-400 font-bold text-sm">${c.itemName} <span class="text-slate-500 text-[9px] ml-2 uppercase border border-slate-700 px-1.5 py-0.5 rounded-md">${c.cosmeticSlot}</span></span>
-                <button onclick="window.deleteCosmetic('${c.itemName}')" class="text-red-500 hover:text-red-400 text-[10px] font-black uppercase transition shadow-sm">Delete</button>
-            </li>`;
-        });
-    } else {
-        clist.innerHTML = '<li class="py-10 text-slate-600 text-center font-medium">Schema catalog empty.</li>';
-    }
-}
-
 let selectedPlayer = null;
-window.loadPlayerProfile = function(pid) {
-    let p = fullPlayerCache.find(x => x.id === pid);
-    if(!p) return;
-    selectedPlayer = p;
-    window.switchTab('players');
-    document.getElementById('playerStats').classList.remove('hidden');
-    document.getElementById('displayName').innerText = p.name;
-    document.getElementById('displayId').innerText = p.id;
-    document.getElementById('pebbleCount').innerText = p.pebbles || 0;
-    
-    document.getElementById('ownerBadge').classList.toggle('hidden', !p.isOwner);
-    document.getElementById('adminBadge').classList.toggle('hidden', !p.isAdmin);
-    document.getElementById('banBadge').classList.toggle('hidden', !p.isBanned);
-    
-    let tagsContainer = document.getElementById('playerTagsContainer');
-    tagsContainer.innerHTML = '';
-    if(p.tags && p.tags.length > 0) {
-        p.tags.forEach(tag => {
-            tagsContainer.innerHTML += `<span class="bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-md flex items-center gap-2">${tag} <button onclick="window.removePlayerTag('${tag}')" class="text-red-400 hover:text-red-300 transition font-black">X</button></span>`;
-        });
-    } else {
-        tagsContainer.innerHTML = '<span class="text-slate-600 text-xs italic">Unassigned properties.</span>';
+let pollHandle = null;
+
+// =========================================================================
+// BOOT / AUTH
+// =========================================================================
+window.onload = async function () {
+  const hash = new URLSearchParams(location.hash.replace(/^#/, ""));
+  if (hash.get("session")) {
+    sessionToken = hash.get("session");
+    localStorage.setItem("cvr_session", sessionToken);
+    history.replaceState(null, "", location.pathname);
+  }
+  if (hash.get("auth_error")) {
+    showLoginError(hash.get("auth_error"));
+    history.replaceState(null, "", location.pathname);
+  }
+
+  if (!sessionToken) return; // stay on login screen
+
+  const who = await apiCall({ action: "whoami" }, { skipProjectId: true });
+  if (!who || !who.authenticated) {
+    localStorage.removeItem("cvr_session");
+    sessionToken = null;
+    return;
+  }
+
+  currentUser = who;
+  enterDashboard();
+};
+
+function showLoginError(reason) {
+  const messages = {
+    not_authorized: "That account isn't on the access list yet. Ask the owner to add your email.",
+    missing_code: "The sign-in flow was interrupted. Try again.",
+    invalid_state: "That sign-in link expired. Try again.",
+    token_exchange_failed: "Couldn't confirm your account with the provider. Try again.",
+    no_email: "Your account didn't share an email address. Use an account with a verified email.",
+  };
+  const el = document.getElementById("loginErrorText");
+  el.innerText = messages[reason] || "Sign-in failed. Try again.";
+  el.classList.remove("hidden");
+}
+
+function loginWithGoogle() { location.href = `${WORKER_BASE_URL}/auth/google/start`; }
+function loginWithGithub() { location.href = `${WORKER_BASE_URL}/auth/github/start`; }
+
+function logout() {
+  localStorage.removeItem("cvr_session");
+  if (pollHandle) clearInterval(pollHandle);
+  location.reload();
+}
+
+function enterDashboard() {
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("userDisplayTag").innerText = currentUser.email;
+  if (currentUser.isOwner) document.getElementById("btn-access").classList.remove("hidden");
+  loadProjects();
+  pollHandle = setInterval(fetchProjectData, 5000);
+}
+
+// =========================================================================
+// API
+// =========================================================================
+async function apiCall(payload, opts = {}) {
+  try {
+    const body = { ...payload };
+    if (!opts.skipProjectId && activeProject && !body.projectId) body.projectId = activeProject.id;
+    const res = await fetch(WORKER_BASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${sessionToken}` },
+      body: JSON.stringify(body),
+    }).catch(() => null);
+    if (!res) return null;
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  } catch {
+    return null;
+  }
+}
+
+// =========================================================================
+// TOAST / UTIL
+// =========================================================================
+function showToast(msg) {
+  const t = document.createElement("div");
+  t.className = "toast fixed bottom-8 right-8 panel px-5 py-3.5 rounded-xl text-sm font-semibold flex items-center gap-3 z-[100]";
+  t.innerHTML = `<span class="w-2 h-2 rounded-full" style="background: var(--moss);"></span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function copyToClipboard(elementId) {
+  const el = document.getElementById(elementId);
+  el.select();
+  document.execCommand("copy");
+  showToast("Copied to clipboard.");
+}
+
+function toggleKeyVisibility(elementId) {
+  const el = document.getElementById(elementId);
+  el.type = el.type === "password" ? "text" : "password";
+}
+
+// =========================================================================
+// PROJECTS
+// =========================================================================
+async function loadProjects() {
+  const res = await apiCall({ action: "get_projects" }, { skipProjectId: true });
+  projectsArray = (res && res.projects) || [];
+  renderProjectsSidebar();
+
+  if (projectsArray.length > 0) {
+    if (!activeProject) selectProject(projectsArray[0]);
+  } else {
+    activeProject = null;
+    document.getElementById("noProjectOverlay").classList.remove("hidden");
+  }
+}
+
+function renderProjectsSidebar() {
+  const cont = document.getElementById("projectsListContainer");
+  cont.innerHTML = "";
+  if (projectsArray.length === 0) {
+    cont.innerHTML = `<p class="text-[10px] italic px-2" style="color: var(--text-faint);">No projects yet.</p>`;
+    return;
+  }
+  projectsArray.forEach((p) => {
+    const isSel = activeProject && activeProject.id === p.id;
+    const btn = document.createElement("button");
+    btn.className = `w-full text-left p-2.5 rounded-lg flex items-center gap-2.5 text-xs font-bold transition ${isSel ? "" : "hover:bg-white/5"}`;
+    btn.style.cssText = isSel ? "background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(232,163,61,0.25);" : "color: var(--text-dim); border: 1px solid transparent;";
+    btn.onclick = () => selectProject(p);
+    btn.innerHTML = `<img src="${p.logo}" class="w-5 h-5 rounded object-cover"> <span class="truncate">${p.name}</span>`;
+    cont.appendChild(btn);
+  });
+}
+
+function selectProject(proj) {
+  activeProject = proj;
+  document.getElementById("noProjectOverlay").classList.add("hidden");
+  renderProjectsSidebar();
+
+  document.getElementById("overviewProjId").value = proj.id;
+  document.getElementById("overviewEndpoint").value = proj.endpoint;
+  document.getElementById("overviewApiKey").value = proj.apiKey;
+  document.getElementById("projSettingNameInput").value = proj.name;
+  document.getElementById("projSettingLogoInput").value = proj.logo;
+
+  switchTab("overview");
+  fetchProjectData();
+}
+
+function showCreateProjectModal() { document.getElementById("createProjectModal").classList.remove("hidden"); }
+
+async function submitCreateProject() {
+  const name = document.getElementById("newProjName").value.trim();
+  const logo = document.getElementById("newProjLogo").value.trim();
+  if (!name) return;
+  const res = await apiCall({ action: "create_project", name, logo }, { skipProjectId: true });
+  document.getElementById("createProjectModal").classList.add("hidden");
+  document.getElementById("newProjName").value = "";
+  document.getElementById("newProjLogo").value = "";
+  if (res && res.ok) {
+    projectsArray.push(res.project);
+    selectProject(res.project);
+    showToast("Project created.");
+  } else {
+    showToast("Couldn't create the project.");
+  }
+}
+
+async function saveCurrentProjectSettings() {
+  if (!activeProject) return;
+  const name = document.getElementById("projSettingNameInput").value.trim();
+  const logo = document.getElementById("projSettingLogoInput").value.trim();
+  const res = await apiCall({ action: "update_project", projectId: activeProject.id, name, logo });
+  if (res && res.ok) {
+    activeProject.name = name;
+    activeProject.logo = logo;
+    const idx = projectsArray.findIndex((p) => p.id === activeProject.id);
+    if (idx > -1) projectsArray[idx] = activeProject;
+    renderProjectsSidebar();
+    showToast("Project settings saved.");
+  }
+}
+
+async function deleteCurrentProject() {
+  if (!activeProject) return;
+  if (!confirm(`Delete "${activeProject.name}"? This can't be undone.`)) return;
+  const res = await apiCall({ action: "delete_project", projectId: activeProject.id });
+  if (res && res.ok) {
+    projectsArray = projectsArray.filter((p) => p.id !== activeProject.id);
+    activeProject = null;
+    showToast("Project deleted.");
+    if (projectsArray.length > 0) selectProject(projectsArray[0]);
+    else document.getElementById("noProjectOverlay").classList.remove("hidden");
+  }
+}
+
+// =========================================================================
+// TABS
+// =========================================================================
+function switchTab(tabId) {
+  document.querySelectorAll(".tab-content").forEach((el) => el.classList.add("hidden"));
+  document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+
+  const titles = {
+    overview: "Overview", players: "Player lookup", allplayers: "All players",
+    cosmetics: "Catalog", projectsettings: "Project settings", access: "Access",
+  };
+  document.getElementById("currentTabTitle").innerText = titles[tabId];
+
+  document.querySelectorAll("#mainNav button").forEach((b) => b.classList.remove("active"));
+  const activeBtn = document.getElementById(`btn-${tabId}`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  if (tabId === "access") loadAllowedEmails();
+}
+
+// =========================================================================
+// PLAYER DATA
+// =========================================================================
+async function fetchProjectData() {
+  if (!activeProject) return;
+  const res = await apiCall({ action: "get_all", limit: 500 });
+  if (!res) {
+    fullPlayerCache = [];
+    globalCatalog = [];
+  } else {
+    fullPlayerCache = res.players || [];
+    globalCatalog = res.catalog || [];
+    if (res.dataGB) document.getElementById("statDataGB").innerHTML = `${res.dataGB} <span class="text-base font-normal" style="color: var(--text-faint);">GB</span>`;
+  }
+  renderAllPlayers();
+  renderCosmetics();
+  if (selectedPlayer) {
+    const fresh = fullPlayerCache.find((p) => p.id === selectedPlayer.id);
+    if (fresh) loadPlayerProfile(fresh.id);
+  }
+}
+
+function renderAllPlayers() {
+  const list = document.getElementById("allList");
+  if (!list) return;
+  list.innerHTML = "";
+  let concurrentCount = 0;
+
+  if (fullPlayerCache.length === 0) {
+    list.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No players yet.</li>`;
+    document.getElementById("liveConcurrent").innerText = "0";
+    document.getElementById("statInGame").innerText = "0";
+    return;
+  }
+
+  fullPlayerCache.forEach((p) => {
+    let isOnline = false;
+    if (p.lastSeen) {
+      const lastActive = new Date(p.lastSeen).getTime();
+      if (Date.now() - lastActive < 45000) { isOnline = true; concurrentCount++; }
     }
-};
+    const dot = isOnline
+      ? `<span class="w-2.5 h-2.5 rounded-full inline-block mr-3.5 status-dot" style="background: var(--moss);"></span>`
+      : `<span class="w-2.5 h-2.5 rounded-full inline-block mr-3.5" style="background: rgba(255,255,255,0.1);"></span>`;
+    const banned = p.isBanned ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ml-2.5" style="background: var(--danger-soft); color: #e08d7c;">BANNED</span>` : "";
+    const owner = p.isOwner ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ml-2.5" style="background: var(--accent-soft); color: var(--accent);">OWNER</span>` : "";
 
-window.searchPlayer = function() {
-    let input = document.getElementById('playerId').value.trim().toLowerCase();
-    let type = document.getElementById('searchType').value;
-    if (!input) return;
-    let p = fullPlayerCache.find(x => type === 'id' ? x.id.toLowerCase() === input : (x.name && x.name.toLowerCase().includes(input)));
-    if (p) window.loadPlayerProfile(p.id);
-    else { alert('Zero indexed matches derived.'); document.getElementById('playerStats').classList.add('hidden'); }
-};
+    const li = document.createElement("li");
+    li.className = "py-3.5 px-5 flex justify-between items-center cursor-pointer hover:bg-white/5 transition";
+    li.onclick = () => loadPlayerProfile(p.id);
+    li.innerHTML = `<span class="flex items-center">${dot}<span class="font-semibold">${escapeHtml(p.name)}</span>${owner}${banned}</span>
+      <span class="text-[10px] font-mono px-2.5 py-1 rounded panel-raised" style="color: var(--text-dim);">${escapeHtml(p.id)}</span>`;
+    list.appendChild(li);
+  });
 
-window.modifyPebbles = async function(isAdding) {
-    if(!selectedPlayer) return;
-    let amt = parseInt(document.getElementById('pebbleAmount').value);
-    if (isNaN(amt)) return;
-    let res = await apiCall({ action: 'edit_pebbles', id: selectedPlayer.id, amount: isAdding ? amt : -amt });
-    if(res && res.player) {
-        window.fetchProjectData();
-        window.loadPlayerProfile(selectedPlayer.id);
-        window.showToast("Economy ledger modified.");
-    }
-};
+  document.getElementById("liveConcurrent").innerText = concurrentCount;
+  document.getElementById("statInGame").innerText = concurrentCount;
+}
 
-window.setPebbles = async function() {
-    if(!selectedPlayer) return;
-    let amt = parseInt(document.getElementById('pebbleAmount').value);
-    if (isNaN(amt)) return;
-    let res = await apiCall({ action: 'set_pebbles', id: selectedPlayer.id, amount: amt });
-    if(res && res.player) {
-        window.fetchProjectData();
-        window.loadPlayerProfile(selectedPlayer.id);
-        window.showToast("Absolute economy established.");
-    }
-};
-
-window.changeName = async function() {
-    if(!selectedPlayer) return;
-    let name = document.getElementById('newName').value.trim();
-    if (!name) return;
-    let res = await apiCall({ action: 'set_name', id: selectedPlayer.id, value: name });
-    if(res && res.player) {
-        document.getElementById('newName').value = '';
-        window.fetchProjectData();
-        window.loadPlayerProfile(selectedPlayer.id);
-        window.showToast("Identity variables overriden.");
-    }
-};
-
-window.toggleOwner = async function() {
-    if(!selectedPlayer) return;
-    let res = await apiCall({ action: "toggle_owner", id: selectedPlayer.id });
-    if(res) {
-        window.fetchProjectData();
-        setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
-        window.showToast("Owner token variables modified.");
-    }
-};
-
-window.toggleAdmin = async function() {
-    if(!selectedPlayer) return;
-    let res = await apiCall({ action: 'toggle_admin', id: selectedPlayer.id });
-    if(res) {
-        window.fetchProjectData();
-        setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
-        window.showToast("Staff parameters shifted.");
-    }
-};
-
-window.toggleBan = async function() {
-    if(!selectedPlayer) return;
-    let res = await apiCall({ action: 'toggle_ban', id: selectedPlayer.id });
-    if(res) {
-        window.fetchProjectData();
-        setTimeout(() => window.loadPlayerProfile(selectedPlayer.id), 500);
-        window.showToast("Suspension directive altered.");
-    }
-};
-
-window.kickPlayer = async function() {
-    if(!selectedPlayer) return;
-    await apiCall({ action: 'add_cloud_command', targetId: selectedPlayer.id, command: 'kick', value: 'true' });
-    window.showToast("Force drop signal transmitted.");
-};
-
-window.showProvisionModal = function() {
-    document.getElementById("provisionModal").classList.remove("hidden");
-};
-
-window.executeProvision = async function() {
-    let id = document.getElementById('provPlayerId').value.trim();
-    let name = document.getElementById('provPlayerName').value.trim();
-    if(!id) return;
-    let res = await apiCall({ action: 'joined', id: id, name: name || "Chimp" });
-    if(res) {
-        document.getElementById("provisionModal").classList.add("hidden");
-        document.getElementById('provPlayerId').value = "";
-        document.getElementById('provPlayerName').value = "";
-        window.fetchProjectData();
-        window.showToast("Local index record successfully provisioned.");
-    }
-};
-
-window.applyQuickFilter = function() {
-    let val = document.getElementById('quickFilterInput').value.toLowerCase();
-    let items = document.querySelectorAll('#allList li');
-    items.forEach(li => {
-        let text = li.innerText.toLowerCase();
-        if(text.includes(val)) li.classList.remove('hidden');
-        else li.classList.add('hidden');
+function renderCosmetics() {
+  const clist = document.getElementById("globalCosmeticList");
+  if (!clist) return;
+  clist.innerHTML = "";
+  if (globalCatalog.length > 0) {
+    globalCatalog.forEach((c) => {
+      const li = document.createElement("li");
+      li.className = "py-3.5 px-4 flex justify-between items-center hover:bg-white/5 transition rounded-lg";
+      li.innerHTML = `<span class="font-semibold text-sm" style="color: var(--accent);">${escapeHtml(c.itemName)} <span class="text-[9px] ml-2 uppercase px-1.5 py-0.5 rounded" style="color: var(--text-faint); border: 1px solid var(--hairline-soft);">${escapeHtml(c.cosmeticSlot)}</span></span>
+        <button class="text-[10px] font-black uppercase" style="color: #e08d7c;">Delete</button>`;
+      li.querySelector("button").onclick = () => deleteCosmetic(c.itemName);
+      clist.appendChild(li);
     });
-};
+  } else {
+    clist.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No cosmetics yet.</li>`;
+  }
+}
 
-window.clearQuickFilter = function() {
-    document.getElementById('quickFilterInput').value = '';
-    window.applyQuickFilter();
-};
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.innerText = str ?? "";
+  return div.innerHTML;
+}
 
-window.createCosmetic = async function() {
-    let id = document.getElementById('newCosId').value;
-    let name = document.getElementById('newCosName').value.trim();
-    let slot = document.getElementById('newCosSlot').value;
-    let price = document.getElementById('newCosPrice').value;
-    if(!id || !name || !price) return;
-    let res = await apiCall({ action: 'add_cosmetic', id, name, slot, price });
-    if(res) {
-        document.getElementById('newCosId').value = '';
-        document.getElementById('newCosName').value = '';
-        document.getElementById('newCosPrice').value = '';
-        window.fetchProjectData();
-        window.showToast("Asset schema written to cloud.");
-    }
-};
+function loadPlayerProfile(pid) {
+  const p = fullPlayerCache.find((x) => x.id === pid);
+  if (!p) return;
+  selectedPlayer = p;
+  switchTab("players");
+  document.getElementById("playerStats").classList.remove("hidden");
+  document.getElementById("displayName").innerText = p.name;
+  document.getElementById("displayId").innerText = p.id;
+  document.getElementById("pebbleCount").innerText = p.pebbles || 0;
 
-window.deleteCosmetic = async function(name) {
-    let res = await apiCall({ action: 'remove_comm_cosmetic', name });
-    if(res) {
-        window.fetchProjectData();
-        window.showToast("Asset purged from global tracking.");
-    }
-};
+  document.getElementById("ownerBadge").classList.toggle("hidden", !p.isOwner);
+  document.getElementById("adminBadge").classList.toggle("hidden", !p.isAdmin);
+  document.getElementById("banBadge").classList.toggle("hidden", !p.isBanned);
+  document.getElementById("ownerToggleBtn").innerText = p.isOwner ? "Remove owner" : "Make owner";
+  document.getElementById("adminToggleBtn").innerText = p.isAdmin ? "Remove staff" : "Make staff";
+  document.getElementById("banToggleBtn").innerText = p.isBanned ? "Unban player" : "Ban player";
 
-setInterval(window.fetchProjectData, 15000);
+  const tagsContainer = document.getElementById("playerTagsContainer");
+  tagsContainer.innerHTML = "";
+  if (p.tags && p.tags.length > 0) {
+    p.tags.forEach((tag) => {
+      const span = document.createElement("span");
+      span.className = "text-[10px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1.5";
+      span.style.cssText = "background: var(--moss-soft); color: var(--moss);";
+      span.innerHTML = `${escapeHtml(tag)} <button style="color:#e08d7c;">×</button>`;
+      span.querySelector("button").onclick = () => removePlayerTag(tag);
+      tagsContainer.appendChild(span);
+    });
+  } else {
+    tagsContainer.innerHTML = `<span class="text-xs italic" style="color: var(--text-faint);">No tags yet.</span>`;
+  }
+}
+
+function searchPlayer() {
+  const input = document.getElementById("playerId").value.trim().toLowerCase();
+  const type = document.getElementById("searchType").value;
+  if (!input) return;
+  const p = fullPlayerCache.find((x) => (type === "id" ? x.id.toLowerCase() === input : (x.name || "").toLowerCase().includes(input)));
+  if (p) loadPlayerProfile(p.id);
+  else { showToast("No matching player found."); document.getElementById("playerStats").classList.add("hidden"); }
+}
+
+async function modifyPebbles(isAdding) {
+  if (!selectedPlayer) return;
+  const amt = parseInt(document.getElementById("pebbleAmount").value);
+  if (isNaN(amt)) return;
+  const res = await apiCall({ action: "edit_pebbles", id: selectedPlayer.id, amount: isAdding ? amt : -amt });
+  if (res && res.player) { fetchProjectData(); showToast(isAdding ? "Pebbles added." : "Pebbles taken."); }
+}
+
+async function setPebblesExact() {
+  if (!selectedPlayer) return;
+  const amt = parseInt(document.getElementById("pebbleAmount").value);
+  if (isNaN(amt)) return;
+  const res = await apiCall({ action: "set_pebbles", id: selectedPlayer.id, amount: amt });
+  if (res && res.player) { fetchProjectData(); showToast("Pebbles set."); }
+}
+
+async function changeName() {
+  if (!selectedPlayer) return;
+  const name = document.getElementById("newName").value.trim();
+  if (!name) return;
+  const res = await apiCall({ action: "set_name", id: selectedPlayer.id, value: name });
+  if (res && res.player) { document.getElementById("newName").value = ""; fetchProjectData(); showToast("Player renamed."); }
+}
+
+async function addPlayerTag() {
+  if (!selectedPlayer) return;
+  const tag = document.getElementById("newTagInput").value.trim();
+  if (!tag) return;
+  const res = await apiCall({ action: "add_tag", id: selectedPlayer.id, value: tag });
+  if (res && res.player) { document.getElementById("newTagInput").value = ""; fetchProjectData(); }
+}
+
+async function removePlayerTag(tag) {
+  if (!selectedPlayer) return;
+  const res = await apiCall({ action: "remove_tag", id: selectedPlayer.id, value: tag });
+  if (res && res.player) fetchProjectData();
+}
+
+async function toggleOwner() {
+  if (!selectedPlayer) return;
+  const res = await apiCall({ action: "toggle_owner", id: selectedPlayer.id });
+  if (res) { fetchProjectData(); showToast("Owner access updated — takes effect instantly in-game."); }
+}
+
+async function toggleAdmin() {
+  if (!selectedPlayer) return;
+  const res = await apiCall({ action: "toggle_admin", id: selectedPlayer.id });
+  if (res) { fetchProjectData(); showToast("Staff role updated — takes effect instantly in-game."); }
+}
+
+async function toggleBan() {
+  if (!selectedPlayer) return;
+  const res = await apiCall({ action: "toggle_ban", id: selectedPlayer.id });
+  if (res) { fetchProjectData(); showToast("Ban status updated — takes effect instantly in-game."); }
+}
+
+async function kickPlayer() {
+  if (!selectedPlayer) return;
+  await apiCall({ action: "add_cloud_command", targetId: selectedPlayer.id, command: "kick", value: "true" });
+  showToast("Kick sent — the player will be dropped within a few seconds.");
+}
+
+function showProvisionModal() { document.getElementById("provisionModal").classList.remove("hidden"); }
+
+async function executeProvision() {
+  const id = document.getElementById("provPlayerId").value.trim();
+  const name = document.getElementById("provPlayerName").value.trim();
+  if (!id) return;
+  const res = await apiCall({ action: "joined", id, name: name || "Chimp" });
+  if (res) {
+    document.getElementById("provisionModal").classList.add("hidden");
+    document.getElementById("provPlayerId").value = "";
+    document.getElementById("provPlayerName").value = "";
+    fetchProjectData();
+    showToast("Player added.");
+  }
+}
+
+function applyQuickFilter() {
+  const val = document.getElementById("quickFilterInput").value.toLowerCase();
+  document.querySelectorAll("#allList li").forEach((li) => {
+    li.classList.toggle("hidden", !li.innerText.toLowerCase().includes(val));
+  });
+}
+
+function clearQuickFilter() {
+  document.getElementById("quickFilterInput").value = "";
+  applyQuickFilter();
+}
+
+async function createCosmetic() {
+  const id = document.getElementById("newCosId").value;
+  const name = document.getElementById("newCosName").value.trim();
+  const slot = document.getElementById("newCosSlot").value;
+  const price = document.getElementById("newCosPrice").value;
+  if (!id || !name || !price) return;
+  const res = await apiCall({ action: "add_cosmetic", id, name, slot, price });
+  if (res) {
+    document.getElementById("newCosId").value = "";
+    document.getElementById("newCosName").value = "";
+    document.getElementById("newCosPrice").value = "";
+    fetchProjectData();
+    showToast("Cosmetic added.");
+  }
+}
+
+async function deleteCosmetic(name) {
+  const res = await apiCall({ action: "remove_comm_cosmetic", name });
+  if (res) { fetchProjectData(); showToast("Cosmetic removed."); }
+}
+
+// =========================================================================
+// ACCESS (owner only)
+// =========================================================================
+async function loadAllowedEmails() {
+  const res = await apiCall({ action: "get_allowed_emails" }, { skipProjectId: true });
+  const list = document.getElementById("allowedEmailsList");
+  const allowed = (res && res.allowed) || [];
+  list.innerHTML = "";
+  if (allowed.length === 0) {
+    list.innerHTML = `<li class="py-8 text-center" style="color: var(--text-faint);">No one added yet — you're the only one with access.</li>`;
+    return;
+  }
+  allowed.forEach((entry) => {
+    const email = typeof entry === "string" ? entry : entry.email;
+    const isAdmin = typeof entry === "string" ? true : entry.isAdmin !== false;
+    const li = document.createElement("li");
+    li.className = "py-4 px-6 flex justify-between items-center";
+    li.innerHTML = `<span class="font-mono text-sm">${escapeHtml(email)} <span class="text-[9px] ml-2 uppercase px-1.5 py-0.5 rounded" style="color: var(--text-faint); border: 1px solid var(--hairline-soft);">${isAdmin ? "Staff" : "Viewer"}</span></span>
+      <button class="text-[10px] font-black uppercase" style="color: #e08d7c;">Remove</button>`;
+    li.querySelector("button").onclick = () => removeAllowedEmail(email);
+    list.appendChild(li);
+  });
+}
+
+async function addAllowedEmail() {
+  const email = document.getElementById("newAllowedEmail").value.trim();
+  const isAdmin = document.getElementById("newAllowedIsAdmin").checked;
+  if (!email) return;
+  const res = await apiCall({ action: "add_allowed_email", email, isAdmin }, { skipProjectId: true });
+  if (res && res.ok) {
+    document.getElementById("newAllowedEmail").value = "";
+    loadAllowedEmails();
+    showToast("Access granted.");
+  }
+}
+
+async function removeAllowedEmail(email) {
+  const res = await apiCall({ action: "remove_allowed_email", email }, { skipProjectId: true });
+  if (res && res.ok) { loadAllowedEmails(); showToast("Access removed."); }
+}
 </script>
 </body>
 </html>
