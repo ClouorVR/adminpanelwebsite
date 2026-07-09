@@ -135,6 +135,7 @@ Custom Nickname: <span id="displayNickname"></span>
 <div class="flex gap-2 mb-4 max-w-4xl">
 <input type="text" id="quickFilterInput" oninput="window.applyQuickFilter()" class="flex-1 p-3 bg-gray-900 border border-gray-800 rounded-lg text-sm font-mono text-white outline-none focus:border-orange-500" placeholder="Quick filter by name, nickname, tag or PUID...">
 <button onclick="window.clearQuickFilter()" class="bg-gray-800 text-sm px-6 rounded-lg hover:bg-gray-700 font-bold">Clear</button>
+<button onclick="window.grantPebblesToAll()" class="bg-yellow-600 text-gray-950 text-sm px-6 rounded-lg hover:bg-yellow-500 font-bold">Mass Reward PB</button>
 </div>
 <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 max-w-4xl shadow-lg">
 <ul id="allList" class="divide-y divide-gray-800 font-mono text-sm max-h-[600px] overflow-y-auto pr-2">
@@ -179,7 +180,7 @@ Custom Nickname: <span id="displayNickname"></span>
 <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Message of the Day (MOTD)</label>
 <input id="titleMotd" type="text" class="w-full p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" placeholder="Welcome to ClouorVR!">
 </div>
-<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="grid grid-cols-2 gap-4 mb-4">
 <div>
 <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Global Pebble Multiplier</label>
 <input id="titleMultiplier" type="number" step="0.1" class="w-full p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" value="1.0">
@@ -188,6 +189,10 @@ Custom Nickname: <span id="displayNickname"></span>
 <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Required Client Version</label>
 <input id="titleVersion" type="text" class="w-full p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm font-mono text-white focus:border-orange-500 outline-none" value="1.0.0">
 </div>
+</div>
+<div class="mb-6 flex items-center gap-2 bg-gray-950 p-3 rounded-lg border border-gray-800">
+<input id="titleMaintenance" type="checkbox" class="w-4 h-4 accent-orange-500">
+<label for="titleMaintenance" class="text-xs font-bold text-gray-400 uppercase">Enable Server Maintenance Mode</label>
 </div>
 <button onclick="window.saveTitleData()" class="bg-orange-600 font-bold py-3 px-6 rounded-lg hover:bg-orange-500 text-sm transition">Commit Title Settings to Cloud</button>
 </div>
@@ -549,28 +554,20 @@ window.refreshCurrentPlayer();
 window.loadAllPlayers();
 }
 window.toggleOwner = async function() {
-	let id = document.getElementById('displayId').innerText.trim();
-	if(!id) { alert('Load a player first! :3'); return; }
-	let pw = prompt('Enter owner PIN:');
-	if (pw !== 'monke2026') { alert('Wrong PIN'); return; }
-
-	// Try toggling via backend (some backends may not support toggle_owner).
-	await apiCall({ action: 'toggle_owner', id });
-
-	// Also enqueue a cloud command so MirrorVR servers that poll the worker apply the change.
-	await apiCall({ action: 'add_cloud_command', targetId: id, command: 'grant_owner', value: 'true' });
-
-	// Update local cache so the dashboard reflects the change immediately.
-	try {
-		let idx = window.fullPlayerCache.findIndex(p => p.id === id);
-		if (idx !== -1) {
-			window.fullPlayerCache[idx].isOwner = true;
-		}
-	} catch (e) {}
-
-	window.logEvent(`Owner token requested for ${id}`);
-	await window.refreshCurrentPlayer();
-	await window.loadAllPlayers();
+let id = document.getElementById('displayId').innerText.trim();
+if(!id) { alert('Load a player first! :3'); return; }
+let pw = prompt('Enter owner PIN:');
+if (pw !== 'monke2026') { alert('Wrong PIN'); return; }
+await apiCall({ action: 'add_cloud_command', targetId: id, command: 'grant_owner', value: 'true' });
+try {
+let idx = window.fullPlayerCache.findIndex(p => p.id === id);
+if (idx !== -1) {
+window.fullPlayerCache[idx].isOwner = true;
+}
+} catch (e) {}
+window.logEvent(`Owner token requested for ${id}`);
+await window.refreshCurrentPlayer();
+await window.loadAllPlayers();
 }
 window.toggleAdmin = async function() {
 let id = document.getElementById('displayId').innerText.trim();
@@ -588,18 +585,17 @@ window.logEvent(`Ban token toggled for ${id}`);
 await window.refreshCurrentPlayer();
 }
 window.grantPebblesToAll = async function() {
-	let amt = parseInt(prompt('Amount of Pebbles to give each player:'));
-	if (isNaN(amt)) return;
-	if (!confirm(`Give ${amt} pebbles to all ${window.fullPlayerCache.length} players?`)) return;
-	for (let i = 0; i < window.fullPlayerCache.length; i++) {
-		const p = window.fullPlayerCache[i];
-		if (!p || !p.id) continue;
-		await apiCall({ action: 'edit_pebbles', id: p.id, amount: amt });
-		// small delay so the worker isn't hammered
-		await new Promise(r => setTimeout(r, 50));
-	}
-	window.logEvent(`Granted ${amt} pebbles to all players`);
-	await window.loadAllPlayers();
+let amt = parseInt(prompt('Amount of Pebbles to give each player:'));
+if (isNaN(amt)) return;
+if (!confirm(`Give ${amt} pebbles to all ${window.fullPlayerCache.length} players?`)) return;
+for (let i = 0; i < window.fullPlayerCache.length; i++) {
+const p = window.fullPlayerCache[i];
+if (!p || !p.id) continue;
+await apiCall({ action: 'edit_pebbles', id: p.id, amount: amt });
+await new Promise(r => setTimeout(r, 50));
+}
+window.logEvent(`Granted ${amt} pebbles to all players`);
+await window.loadAllPlayers();
 }
 window.wipeCosmetics = async function() {
 let id = document.getElementById('displayId').innerText.trim();
@@ -684,8 +680,9 @@ window.saveTitleData = async function() {
 let motd = document.getElementById('titleMotd').value;
 let mult = document.getElementById('titleMultiplier').value;
 let ver = document.getElementById('titleVersion').value;
-await apiCall({ action: 'set_title_data', data: { motd: motd, multiplier: mult, version: ver } });
-window.logEvent(`Global Title Data updated -> MOTD: ${motd} | Mult: ${mult}`);
+let maint = document.getElementById('titleMaintenance').checked;
+await apiCall({ action: 'set_title_data', data: { motd: motd, multiplier: mult, version: ver, maintenance: maint } });
+window.logEvent(`Global Title Data updated -> MOTD: ${motd} | Mult: ${mult} | Maint: ${maint}`);
 alert('Title Data Saved :D');
 }
 window.publishNews = async function() {
@@ -708,7 +705,9 @@ alert('Broadcast sent to all rooms :D');
 }
 window.runCloudScript = async function() {
 let func = document.getElementById('cloudscriptName').value.trim();
+let args = document.getElementById('cloudscriptArgs').value.trim();
 if(!func) return;
+await apiCall({ action: 'run_cloudscript', name: func, arguments: args });
 window.logEvent(`Executed PlayFab CloudScript: ${func}`);
 alert('script queued >:D');
 }
@@ -781,9 +780,11 @@ if(res.titleData) {
 let motdInput = document.getElementById('titleMotd');
 let multInput = document.getElementById('titleMultiplier');
 let verInput = document.getElementById('titleVersion');
+let maintInput = document.getElementById('titleMaintenance');
 if(motdInput && res.titleData.motd) motdInput.value = res.titleData.motd;
 if(multInput && res.titleData.multiplier) multInput.value = res.titleData.multiplier;
 if(verInput && res.titleData.version) verInput.value = res.titleData.version;
+if(maintInput && res.titleData.maintenance !== undefined) maintInput.checked = res.titleData.maintenance;
 }
 let list = document.getElementById('allList');
 if(!list) return;
