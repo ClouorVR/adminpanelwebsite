@@ -379,8 +379,23 @@ function unlockLogin() {
   document.getElementById("hcapBlock").style.display = "none"
 }
 
-async function loginWithGoogle() { await client.auth.signInWithOAuth({ provider: 'google' }) }
-async function loginWithGithub() { await client.auth.signInWithOAuth({ provider: 'github' }) }
+async function loginWithGoogle() { 
+  await client.auth.signInWithOAuth({ 
+    provider: 'google',
+    options: {
+      redirectTo: 'https://clouorvr.github.io/adminpanelwebsite/' 
+    }
+  }) 
+}
+
+async function loginWithGithub() { 
+  await client.auth.signInWithOAuth({ 
+    provider: 'github',
+    options: {
+      redirectTo: 'https://clouorvr.github.io/adminpanelwebsite/' 
+    }
+  }) 
+}
 async function logout() { await client.auth.signOut(); location.reload() }
 
 function enterDashboard() {
