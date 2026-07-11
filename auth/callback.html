@@ -1,0 +1,10 @@
+
+const { data, error } = await supabase.auth.exchangeCodeForSession(
+  new URLSearchParams(window.location.search).get('code')
+);
+
+if (!error) {
+  window.location.href = '/adminpanelwebsite';
+} else {
+  console.error("Auth error:", error);
+}
