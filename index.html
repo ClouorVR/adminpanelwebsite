@@ -143,14 +143,14 @@
     </div>
 
     <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto" id="mainNav" aria-label="Main">
-      <button onclick="switchTab('overview')" id="btn-overview" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Overview</button>
-      <button onclick="switchTab('players')" id="btn-players" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Players</button>
-      <button onclick="switchTab('currencies')" id="btn-currencies" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Currencies</button>
-      <button onclick="switchTab('cosmetics')" id="btn-cosmetics" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Catalog</button>
-      <button onclick="switchTab('activity')" id="btn-activity" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden">Activity</button>
-      <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Project</button>
-      <button onclick="switchTab('access')" id="btn-access" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden">Access</button>
-      <button onclick="switchTab('settings')" id="btn-settings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition">Settings</button>
+      <button onclick="switchTab('overview')" id="btn-overview" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🏕️</span><span id="lbl-overview">Overview</span></button>
+      <button onclick="switchTab('players')" id="btn-players" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🦍</span><span id="lbl-players">Players</span></button>
+      <button onclick="switchTab('currencies')" id="btn-currencies" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🍌</span><span id="lbl-currencies">Currencies</span></button>
+      <button onclick="switchTab('cosmetics')" id="btn-cosmetics" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🎨</span><span id="lbl-cosmetics">Catalog</span></button>
+      <button onclick="switchTab('activity')" id="btn-activity" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><span aria-hidden="true" class="mr-2.5">📜</span><span id="lbl-activity">Activity</span></button>
+      <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">⚙️</span><span id="lbl-projectsettings">Project</span></button>
+      <button onclick="switchTab('access')" id="btn-access" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><span aria-hidden="true" class="mr-2.5">🔑</span><span id="lbl-access">Access</span></button>
+      <button onclick="switchTab('settings')" id="btn-settings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🛠️</span><span id="lbl-settings">Settings</span></button>
     </nav>
 
     <div class="p-4 border-t flex items-center gap-2" style="border-color: var(--hairline-soft);">
@@ -203,6 +203,10 @@
 
         <h3 class="font-display font-bold text-base mb-3">Project credentials</h3>
         <p class="text-xs mb-4" style="color: var(--text-dim);">Paste these into <span class="font-mono">MirrorVRManager</span> — or call <span class="font-mono">ConnectToProject(...)</span> at runtime.</p>
+        <div class="panel-raised rounded-xl p-4 mb-5 text-xs flex items-start gap-2.5" style="color: var(--text-dim);">
+          <span aria-hidden="true">🦍</span>
+          <span>Players can create their own username/password accounts right from your game — no Google/GitHub required for them. Call <span class="font-mono">RegisterAccount</span> / <span class="font-mono">LoginAccount</span> on <span class="font-mono">MirrorVRManager</span>. This dashboard itself stays invite-only, since it can edit currency and ban players.</span>
+        </div>
         <div class="keycard p-6">
           <div class="punch"></div>
           <div class="flex flex-col gap-4 relative">
@@ -421,6 +425,10 @@
             <select id="languageSelect" onchange="setLanguage(this.value)" class="input-field rounded-lg text-xs font-bold px-3 py-2">
               <option value="en">English</option>
               <option value="es">Español</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+              <option value="pt">Português</option>
+              <option value="ja">日本語</option>
             </select>
           </div>
         </div>
@@ -463,16 +471,9 @@
   <div class="panel rounded-2xl w-full max-w-md p-7 rise my-8">
     <h3 class="font-display font-bold text-lg mb-5" id="currencyModalTitle">New currency</h3>
     <input type="hidden" id="curEditId">
-    <div class="grid grid-cols-2 gap-3 mb-3">
-      <input id="curName" type="text" class="p-3 input-field rounded-lg text-sm" placeholder="Name (e.g. Gems)">
-      <input id="curSymbol" type="text" class="p-3 input-field rounded-lg text-sm" placeholder="Symbol (e.g. 💎)">
-    </div>
-    <div class="flex items-center gap-3 mb-3">
-      <input id="curColor" type="color" value="#e8a33d" class="w-12 h-10 rounded-lg input-field cursor-pointer">
-      <input id="curStartingBalance" type="number" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="Starting balance" value="0">
-    </div>
+    <input id="curName" type="text" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Name (e.g. Bananas)">
+    <input id="curStartingBalance" type="number" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Starting balance" value="0">
     <textarea id="curDescription" class="w-full p-3 mb-3 input-field rounded-lg text-sm" rows="2" placeholder="Description"></textarea>
-    <input id="curEarnMethods" type="text" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Earn methods, comma separated">
     <label class="flex items-center gap-2 text-xs font-semibold mb-6" style="color: var(--text-dim);">
       <input type="checkbox" id="curIsPremium"> Premium currency (usually purchased, not earned)
     </label>
@@ -480,6 +481,7 @@
       <button onclick="submitCurrency()" class="flex-1 btn-accent font-bold py-3 rounded-lg text-sm">Save</button>
       <button onclick="closeModal('currencyModal')" class="btn-ghost px-6 rounded-lg text-sm font-bold">Cancel</button>
     </div>
+
   </div>
 </div>
 
@@ -495,20 +497,24 @@ const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 const STRINGS = {
   en: { overview: "Overview", players: "Players", currencies: "Currencies", catalog: "Catalog", activity: "Activity", project: "Project", access: "Access", settings: "Settings" },
   es: { overview: "Resumen", players: "Jugadores", currencies: "Monedas", catalog: "Catálogo", activity: "Actividad", project: "Proyecto", access: "Acceso", settings: "Ajustes" },
+  fr: { overview: "Aperçu", players: "Joueurs", currencies: "Monnaies", catalog: "Catalogue", activity: "Activité", project: "Projet", access: "Accès", settings: "Paramètres" },
+  de: { overview: "Übersicht", players: "Spieler", currencies: "Währungen", catalog: "Katalog", activity: "Aktivität", project: "Projekt", access: "Zugriff", settings: "Einstellungen" },
+  pt: { overview: "Visão geral", players: "Jogadores", currencies: "Moedas", catalog: "Catálogo", activity: "Atividade", project: "Projeto", access: "Acesso", settings: "Configurações" },
+  ja: { overview: "概要", players: "プレイヤー", currencies: "通貨", catalog: "カタログ", activity: "アクティビティ", project: "プロジェクト", access: "アクセス", settings: "設定" },
 };
 let currentLang = localStorage.getItem("cvr_lang") || "en";
 function t(key) { return (STRINGS[currentLang] && STRINGS[currentLang][key]) || STRINGS.en[key] || key; }
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("cvr_lang", lang);
-  document.getElementById("btn-overview").innerText = t("overview");
-  document.getElementById("btn-players").innerText = t("players");
-  document.getElementById("btn-currencies").innerText = t("currencies");
-  document.getElementById("btn-cosmetics").innerText = t("catalog");
-  document.getElementById("btn-activity").innerText = t("activity");
-  document.getElementById("btn-projectsettings").innerText = t("project");
-  document.getElementById("btn-access").innerText = t("access");
-  document.getElementById("btn-settings").innerText = t("settings");
+  document.getElementById("lbl-overview").innerText = t("overview");
+  document.getElementById("lbl-players").innerText = t("players");
+  document.getElementById("lbl-currencies").innerText = t("currencies");
+  document.getElementById("lbl-cosmetics").innerText = t("catalog");
+  document.getElementById("lbl-activity").innerText = t("activity");
+  document.getElementById("lbl-projectsettings").innerText = t("project");
+  document.getElementById("lbl-access").innerText = t("access");
+  document.getElementById("lbl-settings").innerText = t("settings");
 }
 
 // =========================================================================
@@ -844,8 +850,8 @@ function openPlayerDrawer(pid, silentRefresh) {
       row.className = "panel p-3 rounded-lg";
       row.innerHTML = `
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background:${c.color}"></span>${escapeHtml(c.name)}</span>
-          <span class="font-mono font-bold text-sm">${c.symbol || ""} ${bal}</span>
+          <span class="text-xs font-bold">${escapeHtml(c.name)}</span>
+          <span class="font-mono font-bold text-sm">${bal}</span>
         </div>
         <div class="flex gap-1.5">
           <input type="number" class="balance-amt-input w-full p-2 input-field rounded text-xs" placeholder="Amount">
@@ -955,7 +961,7 @@ function renderCurrencies() {
     card.innerHTML = `
       <div class="flex items-start justify-between mb-3 relative">
         <div class="flex items-center gap-2.5">
-          <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base shrink-0" style="background:${c.color}22; color:${c.color}; border:1px solid ${c.color}55;">${escapeHtml(c.symbol || "¤")}</span>
+          <span class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-display font-bold shrink-0" style="background: var(--accent-soft); color: var(--accent-text); border: 1px solid var(--hairline);">${escapeHtml((c.name || "?").charAt(0).toUpperCase())}</span>
           <div>
             <div class="font-display font-bold text-sm">${escapeHtml(c.name)}</div>
             ${c.isPremium ? `<span class="text-[9px] font-bold uppercase tracking-wide" style="color: var(--accent-text);">Premium</span>` : ""}
@@ -970,7 +976,6 @@ function renderCurrencies() {
       <div class="flex justify-between text-[11px] font-mono panel-raised rounded-lg px-3 py-2">
         <span style="color: var(--text-faint);">In circulation</span><span class="font-bold">${total}</span>
       </div>
-      ${c.earnMethods && c.earnMethods.length ? `<div class="flex flex-wrap gap-1.5 mt-3">${c.earnMethods.map((m) => `<span class="text-[9px] px-2 py-0.5 rounded panel-raised" style="color: var(--text-dim);">${escapeHtml(m)}</span>`).join("")}</div>` : ""}
     `;
     card.querySelector(".edit-cur-btn").onclick = () => showCurrencyModal(c);
     card.querySelector(".del-cur-btn").onclick = () => deleteCurrency(c.id);
@@ -981,25 +986,21 @@ function showCurrencyModal(existing) {
   document.getElementById("currencyModalTitle").innerText = existing ? "Edit currency" : "New currency";
   document.getElementById("curEditId").value = existing ? existing.id : "";
   document.getElementById("curName").value = existing ? existing.name : "";
-  document.getElementById("curSymbol").value = existing ? existing.symbol : "";
-  document.getElementById("curColor").value = existing ? existing.color : "#e8a33d";
   document.getElementById("curStartingBalance").value = existing ? existing.startingBalance : 0;
   document.getElementById("curDescription").value = existing ? existing.description : "";
-  document.getElementById("curEarnMethods").value = existing && existing.earnMethods ? existing.earnMethods.join(", ") : "";
   document.getElementById("curIsPremium").checked = existing ? !!existing.isPremium : false;
   document.getElementById("currencyModal").classList.remove("hidden");
+  document.getElementById("curName").focus();
 }
 async function submitCurrency() {
   const id = document.getElementById("curEditId").value;
   const payload = {
     name: document.getElementById("curName").value.trim(),
-    symbol: document.getElementById("curSymbol").value.trim(),
-    color: document.getElementById("curColor").value,
     startingBalance: parseInt(document.getElementById("curStartingBalance").value) || 0,
     description: document.getElementById("curDescription").value.trim(),
-    earnMethods: document.getElementById("curEarnMethods").value.split(",").map((s) => s.trim()).filter(Boolean),
     isPremium: document.getElementById("curIsPremium").checked,
   };
+  if (!payload.name) { showToast("Give the currency a name.", true); return; }
   const res = id
     ? await apiCall({ action: "update_currency", currencyId: id, ...payload })
     : await apiCall({ action: "create_currency", ...payload });
@@ -1085,7 +1086,10 @@ const FEATURE_DEFS = [
   { key: "currenciesEnabled", label: "Currencies" },
   { key: "cosmeticsEnabled", label: "Cosmetic shop" },
   { key: "tagsEnabled", label: "Player tags" },
-  { key: "chatEnabled", label: "In-game chat" },
+  { key: "infectionModeEnabled", label: "Infection mode" },
+  { key: "rageModeEnabled", label: "Rage mode (speed boost on tag)" },
+  { key: "mapVotingEnabled", label: "Map voting between rounds" },
+  { key: "customAccountsEnabled", label: "Public custom accounts (sign up in-game)" },
 ];
 let currentFeatures = {};
 async function loadFeatures() {
