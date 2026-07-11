@@ -29,6 +29,22 @@
     --backdrop: rgba(240,237,229,0.9);
     color-scheme: light;
   }
+  [data-theme="superdark"] {
+    --bg: #000000; --panel: #060706; --panel-raised: #0c0d0c;
+    --hairline: rgba(232,163,61,0.16); --hairline-soft: rgba(255,255,255,0.045);
+    --text: #ededea; --text-dim: #83897f; --text-faint: #4a4f47;
+    --accent: #e8a33d; --accent-text: #e8a33d; --accent-soft: rgba(232,163,61,0.12);
+    --moss: #6fa287; --moss-text: #6fa287; --moss-soft: rgba(111,162,135,0.12);
+    --danger: #c1503d; --danger-text: #e08d7c; --danger-soft: rgba(193,80,61,0.12);
+    --backdrop: rgba(0,0,0,0.92);
+    color-scheme: dark;
+  }
+  /* "Flashy" mode: an optional extra layer of polish on top of whichever
+     theme is active — a touch of glow and gradient, not a new palette. */
+  [data-flashy="true"] .keycard { box-shadow: 0 0 0 1px var(--hairline), 0 12px 40px -12px rgba(232,163,61,0.25); }
+  [data-flashy="true"] h1.font-display.font-bold, [data-flashy="true"] h2.font-display.font-bold, [data-flashy="true"] h3.font-display.font-bold { background: linear-gradient(100deg, var(--text) 40%, var(--accent-text) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  [data-flashy="true"] .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #f2b25a 100%); box-shadow: 0 4px 18px -4px rgba(232,163,61,0.5); }
+  [data-flashy="true"] .nav-item.active { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.4); }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.2s ease, color 0.2s ease; }
@@ -131,7 +147,7 @@
         <div class="font-display font-bold text-sm leading-tight">ClouorVR</div>
         <div id="userDisplayTag" class="text-[10px] font-mono truncate" style="color: var(--text-faint);"></div>
       </div>
-      <button onclick="closeMobileSidebar()" class="md:hidden text-lg px-2" aria-label="Close menu">✕</button>
+      <button onclick="closeMobileSidebar()" class="md:hidden px-2" aria-label="Close menu"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
 
     <div class="p-4 border-b" style="border-color: var(--hairline-soft);">
@@ -143,27 +159,27 @@
     </div>
 
     <nav class="flex-1 p-4 flex flex-col gap-1 overflow-y-auto" id="mainNav" aria-label="Main">
-      <button onclick="switchTab('overview')" id="btn-overview" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🏕️</span><span id="lbl-overview">Overview</span></button>
-      <button onclick="switchTab('players')" id="btn-players" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🦍</span><span id="lbl-players">Players</span></button>
-      <button onclick="switchTab('currencies')" id="btn-currencies" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🍌</span><span id="lbl-currencies">Currencies</span></button>
-      <button onclick="switchTab('cosmetics')" id="btn-cosmetics" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🎨</span><span id="lbl-cosmetics">Catalog</span></button>
-      <button onclick="switchTab('activity')" id="btn-activity" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><span aria-hidden="true" class="mr-2.5">📜</span><span id="lbl-activity">Activity</span></button>
-      <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">⚙️</span><span id="lbl-projectsettings">Project</span></button>
-      <button onclick="switchTab('access')" id="btn-access" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><span aria-hidden="true" class="mr-2.5">🔑</span><span id="lbl-access">Access</span></button>
-      <button onclick="switchTab('settings')" id="btn-settings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><span aria-hidden="true">🛠️</span><span id="lbl-settings">Settings</span></button>
+      <button onclick="switchTab('overview')" id="btn-overview" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span id="lbl-overview">Overview</span></button>
+      <button onclick="switchTab('players')" id="btn-players" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/><circle cx="18" cy="7" r="3"/><path d="M22 21v-2a3.7 3.7 0 0 0-2.5-3.5"/></svg><span id="lbl-players">Players</span></button>
+      <button onclick="switchTab('currencies')" id="btn-currencies" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 2.5-1.5c1.5 0 2.5.8 2.5 2s-1 1.7-2.5 2-2.5.8-2.5 2 1 2 2.5 2a2.5 2.5 0 0 0 2.5-1.5M12 6.5v1M12 16v1"/></svg><span id="lbl-currencies">Currencies</span></button>
+      <button onclick="switchTab('cosmetics')" id="btn-cosmetics" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span id="lbl-cosmetics">Catalog</span></button>
+      <button onclick="switchTab('activity')" id="btn-activity" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0 mr-2.5" style="display:inline-block;vertical-align:-3px;"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg><span id="lbl-activity">Activity</span></button>
+      <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span id="lbl-projectsettings">Project</span></button>
+      <button onclick="switchTab('access')" id="btn-access" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0 mr-2.5" style="display:inline-block;vertical-align:-3px;"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6z"/></svg><span id="lbl-access">Platform</span></button>
+      <button onclick="switchTab('settings')" id="btn-settings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg><span id="lbl-settings">Settings</span></button>
     </nav>
 
     <div class="p-4 border-t flex items-center gap-2" style="border-color: var(--hairline-soft);">
-      <button onclick="toggleTheme()" class="btn-ghost font-semibold py-2.5 rounded-lg text-xs transition px-3" aria-label="Toggle theme" id="themeToggleBtnSidebar">🌙</button>
+      <button onclick="toggleTheme()" class="btn-ghost font-semibold py-2.5 rounded-lg text-xs transition px-3" aria-label="Toggle theme" id="themeToggleBtnSidebar"><svg id="themeIconSidebar" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z"/></svg></button>
       <button onclick="logout()" class="flex-1 btn-ghost font-semibold py-2.5 rounded-lg text-xs transition">Sign out</button>
     </div>
   </div>
 
   <div id="mainArea" class="flex-1 flex flex-col overflow-hidden">
     <div id="mobileTopbar" class="items-center justify-between px-4 py-3 panel border-b" style="border-color: var(--hairline-soft);">
-      <button onclick="openMobileSidebar()" class="text-xl px-2" aria-label="Open menu">☰</button>
+      <button onclick="openMobileSidebar()" class="px-2" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
       <span class="font-display font-bold text-sm" id="mobileTabTitle">Overview</span>
-      <button onclick="toggleTheme()" class="text-lg px-2" aria-label="Toggle theme">🌙</button>
+      <button onclick="toggleTheme()" class="px-2" aria-label="Toggle theme"><svg id="themeIconMobile" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z"/></svg></button>
     </div>
 
     <header class="h-16 border-b hidden md:flex items-center px-8 justify-between shrink-0" style="border-color: var(--hairline-soft);">
@@ -189,7 +205,7 @@
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 mb-8">
           <div class="panel rounded-2xl p-5 md:p-7">
             <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Storage used</h3>
-            <p class="font-display font-bold text-2xl md:text-4xl" id="statDataGB">0.00 <span class="text-sm font-normal" style="color: var(--text-faint);">GB</span></p>
+            <p class="font-display font-bold text-2xl md:text-4xl" id="statDataGB">—</p>
           </div>
           <div class="panel rounded-2xl p-5 md:p-7">
             <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Online now</h3>
@@ -203,10 +219,6 @@
 
         <h3 class="font-display font-bold text-base mb-3">Project credentials</h3>
         <p class="text-xs mb-4" style="color: var(--text-dim);">Paste these into <span class="font-mono">MirrorVRManager</span> — or call <span class="font-mono">ConnectToProject(...)</span> at runtime.</p>
-        <div class="panel-raised rounded-xl p-4 mb-5 text-xs flex items-start gap-2.5" style="color: var(--text-dim);">
-          <span aria-hidden="true">🦍</span>
-          <span>Players can create their own username/password accounts right from your game — no Google/GitHub required for them. Call <span class="font-mono">RegisterAccount</span> / <span class="font-mono">LoginAccount</span> on <span class="font-mono">MirrorVRManager</span>. This dashboard itself stays invite-only, since it can edit currency and ban players.</span>
-        </div>
         <div class="keycard p-6">
           <div class="punch"></div>
           <div class="flex flex-col gap-4 relative">
@@ -228,7 +240,7 @@
               <label class="block text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--text-faint);">API key</label>
               <div class="flex gap-2">
                 <input type="password" id="overviewApiKey" readonly class="flex-1 p-3 rounded-lg text-sm font-mono input-field">
-                <button onclick="toggleKeyVisibility('overviewApiKey')" class="btn-ghost px-3.5 rounded-lg" aria-label="Show API key">👁</button>
+                <button onclick="toggleKeyVisibility('overviewApiKey')" class="btn-ghost px-3.5 rounded-lg" aria-label="Show API key"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
                 <button onclick="copyToClipboard('overviewApiKey')" class="btn-ghost px-4 rounded-lg text-xs font-bold">Copy</button>
               </div>
             </div>
@@ -253,7 +265,7 @@
       <div id="playerDrawerBackdrop" class="hidden fixed inset-0 z-40" style="background: var(--backdrop);" onclick="closePlayerDrawer()"></div>
       <div id="playerDrawer" class="hidden fixed top-0 right-0 h-full w-full sm:w-[440px] z-50 panel overflow-y-auto rise" role="dialog" aria-modal="true" aria-label="Player details" style="border-left: 1px solid var(--hairline-soft);">
         <div class="p-6 relative">
-          <button onclick="closePlayerDrawer()" class="absolute top-5 right-5 text-lg" aria-label="Close">✕</button>
+          <button onclick="closePlayerDrawer()" class="absolute top-5 right-5" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
           <div class="flex gap-2 mb-4">
             <span id="ownerBadge" class="hidden text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider" style="background: var(--accent-soft); color: var(--accent-text);">OWNER</span>
             <span id="adminBadge" class="hidden text-[10px] font-black px-2.5 py-1 rounded-md tracking-wider" style="background: var(--moss-soft); color: var(--moss-text);">ADMIN</span>
@@ -388,21 +400,35 @@
 
       <!-- ACCESS (owner only) -->
       <div id="tab-access" class="tab-content hidden max-w-3xl mx-auto rise">
-        <h1 class="font-display font-bold text-2xl mb-2">Dashboard access</h1>
-        <p class="text-sm mb-7" style="color: var(--text-dim);">Anyone below can sign into this console with Google or GitHub. You're the owner and always have full access.</p>
+        <h1 class="font-display font-bold text-2xl mb-2">Platform</h1>
+        <p class="text-sm mb-7" style="color: var(--text-dim);">Sign-up is open to anyone with a Google or GitHub account — each person only ever sees their own projects. This is where you moderate abuse and set storage limits, as the platform owner.</p>
+
+        <div class="panel p-6 md:p-8 rounded-2xl mb-6">
+          <h3 class="font-bold text-sm mb-1.5">Storage quota</h3>
+          <p class="text-xs mb-5" style="color: var(--text-dim);">Applies to every account on this platform.</p>
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="flex items-center gap-2 text-xs font-semibold" style="color: var(--text-dim);">
+              <input type="radio" name="quotaMode" id="quotaModeUnlimited" onchange="onQuotaModeChange()"> Unlimited
+            </label>
+            <label class="flex items-center gap-2 text-xs font-semibold" style="color: var(--text-dim);">
+              <input type="radio" name="quotaMode" id="quotaModeLimited" onchange="onQuotaModeChange()"> Limited to
+            </label>
+            <input type="number" id="quotaGBInput" class="w-24 p-2.5 input-field rounded-lg text-sm" placeholder="GB">
+            <span class="text-xs" style="color: var(--text-faint);">GB per account</span>
+            <button onclick="saveStorageQuota()" class="btn-accent font-bold px-6 py-2.5 rounded-lg text-sm">Save</button>
+          </div>
+        </div>
+
         <div class="panel p-6 rounded-2xl mb-6">
+          <h3 class="font-bold text-sm mb-1.5">Block an account</h3>
+          <p class="text-xs mb-5" style="color: var(--text-dim);">Blocked accounts can no longer sign into the dashboard.</p>
           <div class="flex flex-col sm:flex-row gap-3">
-            <input id="newAllowedEmail" type="email" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="teammate@email.com">
-            <select id="newAllowedRole" class="p-3 input-field rounded-lg text-sm font-semibold">
-              <option value="viewer">Viewer — read only</option>
-              <option value="moderator">Moderator</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button onclick="addAllowedEmail()" class="btn-accent font-bold px-7 py-3 sm:py-0 rounded-lg text-sm">Grant access</button>
+            <input id="newBannedEmail" type="email" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="account@email.com">
+            <button onclick="banAccount()" class="font-bold px-7 py-3 sm:py-0 rounded-lg text-sm" style="background: var(--danger); color: #1a0a06;">Block</button>
           </div>
         </div>
         <div class="panel rounded-2xl overflow-hidden">
-          <ul id="allowedEmailsList" class="divide-y text-sm" style="border-color: var(--hairline-soft);">
+          <ul id="bannedEmailsList" class="divide-y text-sm" style="border-color: var(--hairline-soft);">
             <li class="py-8 text-center" style="color: var(--text-faint);">Loading...</li>
           </ul>
         </div>
@@ -413,12 +439,20 @@
         <h1 class="font-display font-bold text-2xl mb-7">Settings</h1>
         <div class="panel p-6 md:p-8 rounded-2xl mb-6">
           <h3 class="font-bold text-sm mb-4">Appearance</h3>
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
             <span class="text-sm" style="color: var(--text-dim);">Theme</span>
             <div class="flex gap-2">
               <button onclick="setTheme('dark')" id="themeBtnDark" class="btn-ghost px-4 py-2 rounded-lg text-xs font-bold">Dark</button>
+              <button onclick="setTheme('superdark')" id="themeBtnSuperdark" class="btn-ghost px-4 py-2 rounded-lg text-xs font-bold">Super dark</button>
               <button onclick="setTheme('light')" id="themeBtnLight" class="btn-ghost px-4 py-2 rounded-lg text-xs font-bold">Light</button>
             </div>
+          </div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-sm" style="color: var(--text-dim);">Extra polish</div>
+              <div class="text-[11px]" style="color: var(--text-faint);">Adds subtle glow and gradient accents on top of your theme.</div>
+            </div>
+            <button onclick="setFlashyMode(!(document.getElementById('flashyToggleBtn').classList.contains('active')))" id="flashyToggleBtn" class="btn-ghost px-4 py-2 rounded-lg text-xs font-bold shrink-0">Toggle</button>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm" style="color: var(--text-dim);">Language</span>
@@ -429,6 +463,12 @@
               <option value="de">Deutsch</option>
               <option value="pt">Português</option>
               <option value="ja">日本語</option>
+              <option value="it">Italiano</option>
+              <option value="ru">Русский</option>
+              <option value="ko">한국어</option>
+              <option value="zh">中文</option>
+              <option value="nl">Nederlands</option>
+              <option value="pl">Polski</option>
             </select>
           </div>
         </div>
@@ -495,12 +535,18 @@ const WORKER_BASE_URL = "https://clouorvr-backend.schatziheiko1984.workers.dev";
 // I18N (small real scaffold — English + Spanish — extend STRINGS to add more)
 // =========================================================================
 const STRINGS = {
-  en: { overview: "Overview", players: "Players", currencies: "Currencies", catalog: "Catalog", activity: "Activity", project: "Project", access: "Access", settings: "Settings" },
-  es: { overview: "Resumen", players: "Jugadores", currencies: "Monedas", catalog: "Catálogo", activity: "Actividad", project: "Proyecto", access: "Acceso", settings: "Ajustes" },
-  fr: { overview: "Aperçu", players: "Joueurs", currencies: "Monnaies", catalog: "Catalogue", activity: "Activité", project: "Projet", access: "Accès", settings: "Paramètres" },
-  de: { overview: "Übersicht", players: "Spieler", currencies: "Währungen", catalog: "Katalog", activity: "Aktivität", project: "Projekt", access: "Zugriff", settings: "Einstellungen" },
-  pt: { overview: "Visão geral", players: "Jogadores", currencies: "Moedas", catalog: "Catálogo", activity: "Atividade", project: "Projeto", access: "Acesso", settings: "Configurações" },
-  ja: { overview: "概要", players: "プレイヤー", currencies: "通貨", catalog: "カタログ", activity: "アクティビティ", project: "プロジェクト", access: "アクセス", settings: "設定" },
+  en: { overview: "Overview", players: "Players", currencies: "Currencies", catalog: "Catalog", activity: "Activity", project: "Project", access: "Platform", settings: "Settings" },
+  es: { overview: "Resumen", players: "Jugadores", currencies: "Monedas", catalog: "Catálogo", activity: "Actividad", project: "Proyecto", access: "Plataforma", settings: "Ajustes" },
+  fr: { overview: "Aperçu", players: "Joueurs", currencies: "Monnaies", catalog: "Catalogue", activity: "Activité", project: "Projet", access: "Plateforme", settings: "Paramètres" },
+  de: { overview: "Übersicht", players: "Spieler", currencies: "Währungen", catalog: "Katalog", activity: "Aktivität", project: "Projekt", access: "Plattform", settings: "Einstellungen" },
+  pt: { overview: "Visão geral", players: "Jogadores", currencies: "Moedas", catalog: "Catálogo", activity: "Atividade", project: "Projeto", access: "Plataforma", settings: "Configurações" },
+  ja: { overview: "概要", players: "プレイヤー", currencies: "通貨", catalog: "カタログ", activity: "アクティビティ", project: "プロジェクト", access: "プラットフォーム", settings: "設定" },
+  it: { overview: "Panoramica", players: "Giocatori", currencies: "Valute", catalog: "Catalogo", activity: "Attività", project: "Progetto", access: "Piattaforma", settings: "Impostazioni" },
+  ru: { overview: "Обзор", players: "Игроки", currencies: "Валюты", catalog: "Каталог", activity: "Активность", project: "Проект", access: "Платформа", settings: "Настройки" },
+  ko: { overview: "개요", players: "플레이어", currencies: "화폐", catalog: "카탈로그", activity: "활동", project: "프로젝트", access: "플랫폼", settings: "설정" },
+  zh: { overview: "概览", players: "玩家", currencies: "货币", catalog: "目录", activity: "活动", project: "项目", access: "平台", settings: "设置" },
+  nl: { overview: "Overzicht", players: "Spelers", currencies: "Valuta", catalog: "Catalogus", activity: "Activiteit", project: "Project", access: "Platform", settings: "Instellingen" },
+  pl: { overview: "Przegląd", players: "Gracze", currencies: "Waluty", catalog: "Katalog", activity: "Aktywność", project: "Projekt", access: "Platforma", settings: "Ustawienia" },
 };
 let currentLang = localStorage.getItem("cvr_lang") || "en";
 function t(key) { return (STRINGS[currentLang] && STRINGS[currentLang][key]) || STRINGS.en[key] || key; }
@@ -520,20 +566,30 @@ function setLanguage(lang) {
 // =========================================================================
 // THEME
 // =========================================================================
+const SUN_PATH = "M12 4v2M12 18v2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4 4.2 19.8M19.8 4.2l-1.4 1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z";
+const MOON_PATH = "M21 12.5A8.5 8.5 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z";
 function setTheme(mode) {
   document.documentElement.setAttribute("data-theme", mode);
   localStorage.setItem("cvr_theme", mode);
-  document.getElementById("themeToggleBtnSidebar").innerText = mode === "light" ? "☀️" : "🌙";
-  document.getElementById("themeBtnDark") && document.getElementById("themeBtnDark").classList.toggle("active", mode === "dark");
-  document.getElementById("themeBtnLight") && document.getElementById("themeBtnLight").classList.toggle("active", mode === "light");
+  const path = mode === "light" ? SUN_PATH : MOON_PATH;
+  ["themeIconSidebar", "themeIconMobile"].forEach((id) => { const el = document.getElementById(id); if (el) el.setAttribute("d", path); });
+  ["themeBtnDark", "themeBtnSuperdark", "themeBtnLight"].forEach((id) => document.getElementById(id) && document.getElementById(id).classList.remove("active"));
+  const btnId = mode === "light" ? "themeBtnLight" : mode === "superdark" ? "themeBtnSuperdark" : "themeBtnDark";
+  document.getElementById(btnId) && document.getElementById(btnId).classList.add("active");
 }
 function toggleTheme() {
-  const cur = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
-  setTheme(cur);
+  const cur = document.documentElement.getAttribute("data-theme");
+  setTheme(cur === "light" ? "dark" : "light");
+}
+function setFlashyMode(on) {
+  document.documentElement.setAttribute("data-flashy", on ? "true" : "false");
+  localStorage.setItem("cvr_flashy", on ? "1" : "0");
+  const btn = document.getElementById("flashyToggleBtn");
+  if (btn) btn.classList.toggle("active", on);
 }
 (function initTheme() {
-  const saved = localStorage.getItem("cvr_theme") || "dark";
-  setTheme(saved);
+  setTheme(localStorage.getItem("cvr_theme") || "dark");
+  setFlashyMode(localStorage.getItem("cvr_flashy") === "1");
 })();
 
 // =========================================================================
@@ -617,16 +673,9 @@ async function revokeAllSessions() {
 function enterDashboard() {
   document.getElementById("loginScreen").classList.add("hidden");
   document.getElementById("userDisplayTag").innerText = currentUser.email;
-  document.getElementById("accountEmailDisplay").innerText = `Signed in as ${currentUser.email} (${currentUser.role})`;
-  const rank = currentUser.dashRank || 0;
-  if (currentUser.isOwner) document.getElementById("btn-access").classList.remove("hidden");
-  if (rank >= 2) document.getElementById("btn-activity").classList.remove("hidden");
-  if (rank < 2) {
-    ["newProjectBtn", "newCurrencyBtn", "addCosmeticBtn", "saveProjectBtn", "saveFeaturesBtn"].forEach((id) => {
-      const el = document.getElementById(id); if (el) el.disabled = true;
-    });
-  }
-  if (!currentUser.isOwner) { const bp = document.getElementById("backupPanel"); if (bp) bp.classList.add("hidden"); }
+  document.getElementById("accountEmailDisplay").innerText = `Signed in as ${currentUser.email}${currentUser.isPlatformOwner ? " (platform owner)" : ""}`;
+  document.getElementById("btn-activity").classList.remove("hidden");
+  if (currentUser.isPlatformOwner) document.getElementById("btn-access").classList.remove("hidden");
   loadProjects();
   pollHandle = setInterval(fetchProjectData, 5000);
 }
@@ -669,6 +718,15 @@ function copyToClipboard(elementId) {
 function toggleKeyVisibility(elementId) {
   const el = document.getElementById(elementId);
   el.type = el.type === "password" ? "text" : "password";
+}
+function formatBytes(bytes) {
+  if (!bytes || bytes < 0) bytes = 0;
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let val = bytes, i = 0;
+  while (val >= 1024 && i < units.length - 1) { val /= 1024; i++; }
+  const precision = i === 0 ? 0 : val >= 100 ? 0 : val >= 10 ? 1 : 2;
+  const numStr = val.toFixed(precision).replace(/\.0+$/, "");
+  return `${numStr} <span class="text-sm font-normal" style="color: var(--text-faint);">${units[i]}</span>`;
 }
 function escapeHtml(str) {
   const div = document.createElement("div");
@@ -755,13 +813,13 @@ async function deleteCurrentProject() {
 function switchTab(tabId) {
   document.querySelectorAll(".tab-content").forEach((el) => el.classList.add("hidden"));
   document.getElementById(`tab-${tabId}`).classList.remove("hidden");
-  const titles = { overview: "Overview", players: "Players", currencies: "Currencies", cosmetics: "Catalog", activity: "Activity", projectsettings: "Project settings", access: "Access", settings: "Settings" };
+  const titles = { overview: "Overview", players: "Players", currencies: "Currencies", cosmetics: "Catalog", activity: "Activity", projectsettings: "Project settings", access: "Platform", settings: "Settings" };
   document.getElementById("currentTabTitle").innerText = titles[tabId];
   document.getElementById("mobileTabTitle").innerText = titles[tabId];
   document.querySelectorAll("#mainNav button").forEach((b) => b.classList.remove("active"));
   const activeBtn = document.getElementById(`btn-${tabId}`);
   if (activeBtn) activeBtn.classList.add("active");
-  if (tabId === "access") loadAllowedEmails();
+  if (tabId === "access") loadPlatformTab();
   if (tabId === "activity") switchActivitySub("audit");
   if (tabId === "projectsettings") loadFeatures();
   document.getElementById("mainContent").focus();
@@ -778,7 +836,7 @@ async function fetchProjectData() {
     globalCatalog = res.catalog || [];
     currenciesArray = res.currencies || [];
     currencyTotals = res.currencyTotals || {};
-    if (res.dataGB) document.getElementById("statDataGB").innerHTML = `${parseFloat(res.dataGB).toFixed(4)} <span class="text-sm font-normal" style="color: var(--text-faint);">GB</span>`;
+    if (typeof res.approxBytes === "number") document.getElementById("statDataGB").innerHTML = formatBytes(res.approxBytes);
     document.getElementById("statTotalPlayers").innerText = res.totalPlayers ?? fullPlayerCache.length;
   }
   renderAllPlayers();
@@ -837,7 +895,6 @@ function openPlayerDrawer(pid, silentRefresh) {
   document.getElementById("banBadge").classList.toggle("hidden", !p.isBanned);
   document.getElementById("banToggleBtn").innerText = p.isBanned ? "Unban player" : "Ban player";
   document.getElementById("roleSelect").value = p.role || "user";
-  document.getElementById("roleSelect").querySelector('option[value="owner"]').disabled = !(currentUser && currentUser.isOwner);
 
   const balancesList = document.getElementById("playerBalancesList");
   balancesList.innerHTML = "";
@@ -883,10 +940,6 @@ function openPlayerDrawer(pid, silentRefresh) {
     tagsContainer.innerHTML = `<span class="text-xs italic" style="color: var(--text-faint);">No tags yet.</span>`;
   }
 
-  const rank = (currentUser && currentUser.dashRank) || 0;
-  ["renameBtn", "addTagBtn"].forEach((id) => { document.getElementById(id).disabled = rank < 1; });
-  document.getElementById("roleSelect").disabled = rank < 2;
-  document.getElementById("banToggleBtn").disabled = rank < 1;
 }
 function closePlayerDrawer() {
   document.getElementById("playerDrawer").classList.add("hidden");
@@ -1089,7 +1142,6 @@ const FEATURE_DEFS = [
   { key: "infectionModeEnabled", label: "Infection mode" },
   { key: "rageModeEnabled", label: "Rage mode (speed boost on tag)" },
   { key: "mapVotingEnabled", label: "Map voting between rounds" },
-  { key: "customAccountsEnabled", label: "Public custom accounts (sign up in-game)" },
 ];
 let currentFeatures = {};
 async function loadFeatures() {
@@ -1140,35 +1192,50 @@ function importProjectData(event) {
 }
 
 // =========================================================================
-// ACCESS
+// PLATFORM (owner only)
 // =========================================================================
-async function loadAllowedEmails() {
-  const res = await apiCall({ action: "get_allowed_emails" }, { skipProjectId: true });
-  const list = document.getElementById("allowedEmailsList");
-  const allowed = (res && res.allowed) || [];
+async function loadPlatformTab() {
+  const [configRes] = await Promise.all([apiCall({ action: "get_platform_config" }, { skipProjectId: true })]);
+  const quotaGB = configRes && configRes.config ? configRes.config.storageQuotaGB : null;
+  document.getElementById("quotaModeUnlimited").checked = quotaGB === null;
+  document.getElementById("quotaModeLimited").checked = quotaGB !== null;
+  document.getElementById("quotaGBInput").value = quotaGB !== null ? quotaGB : "";
+  onQuotaModeChange();
+  loadBannedUsers();
+}
+function onQuotaModeChange() {
+  document.getElementById("quotaGBInput").disabled = document.getElementById("quotaModeUnlimited").checked;
+}
+async function saveStorageQuota() {
+  const quotaGB = document.getElementById("quotaModeUnlimited").checked ? null : (parseInt(document.getElementById("quotaGBInput").value) || 0);
+  const res = await apiCall({ action: "set_storage_quota", quotaGB }, { skipProjectId: true });
+  if (res && res.ok) showToast("Storage quota saved.");
+}
+async function loadBannedUsers() {
+  const res = await apiCall({ action: "get_banned_users" }, { skipProjectId: true });
+  const list = document.getElementById("bannedEmailsList");
+  const banned = (res && res.banned) || [];
   list.innerHTML = "";
-  if (allowed.length === 0) { list.innerHTML = `<li class="py-8 text-center" style="color: var(--text-faint);">No one added yet — you're the only one with access.</li>`; return; }
-  allowed.forEach((entry) => {
+  if (banned.length === 0) { list.innerHTML = `<li class="py-8 text-center" style="color: var(--text-faint);">No accounts blocked.</li>`; return; }
+  banned.forEach((entry) => {
     const email = typeof entry === "string" ? entry : entry.email;
-    const role = typeof entry === "string" ? "admin" : (entry.role || "viewer");
     const li = document.createElement("li");
     li.className = "py-4 px-5 sm:px-6 flex justify-between items-center gap-2";
-    li.innerHTML = `<span class="font-mono text-xs sm:text-sm truncate">${escapeHtml(email)} <span class="text-[9px] ml-2 uppercase px-1.5 py-0.5 rounded" style="color: var(--text-faint); border: 1px solid var(--hairline-soft);">${escapeHtml(role)}</span></span>
-      <button class="text-[10px] font-black uppercase shrink-0" style="color: var(--danger-text);">Remove</button>`;
-    li.querySelector("button").onclick = () => removeAllowedEmail(email);
+    li.innerHTML = `<span class="font-mono text-xs sm:text-sm truncate">${escapeHtml(email)}</span>
+      <button class="text-[10px] font-black uppercase shrink-0" style="color: var(--moss-text);">Unblock</button>`;
+    li.querySelector("button").onclick = () => unbanAccount(email);
     list.appendChild(li);
   });
 }
-async function addAllowedEmail() {
-  const email = document.getElementById("newAllowedEmail").value.trim();
-  const role = document.getElementById("newAllowedRole").value;
+async function banAccount() {
+  const email = document.getElementById("newBannedEmail").value.trim();
   if (!email) return;
-  const res = await apiCall({ action: "add_allowed_email", email, role }, { skipProjectId: true });
-  if (res && res.ok) { document.getElementById("newAllowedEmail").value = ""; loadAllowedEmails(); showToast("Access granted."); }
+  const res = await apiCall({ action: "ban_dashboard_user", email }, { skipProjectId: true });
+  if (res && res.ok) { document.getElementById("newBannedEmail").value = ""; loadBannedUsers(); showToast("Account blocked."); }
 }
-async function removeAllowedEmail(email) {
-  const res = await apiCall({ action: "remove_allowed_email", email }, { skipProjectId: true });
-  if (res && res.ok) { loadAllowedEmails(); showToast("Access removed."); }
+async function unbanAccount(email) {
+  const res = await apiCall({ action: "unban_dashboard_user", email }, { skipProjectId: true });
+  if (res && res.ok) { loadBannedUsers(); showToast("Account unblocked."); }
 }
 </script>
 </body>
