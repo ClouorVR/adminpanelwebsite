@@ -43,22 +43,41 @@
   }
   /* Visual style tiers — "clean" is the default (nothing extra), "enhanced"
      adds a touch of glow/gradient, "maximum" pushes that further with a
-     slow-moving gradient sheen. Still monochrome icons, still no emoji. */
-  [data-style="enhanced"] .keycard, [data-style="maximum"] .keycard { box-shadow: 0 0 0 1px var(--hairline), 0 12px 40px -12px rgba(232,163,61,0.25); }
+     slow-moving gradient sheen, "ultra" adds a pulsing glow border and a
+     faint animated aurora behind the whole app. Still monochrome icons,
+     still no emoji, still turns off for prefers-reduced-motion. */
+  [data-style="enhanced"] .keycard, [data-style="maximum"] .keycard, [data-style="ultra"] .keycard { box-shadow: 0 0 0 1px var(--hairline), 0 12px 40px -12px rgba(232,163,61,0.25); }
   [data-style="enhanced"] h1.font-display.font-bold, [data-style="enhanced"] h2.font-display.font-bold, [data-style="enhanced"] h3.font-display.font-bold,
-  [data-style="maximum"] h1.font-display.font-bold, [data-style="maximum"] h2.font-display.font-bold, [data-style="maximum"] h3.font-display.font-bold {
+  [data-style="maximum"] h1.font-display.font-bold, [data-style="maximum"] h2.font-display.font-bold, [data-style="maximum"] h3.font-display.font-bold,
+  [data-style="ultra"] h1.font-display.font-bold, [data-style="ultra"] h2.font-display.font-bold, [data-style="ultra"] h3.font-display.font-bold {
     background: linear-gradient(100deg, var(--text) 40%, var(--accent-text) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  [data-style="enhanced"] .btn-accent, [data-style="maximum"] .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #f2b25a 100%); box-shadow: 0 4px 18px -4px rgba(232,163,61,0.5); }
-  [data-style="enhanced"] .nav-item.active, [data-style="maximum"] .nav-item.active { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.4); }
+  [data-style="enhanced"] .btn-accent, [data-style="maximum"] .btn-accent, [data-style="ultra"] .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #f2b25a 100%); box-shadow: 0 4px 18px -4px rgba(232,163,61,0.5); }
+  [data-style="enhanced"] .nav-item.active, [data-style="maximum"] .nav-item.active, [data-style="ultra"] .nav-item.active { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.4); }
   @keyframes sheenMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-  [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised {
+  [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised,
+  [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised {
     background-image: linear-gradient(115deg, var(--panel) 0%, var(--panel) 40%, var(--accent-soft) 50%, var(--panel) 60%, var(--panel) 100%);
     background-size: 250% 100%;
     animation: sheenMove 9s linear infinite;
   }
-  [data-style="maximum"] .keycard { animation: sheenMove 5s linear infinite; background-image: linear-gradient(115deg, var(--panel-raised) 0%, var(--panel) 35%, var(--accent-soft) 50%, var(--panel) 65%, var(--panel-raised) 100%); background-size: 260% 100%; }
-  @media (prefers-reduced-motion: reduce) { [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised, [data-style="maximum"] .keycard { animation: none; } }
+  [data-style="maximum"] .keycard, [data-style="ultra"] .keycard { animation: sheenMove 5s linear infinite; background-image: linear-gradient(115deg, var(--panel-raised) 0%, var(--panel) 35%, var(--accent-soft) 50%, var(--panel) 65%, var(--panel-raised) 100%); background-size: 260% 100%; }
+
+  @keyframes glowPulse { 0%, 100% { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.35); } 50% { box-shadow: inset 0 0 0 1px var(--accent), 0 0 26px -4px rgba(232,163,61,0.7); } }
+  @keyframes auroraDrift { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(-4%, 3%) rotate(360deg); } }
+  [data-style="ultra"] .nav-item.active { animation: glowPulse 3.5s ease-in-out infinite; }
+  [data-style="ultra"] .keycard, [data-style="ultra"] .panel:hover { animation: sheenMove 3.5s linear infinite, glowPulse 4s ease-in-out infinite; }
+  [data-style="ultra"] body::before {
+    content: ""; position: fixed; inset: -50%; z-index: -1; pointer-events: none;
+    background: conic-gradient(from 0deg, transparent 0%, var(--accent-soft) 15%, transparent 30%, var(--moss-soft) 55%, transparent 70%, var(--accent-soft) 88%, transparent 100%);
+    opacity: 0.35; filter: blur(60px);
+    animation: auroraDrift 40s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised, [data-style="maximum"] .keycard,
+    [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised, [data-style="ultra"] .keycard,
+    [data-style="ultra"] .nav-item.active, [data-style="ultra"] body::before { animation: none; }
+  }
 
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -192,6 +211,7 @@
       <button onclick="switchTab('currencies')" id="btn-currencies" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 2.5-1.5c1.5 0 2.5.8 2.5 2s-1 1.7-2.5 2-2.5.8-2.5 2 1 2 2.5 2a2.5 2.5 0 0 0 2.5-1.5M12 6.5v1M12 16v1"/></svg><span id="lbl-currencies">Currencies</span></button>
       <button onclick="switchTab('cosmetics')" id="btn-cosmetics" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span id="lbl-cosmetics">Catalog</span></button>
       <button onclick="switchTab('activity')" id="btn-activity" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg><span id="lbl-activity">Activity</span></button>
+      <button onclick="switchTab('leaderboards')" id="btn-leaderboards" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M8 21h8M12 17v4M6 3h12v4a6 6 0 0 1-12 0V3z"/><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3"/></svg><span id="lbl-leaderboards">Leaderboards</span></button>
       <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span id="lbl-projectsettings">Project</span></button>
       <button onclick="switchTab('platform')" id="btn-platform" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition hidden"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0 mr-2.5" style="display:inline-block;vertical-align:-3px;"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6z"/></svg><span id="lbl-platform">Platform</span></button>
       <button onclick="switchTab('settings')" id="btn-settings" class="nav-item text-left px-3.5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg><span id="lbl-settings">Settings</span></button>
@@ -223,10 +243,14 @@
 
       <!-- OVERVIEW -->
       <div id="tab-overview" class="tab-content max-w-4xl mx-auto rise">
-        <div class="grid grid-cols-3 gap-4 md:gap-5 mb-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 mb-8">
           <div class="panel rounded-2xl p-5 md:p-7">
             <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Players</h3>
             <p class="font-display font-bold text-2xl md:text-4xl" id="statPlayers">0</p>
+          </div>
+          <div class="panel rounded-2xl p-5 md:p-7">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Online now</h3>
+            <p class="font-display font-bold text-2xl md:text-4xl" id="statOnline" style="color: var(--moss-text);">0</p>
           </div>
           <div class="panel rounded-2xl p-5 md:p-7">
             <h3 class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color: var(--text-faint);">Currencies</h3>
@@ -265,6 +289,7 @@
       <div id="tab-players" class="tab-content hidden max-w-4xl mx-auto rise">
         <div class="flex flex-col sm:flex-row gap-3 mb-6 panel p-2.5 rounded-xl">
           <input type="text" id="quickFilterInput" oninput="applyQuickFilter()" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="Search by name, ID, or tag...">
+          <button onclick="exportPlayersCsv()" class="btn-ghost text-sm px-6 py-3 sm:py-0 rounded-lg font-bold">Export CSV</button>
           <button onclick="showProvisionModal()" class="btn-accent text-sm px-6 py-3 sm:py-0 rounded-lg font-bold">Add manually</button>
         </div>
         <div class="panel rounded-2xl overflow-hidden">
@@ -359,6 +384,21 @@
         </div>
       </div>
 
+      <!-- LEADERBOARDS -->
+      <div id="tab-leaderboards" class="tab-content hidden max-w-4xl mx-auto rise">
+        <p class="text-sm mb-6" style="color: var(--text-dim);">Ranks players by any stat your game reports with <span class="font-mono">SubmitStatistic</span>. Pick one below, or type a name your game uses.</p>
+        <div class="flex flex-col sm:flex-row gap-3 mb-4 panel p-2.5 rounded-xl">
+          <input type="text" id="leaderboardStatInput" class="flex-1 p-3 input-field rounded-lg text-sm" placeholder="Stat name (e.g. tags_landed)">
+          <button onclick="loadLeaderboard()" class="btn-accent text-sm px-6 py-3 sm:py-0 rounded-lg font-bold">Load</button>
+        </div>
+        <div id="leaderboardStatChips" class="flex flex-wrap gap-2 mb-6"></div>
+        <div class="panel rounded-2xl overflow-hidden">
+          <ul id="leaderboardList" class="divide-y text-sm max-h-[500px] overflow-y-auto" style="border-color: var(--hairline-soft);">
+            <li class="py-10 text-center font-medium" style="color: var(--text-faint);">Pick a stat above to see rankings.</li>
+          </ul>
+        </div>
+      </div>
+
       <!-- PROJECT SETTINGS -->
       <div id="tab-projectsettings" class="tab-content hidden max-w-3xl mx-auto rise">
         <h1 class="font-display font-bold text-2xl mb-7">Project settings</h1>
@@ -414,6 +454,7 @@
               <button onclick="setVisualStyle('clean')" id="styleBtnClean" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Clean</button>
               <button onclick="setVisualStyle('enhanced')" id="styleBtnEnhanced" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Cooler</button>
               <button onclick="setVisualStyle('maximum')" id="styleBtnMaximum" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Cooler COOLER</button>
+              <button onclick="setVisualStyle('ultra')" id="styleBtnUltra" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Cooler Cooler Duper x100</button>
             </div>
           </div>
           <div class="flex items-center justify-between mt-4">
@@ -504,6 +545,7 @@ let projectsArray = [];
 let fullPlayerCache = [];
 let globalCatalog = [];
 let currenciesArray = [];
+let currencyTotals = {};
 let selectedPlayer = null;
 
 // =========================================================================
@@ -563,8 +605,9 @@ function toggleTheme() {
 function setVisualStyle(style) {
   document.documentElement.setAttribute("data-style", style);
   localStorage.setItem("cvr_style", style);
-  ["styleBtnClean", "styleBtnEnhanced", "styleBtnMaximum"].forEach((id) => document.getElementById(id).classList.remove("active"));
-  document.getElementById(style === "maximum" ? "styleBtnMaximum" : style === "enhanced" ? "styleBtnEnhanced" : "styleBtnClean").classList.add("active");
+  ["styleBtnClean", "styleBtnEnhanced", "styleBtnMaximum", "styleBtnUltra"].forEach((id) => document.getElementById(id).classList.remove("active"));
+  const btnId = style === "ultra" ? "styleBtnUltra" : style === "maximum" ? "styleBtnMaximum" : style === "enhanced" ? "styleBtnEnhanced" : "styleBtnClean";
+  document.getElementById(btnId).classList.add("active");
 }
 (function initAppearance() {
   setTheme(localStorage.getItem("cvr_theme") || "dark");
@@ -612,11 +655,7 @@ function unlockLogin() {
 }
 
 function showLoginError(reason) {
-  const messages = {
-    banned: "This account has been blocked from the dashboard.",
-    invalid_credentials: "Incorrect email or password.",
-    signup_failed: "Couldn't create that account. It may already exist.",
-  };
+  const messages = { banned: "This account has been blocked from the dashboard." };
   const el = document.getElementById("loginErrorText");
   el.innerText = messages[reason] || reason || "Something went wrong.";
   el.classList.remove("hidden");
@@ -631,16 +670,32 @@ async function loginWithGithub() {
 async function manualSignIn() {
   const email = document.getElementById("manualEmail").value.trim();
   const password = document.getElementById("manualPassword").value;
+  if (!email || !password) { showLoginError("Enter both an email and a password."); return; }
   const { error } = await client.auth.signInWithPassword({ email, password });
-  if (error) showLoginError("invalid_credentials");
+  // Show Supabase's real reason (e.g. "Invalid login credentials", "Email
+  // not confirmed") instead of a generic guess — a canned message here was
+  // exactly the kind of silent-failure bug that made the RPC issue hard to
+  // track down too.
+  if (error) { console.error("Sign-in error:", error); showLoginError(error.message); }
 }
 async function manualSignUp() {
   const email = document.getElementById("manualEmail").value.trim();
   const password = document.getElementById("manualPassword").value;
+  if (!email || !password) { showLoginError("Enter both an email and a password."); return; }
   if (password.length < 6) { showLoginError("Password must be at least 6 characters."); return; }
-  const { error } = await client.auth.signUp({ email, password });
-  if (error) showLoginError("signup_failed");
-  else showLoginError("Account created — check your email to confirm, then sign in.");
+  const { data, error } = await client.auth.signUp({ email, password });
+  if (error) { console.error("Sign-up error:", error); showLoginError(error.message); return; }
+  if (data && data.user && data.user.identities && data.user.identities.length === 0) {
+    showLoginError("An account with that email already exists — try signing in instead.");
+    return;
+  }
+  if (data && data.session) {
+    // Email confirmation is off in this Supabase project — signUp already
+    // returned a live session, no separate sign-in step needed.
+    await handleSession(data.session);
+  } else {
+    showLoginError("Account created — check your email for a confirmation link, then sign in.");
+  }
 }
 async function logout() { await client.auth.signOut(); location.reload(); }
 
@@ -755,13 +810,14 @@ async function deleteCurrentProject() {
 function switchTab(tabId) {
   document.querySelectorAll(".tab-content").forEach((el) => el.classList.add("hidden"));
   document.getElementById(`tab-${tabId}`).classList.remove("hidden");
-  const titles = { overview: "Overview", players: "Players", currencies: "Currencies", cosmetics: "Catalog", activity: "Activity", projectsettings: "Project settings", platform: "Platform", settings: "Settings" };
+  const titles = { overview: "Overview", players: "Players", currencies: "Currencies", cosmetics: "Catalog", activity: "Activity", leaderboards: "Leaderboards", projectsettings: "Project settings", platform: "Platform", settings: "Settings" };
   document.getElementById("currentTabTitle").innerText = titles[tabId];
   document.getElementById("mobileTabTitle").innerText = titles[tabId];
   document.querySelectorAll("#mainNav button").forEach((b) => b.classList.remove("active"));
   document.getElementById(`btn-${tabId}`).classList.add("active");
   if (tabId === "platform") loadBannedUsers();
   if (tabId === "activity") loadAuditLog();
+  if (tabId === "leaderboards") loadLeaderboardStatChips();
   document.getElementById("mainContent").focus();
 }
 
@@ -778,11 +834,18 @@ async function fetchProjectData() {
   fullPlayerCache = pRes.data || [];
   globalCatalog = cRes.data || [];
   currenciesArray = curRes.data || [];
+  currencyTotals = {};
+  let onlineCount = 0;
   fullPlayerCache.forEach((p) => {
     p.balances = {};
-    (p.player_balances || []).forEach((b) => (p.balances[b.currency_id] = b.amount));
+    (p.player_balances || []).forEach((b) => {
+      p.balances[b.currency_id] = b.amount;
+      currencyTotals[b.currency_id] = (currencyTotals[b.currency_id] || 0) + (Number(b.amount) || 0);
+    });
+    if (p.last_seen && Date.now() - new Date(p.last_seen).getTime() < 45000) onlineCount++;
   });
   document.getElementById("statPlayers").innerText = fullPlayerCache.length;
+  document.getElementById("statOnline").innerText = onlineCount;
   document.getElementById("statCurrencies").innerText = currenciesArray.length;
   document.getElementById("statCosmetics").innerText = globalCatalog.length;
   renderAllPlayers();
@@ -930,6 +993,28 @@ async function executeProvision() {
   else showToast("Couldn't add that player — ID may already exist.", true);
 }
 
+function csvEscape(val) {
+  const s = String(val ?? "");
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+function exportPlayersCsv() {
+  if (!activeProject) return;
+  if (fullPlayerCache.length === 0) { showToast("No players to export.", true); return; }
+  const currencyCols = currenciesArray.map((c) => c.name);
+  const header = ["id", "name", "role", "is_banned", "tags", "last_seen", "created_at", ...currencyCols];
+  const rows = fullPlayerCache.map((p) => [
+    p.id, p.name, p.role, p.is_banned, (p.tags || []).join("|"), p.last_seen, p.created_at,
+    ...currenciesArray.map((c) => (p.balances && p.balances[c.id]) || 0),
+  ]);
+  const csv = [header, ...rows].map((row) => row.map(csvEscape).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${activeProject.name.replace(/\s+/g, "_")}_players_${Date.now()}.csv`;
+  a.click();
+  showToast("CSV downloaded.");
+}
+
 // =========================================================================
 // CURRENCIES
 // =========================================================================
@@ -955,6 +1040,9 @@ function renderCurrencies() {
         </div>
       </div>
       <p class="text-xs mb-3" style="color: var(--text-dim);">${escapeHtml(c.description || "No description.")}</p>
+      <div class="flex justify-between text-[11px] font-mono panel-raised rounded-lg px-3 py-2 mb-1.5">
+        <span style="color: var(--text-faint);">In circulation</span><span class="font-bold">${currencyTotals[c.id] || 0}</span>
+      </div>
       <div class="flex justify-between text-[11px] font-mono panel-raised rounded-lg px-3 py-2">
         <span style="color: var(--text-faint);">Starting balance</span><span class="font-bold">${c.starting_balance}</span>
       </div>`;
@@ -1066,6 +1154,43 @@ async function loadAuditLog() {
   list.innerHTML = log.length
     ? log.map((e) => `<li class="py-3 px-5 text-xs"><span style="color: var(--text-faint);">${new Date(e.ts).toLocaleString()}</span> · <span class="font-bold" style="color: var(--accent-text);">${escapeHtml(e.actor)}</span> ${escapeHtml(e.action)} ${escapeHtml(JSON.stringify(e.meta || {}))}</li>`).join("")
     : `<li class="py-10 text-center font-medium not-italic font-sans" style="color: var(--text-faint);">No activity recorded yet.</li>`;
+}
+
+// =========================================================================
+// LEADERBOARDS
+// =========================================================================
+// Reads player_statistics directly (RLS already allows this — it's the
+// same table game_get_leaderboard reads from, just accessed as the signed-in
+// project owner instead of through the api-key RPC the game itself uses).
+async function loadLeaderboardStatChips() {
+  if (!activeProject || fullPlayerCache.length === 0) { document.getElementById("leaderboardStatChips").innerHTML = ""; return; }
+  const ids = fullPlayerCache.map((p) => p.id);
+  const { data } = await client.from("player_statistics").select("stat_name").in("player_id", ids);
+  const names = [...new Set((data || []).map((s) => s.stat_name))];
+  const chips = document.getElementById("leaderboardStatChips");
+  chips.innerHTML = names.length
+    ? names.map((n) => `<button class="stat-chip btn-ghost px-3 py-1.5 rounded-full text-xs font-bold" data-name="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("")
+    : `<span class="text-xs italic" style="color: var(--text-faint);">No stats reported yet — call SubmitStatistic from your game first.</span>`;
+  chips.querySelectorAll(".stat-chip").forEach((btn) => {
+    btn.onclick = () => { document.getElementById("leaderboardStatInput").value = btn.dataset.name; loadLeaderboard(); };
+  });
+}
+async function loadLeaderboard() {
+  const statName = document.getElementById("leaderboardStatInput").value.trim();
+  const list = document.getElementById("leaderboardList");
+  if (!statName || !activeProject) { showToast("Enter a stat name first.", true); return; }
+  const ids = fullPlayerCache.map((p) => p.id);
+  if (ids.length === 0) { list.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No players yet.</li>`; return; }
+  const { data, error } = await client.from("player_statistics").select("player_id, value").in("player_id", ids).eq("stat_name", statName).order("value", { ascending: false }).limit(50);
+  if (error) { showToast("Couldn't load that leaderboard.", true); return; }
+  const rows = data || [];
+  if (rows.length === 0) { list.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No one has a "${escapeHtml(statName)}" stat yet.</li>`; return; }
+  const nameById = Object.fromEntries(fullPlayerCache.map((p) => [p.id, p.name]));
+  list.innerHTML = rows.map((r, i) => `
+    <li class="py-3 px-5 flex items-center justify-between text-sm">
+      <span class="flex items-center gap-3"><span class="font-mono font-bold w-6 text-right" style="color: var(--text-faint);">${i + 1}</span> ${escapeHtml(nameById[r.player_id] || r.player_id)}</span>
+      <span class="font-mono font-bold" style="color: var(--accent-text);">${r.value}</span>
+    </li>`).join("");
 }
 
 // =========================================================================
