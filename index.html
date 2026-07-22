@@ -46,37 +46,62 @@
      slow-moving gradient sheen, "ultra" adds a pulsing glow border and a
      faint animated aurora behind the whole app. Still monochrome icons,
      still no emoji, still turns off for prefers-reduced-motion. */
-  [data-style="enhanced"] .keycard, [data-style="maximum"] .keycard, [data-style="ultra"] .keycard { box-shadow: 0 0 0 1px var(--hairline), 0 12px 40px -12px rgba(232,163,61,0.25); }
+  [data-style="enhanced"] .keycard, [data-style="maximum"] .keycard, [data-style="ultra"] .keycard, [data-style="godtier"] .keycard { box-shadow: 0 0 0 1px var(--hairline), 0 12px 40px -12px rgba(232,163,61,0.25); }
   [data-style="enhanced"] h1.font-display.font-bold, [data-style="enhanced"] h2.font-display.font-bold, [data-style="enhanced"] h3.font-display.font-bold,
   [data-style="maximum"] h1.font-display.font-bold, [data-style="maximum"] h2.font-display.font-bold, [data-style="maximum"] h3.font-display.font-bold,
-  [data-style="ultra"] h1.font-display.font-bold, [data-style="ultra"] h2.font-display.font-bold, [data-style="ultra"] h3.font-display.font-bold {
+  [data-style="ultra"] h1.font-display.font-bold, [data-style="ultra"] h2.font-display.font-bold, [data-style="ultra"] h3.font-display.font-bold,
+  [data-style="godtier"] h1.font-display.font-bold, [data-style="godtier"] h2.font-display.font-bold, [data-style="godtier"] h3.font-display.font-bold {
     background: linear-gradient(100deg, var(--text) 40%, var(--accent-text) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  [data-style="enhanced"] .btn-accent, [data-style="maximum"] .btn-accent, [data-style="ultra"] .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #f2b25a 100%); box-shadow: 0 4px 18px -4px rgba(232,163,61,0.5); }
-  [data-style="enhanced"] .nav-item.active, [data-style="maximum"] .nav-item.active, [data-style="ultra"] .nav-item.active { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.4); }
+  [data-style="enhanced"] .btn-accent, [data-style="maximum"] .btn-accent, [data-style="ultra"] .btn-accent, [data-style="godtier"] .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #f2b25a 100%); box-shadow: 0 4px 18px -4px rgba(232,163,61,0.5); }
+  [data-style="enhanced"] .nav-item.active, [data-style="maximum"] .nav-item.active, [data-style="ultra"] .nav-item.active, [data-style="godtier"] .nav-item.active { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.4); }
   @keyframes sheenMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
   [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised,
-  [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised {
+  [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised,
+  [data-style="godtier"] .panel, [data-style="godtier"] .panel-raised {
     background-image: linear-gradient(115deg, var(--panel) 0%, var(--panel) 40%, var(--accent-soft) 50%, var(--panel) 60%, var(--panel) 100%);
     background-size: 250% 100%;
     animation: sheenMove 9s linear infinite;
   }
-  [data-style="maximum"] .keycard, [data-style="ultra"] .keycard { animation: sheenMove 5s linear infinite; background-image: linear-gradient(115deg, var(--panel-raised) 0%, var(--panel) 35%, var(--accent-soft) 50%, var(--panel) 65%, var(--panel-raised) 100%); background-size: 260% 100%; }
+  [data-style="maximum"] .keycard, [data-style="ultra"] .keycard, [data-style="godtier"] .keycard { animation: sheenMove 5s linear infinite; background-image: linear-gradient(115deg, var(--panel-raised) 0%, var(--panel) 35%, var(--accent-soft) 50%, var(--panel) 65%, var(--panel-raised) 100%); background-size: 260% 100%; }
 
   @keyframes glowPulse { 0%, 100% { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(232,163,61,0.35); } 50% { box-shadow: inset 0 0 0 1px var(--accent), 0 0 26px -4px rgba(232,163,61,0.7); } }
   @keyframes auroraDrift { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(-4%, 3%) rotate(360deg); } }
-  [data-style="ultra"] .nav-item.active { animation: glowPulse 3.5s ease-in-out infinite; }
-  [data-style="ultra"] .keycard, [data-style="ultra"] .panel:hover { animation: sheenMove 3.5s linear infinite, glowPulse 4s ease-in-out infinite; }
-  [data-style="ultra"] body::before {
+  [data-style="ultra"] .nav-item.active, [data-style="godtier"] .nav-item.active { animation: glowPulse 3.5s ease-in-out infinite; }
+  [data-style="ultra"] .keycard, [data-style="ultra"] .panel:hover,
+  [data-style="godtier"] .keycard, [data-style="godtier"] .panel:hover { animation: sheenMove 3.5s linear infinite, glowPulse 4s ease-in-out infinite; }
+  [data-style="ultra"] body::before, [data-style="godtier"] body::before {
     content: ""; position: fixed; inset: -50%; z-index: -1; pointer-events: none;
     background: conic-gradient(from 0deg, transparent 0%, var(--accent-soft) 15%, transparent 30%, var(--moss-soft) 55%, transparent 70%, var(--accent-soft) 88%, transparent 100%);
     opacity: 0.35; filter: blur(60px);
     animation: auroraDrift 40s linear infinite;
   }
+  /* godtier: the one extra rung past ultra — quicker pulse, brighter aurora,
+     and a slow-rotating rim-light hairline around every panel. Still
+     monochrome, still no emoji, still respects reduced-motion below. */
+  @keyframes rimRotate { 0% { --rim-angle: 0deg; } 100% { --rim-angle: 360deg; } }
+  [data-style="godtier"] .nav-item.active { animation: glowPulse 2.2s ease-in-out infinite; }
+  [data-style="godtier"] .keycard, [data-style="godtier"] .panel:hover { animation: sheenMove 2.4s linear infinite, glowPulse 2.6s ease-in-out infinite; }
+  [data-style="godtier"] body::before { opacity: 0.5; animation: auroraDrift 22s linear infinite; }
+  [data-style="godtier"] .panel, [data-style="godtier"] .panel-raised, [data-style="godtier"] .keycard {
+    position: relative;
+  }
+  [data-style="godtier"] .panel::after, [data-style="godtier"] .panel-raised::after, [data-style="godtier"] .keycard::after {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; z-index: 1;
+    padding: 1px;
+    background: conic-gradient(from var(--rim-angle, 0deg), transparent 0%, var(--accent) 8%, transparent 20%, transparent 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: rimRotate 6s linear infinite;
+    opacity: 0.8;
+  }
   @media (prefers-reduced-motion: reduce) {
     [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised, [data-style="maximum"] .keycard,
     [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised, [data-style="ultra"] .keycard,
-    [data-style="ultra"] .nav-item.active, [data-style="ultra"] body::before { animation: none; }
+    [data-style="ultra"] .nav-item.active, [data-style="ultra"] body::before,
+    [data-style="godtier"] .panel, [data-style="godtier"] .panel-raised, [data-style="godtier"] .keycard,
+    [data-style="godtier"] .nav-item.active, [data-style="godtier"] body::before,
+    [data-style="godtier"] .panel::after, [data-style="godtier"] .panel-raised::after, [data-style="godtier"] .keycard::after { animation: none; }
   }
 
   * { box-sizing: border-box; }
@@ -107,6 +132,7 @@
   .btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-ghost { background: var(--panel-raised); border: 1px solid var(--hairline-soft); color: var(--text); }
   .btn-ghost:hover { border-color: var(--hairline); }
+  .btn-ghost.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
   .input-field { background: var(--bg); border: 1px solid var(--hairline-soft); color: var(--text); }
   .input-field:focus { outline: none; border-color: var(--accent); }
   .nav-item { color: var(--text-dim); border: 1px solid transparent; }
@@ -378,8 +404,13 @@
 
       <!-- ACTIVITY -->
       <div id="tab-activity" class="tab-content hidden max-w-4xl mx-auto rise">
+        <div class="flex gap-2 mb-4">
+          <button onclick="setActivityView('audit')" id="activityViewBtnAudit" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold active">Audit log</button>
+          <button onclick="setActivityView('events')" id="activityViewBtnEvents" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Player events</button>
+        </div>
         <div class="panel rounded-2xl overflow-hidden">
           <ul id="activityList" class="divide-y text-sm max-h-[600px] overflow-y-auto font-mono" style="border-color: var(--hairline-soft);"></ul>
+          <ul id="playerEventsList" class="hidden divide-y text-sm max-h-[600px] overflow-y-auto font-mono" style="border-color: var(--hairline-soft);"></ul>
         </div>
       </div>
 
@@ -439,6 +470,7 @@
               <button onclick="setVisualStyle('enhanced')" id="styleBtnEnhanced" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Cooler</button>
               <button onclick="setVisualStyle('maximum')" id="styleBtnMaximum" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Cooler COOLER</button>
               <button onclick="setVisualStyle('ultra')" id="styleBtnUltra" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Cooler Cooler Duper x100</button>
+              <button onclick="setVisualStyle('godtier')" id="styleBtnGodtier" class="btn-ghost px-3.5 py-2 rounded-lg text-xs font-bold">Super Duper Cooler Cool 100.1x cooler</button>
             </div>
           </div>
           <div class="flex items-center justify-between mt-4">
@@ -589,8 +621,8 @@ function toggleTheme() {
 function setVisualStyle(style) {
   document.documentElement.setAttribute("data-style", style);
   localStorage.setItem("cvr_style", style);
-  ["styleBtnClean", "styleBtnEnhanced", "styleBtnMaximum", "styleBtnUltra"].forEach((id) => document.getElementById(id).classList.remove("active"));
-  const btnId = style === "ultra" ? "styleBtnUltra" : style === "maximum" ? "styleBtnMaximum" : style === "enhanced" ? "styleBtnEnhanced" : "styleBtnClean";
+  ["styleBtnClean", "styleBtnEnhanced", "styleBtnMaximum", "styleBtnUltra", "styleBtnGodtier"].forEach((id) => document.getElementById(id).classList.remove("active"));
+  const btnId = style === "godtier" ? "styleBtnGodtier" : style === "ultra" ? "styleBtnUltra" : style === "maximum" ? "styleBtnMaximum" : style === "enhanced" ? "styleBtnEnhanced" : "styleBtnClean";
   document.getElementById(btnId).classList.add("active");
 }
 (function initAppearance() {
@@ -800,7 +832,7 @@ function switchTab(tabId) {
   document.querySelectorAll("#mainNav button").forEach((b) => b.classList.remove("active"));
   document.getElementById(`btn-${tabId}`).classList.add("active");
   if (tabId === "platform") loadBannedUsers();
-  if (tabId === "activity") loadAuditLog();
+  if (tabId === "activity") setActivityView(document.getElementById("activityViewBtnEvents").classList.contains("active") ? "events" : "audit");
   if (tabId === "leaderboards") loadLeaderboardStatChips();
   document.getElementById("mainContent").focus();
 }
@@ -1138,6 +1170,26 @@ async function loadAuditLog() {
   list.innerHTML = log.length
     ? log.map((e) => `<li class="py-3 px-5 text-xs"><span style="color: var(--text-faint);">${new Date(e.ts).toLocaleString()}</span> · <span class="font-bold" style="color: var(--accent-text);">${escapeHtml(e.actor)}</span> ${escapeHtml(e.action)} ${escapeHtml(JSON.stringify(e.meta || {}))}</li>`).join("")
     : `<li class="py-10 text-center font-medium not-italic font-sans" style="color: var(--text-faint);">No activity recorded yet.</li>`;
+}
+// Player-facing telemetry (round completions, custom gameplay events, etc.)
+// logged via MirrorVRManager.LogEvent from the game client — separate from
+// the dashboard's own audit_logs, which only track actions taken here.
+async function loadPlayerEvents() {
+  if (!activeProject) return;
+  const { data } = await client.from("player_events").select("*").eq("project_id", activeProject.id).order("ts", { ascending: false }).limit(200);
+  const list = document.getElementById("playerEventsList");
+  const events = data || [];
+  list.innerHTML = events.length
+    ? events.map((e) => `<li class="py-3 px-5 text-xs"><span style="color: var(--text-faint);">${new Date(e.ts).toLocaleString()}</span> · <span class="font-bold" style="color: var(--moss-text);">${escapeHtml(e.player_id || "unknown")}</span> ${escapeHtml(e.event_name)} ${escapeHtml(JSON.stringify(e.data || {}))}</li>`).join("")
+    : `<li class="py-10 text-center font-medium not-italic font-sans" style="color: var(--text-faint);">No player events recorded yet.</li>`;
+}
+function setActivityView(view) {
+  const showAudit = view === "audit";
+  document.getElementById("activityList").classList.toggle("hidden", !showAudit);
+  document.getElementById("playerEventsList").classList.toggle("hidden", showAudit);
+  document.getElementById("activityViewBtnAudit").classList.toggle("active", showAudit);
+  document.getElementById("activityViewBtnEvents").classList.toggle("active", !showAudit);
+  if (showAudit) loadAuditLog(); else loadPlayerEvents();
 }
 
 // =========================================================================
