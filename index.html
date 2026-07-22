@@ -300,10 +300,16 @@
             </div>
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--text-faint);">Game API key (for this project)</label>
-              <div class="flex gap-2">
-                <input type="password" id="overviewApiKey" readonly class="flex-1 p-3 rounded-lg text-sm font-mono input-field">
-                <button onclick="toggleKeyVisibility('overviewApiKey')" class="btn-ghost px-3.5 rounded-lg" aria-label="Show key"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                <button onclick="copyToClipboard('overviewApiKey')" class="btn-ghost px-4 rounded-lg text-xs font-bold">Copy</button>
+              <div id="apiKeyNotGenerated" class="flex flex-col gap-2">
+                <p class="text-xs" style="color: var(--text-dim);">No key yet — generate one before your game can connect. You'll only be able to view it once, right after generating, so copy it somewhere safe.</p>
+                <button onclick="generateApiKey()" class="btn-accent font-bold py-2.5 px-6 rounded-lg text-xs self-start">Generate Game API key</button>
+              </div>
+              <div id="apiKeyGenerated" class="hidden flex flex-col gap-2">
+                <div class="flex gap-2">
+                  <input type="text" readonly value="•••••••••••••••••••••••••••• (hidden — copied once at generation)" class="flex-1 p-3 rounded-lg text-sm font-mono input-field" style="color: var(--text-faint);">
+                  <button onclick="generateApiKey()" class="btn-ghost px-4 rounded-lg text-xs font-bold" style="color: var(--danger-text);">Regenerate</button>
+                </div>
+                <p class="text-[11px]" style="color: var(--text-faint);">Lost it? Regenerating immediately invalidates the old key — any live game builds using it will stop authenticating until updated.</p>
               </div>
             </div>
           </div>
@@ -513,6 +519,18 @@
       <button onclick="submitCreateProject()" class="flex-1 btn-accent font-bold py-3 rounded-lg text-sm">Create</button>
       <button onclick="closeModal('createProjectModal')" class="btn-ghost px-6 rounded-lg text-sm font-bold">Cancel</button>
     </div>
+  </div>
+</div>
+
+<div id="apiKeyRevealModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: var(--backdrop);" role="dialog" aria-modal="true">
+  <div class="panel rounded-2xl w-full max-w-md p-7 rise">
+    <h3 class="font-display font-bold text-lg mb-2">Your new Game API key</h3>
+    <p class="text-xs mb-5" style="color: var(--danger-text);">This is the only time it will be shown. Copy it now and paste it into your game's MirrorVRManager — you won't be able to view it again.</p>
+    <div class="flex gap-2 mb-6">
+      <input id="apiKeyRevealInput" type="text" readonly class="flex-1 p-3 rounded-lg text-sm font-mono input-field" style="color: var(--accent-text);">
+      <button onclick="copyToClipboard('apiKeyRevealInput')" class="btn-ghost px-4 rounded-lg text-xs font-bold">Copy</button>
+    </div>
+    <button onclick="acknowledgeApiKeyReveal()" class="w-full btn-accent font-bold py-3 rounded-lg text-sm">I've copied it — done</button>
   </div>
 </div>
 
@@ -780,7 +798,9 @@ function selectProject(proj) {
   document.getElementById("noProjectOverlay").classList.remove("flex");
   renderProjectsSidebar();
   document.getElementById("overviewProjId").value = proj.id;
-  document.getElementById("overviewApiKey").value = proj.api_key;
+  const hasKey = !!proj.api_key;
+  document.getElementById("apiKeyNotGenerated").classList.toggle("hidden", hasKey);
+  document.getElementById("apiKeyGenerated").classList.toggle("hidden", !hasKey);
   document.getElementById("projSettingNameInput").value = proj.name;
   switchTab("overview");
   fetchProjectData();
@@ -796,7 +816,7 @@ async function submitCreateProject() {
     name,
     logo: "",
     endpoint: `${SUPABASE_URL}/rest/v1/rpc/`,
-    api_key: `cvr_live_${crypto.randomUUID().replace(/-/g, "")}`,
+    api_key: "",
   };
   const { data, error } = await client.from("projects").insert([newProj]).select();
   closeModal("createProjectModal");
@@ -808,6 +828,24 @@ async function saveCurrentProjectSettings() {
   const name = document.getElementById("projSettingNameInput").value.trim();
   const { error } = await client.from("projects").update({ name }).eq("id", activeProject.id);
   if (!error) { activeProject.name = name; renderProjectsSidebar(); showToast("Saved."); }
+}
+async function generateApiKey() {
+  if (activeProject.api_key) {
+    if (!confirm("Regenerating invalidates the current key immediately — any game build still using the old one will stop authenticating. Continue?")) return;
+  }
+  const newKey = `cvr_live_${crypto.randomUUID().replace(/-/g, "")}`;
+  const { error } = await client.from("projects").update({ api_key: newKey }).eq("id", activeProject.id);
+  if (error) { showToast("Couldn't generate a new key.", true); return; }
+  activeProject.api_key = newKey;
+  await logAudit(document.getElementById("apiKeyGenerated").classList.contains("hidden") ? "generate_api_key" : "regenerate_api_key", {});
+  document.getElementById("apiKeyRevealInput").value = newKey;
+  document.getElementById("apiKeyRevealModal").classList.remove("hidden");
+}
+function acknowledgeApiKeyReveal() {
+  closeModal("apiKeyRevealModal");
+  document.getElementById("apiKeyRevealInput").value = "";
+  document.getElementById("apiKeyNotGenerated").classList.add("hidden");
+  document.getElementById("apiKeyGenerated").classList.remove("hidden");
 }
 async function deleteCurrentProject() {
   if (!confirm(`Delete "${activeProject.name}"? This can't be undone.`)) return;
