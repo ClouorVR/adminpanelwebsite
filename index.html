@@ -607,6 +607,8 @@ let globalCatalog = [];
 let currenciesArray = [];
 let currencyTotals = {};
 let selectedPlayer = null;
+let playersRealtimeChannel = null;
+let onlineDecayTimer = null;
 
 // =========================================================================
 // I18N
@@ -831,6 +833,7 @@ function selectProject(proj) {
   switchTab("overview");
   fetchProjectData();
   loadAuditLog();
+  subscribeToPlayerUpdates(proj.id);
 }
 function showCreateProjectModal() { document.getElementById("createProjectModal").classList.remove("hidden"); document.getElementById("newProjName").focus(); }
 async function submitCreateProject() {
@@ -914,23 +917,62 @@ async function fetchProjectData() {
   globalCatalog = cRes.data || [];
   currenciesArray = curRes.data || [];
   currencyTotals = {};
-  let onlineCount = 0;
   fullPlayerCache.forEach((p) => {
     p.balances = {};
     (p.player_balances || []).forEach((b) => {
       p.balances[b.currency_id] = b.amount;
       currencyTotals[b.currency_id] = (currencyTotals[b.currency_id] || 0) + (Number(b.amount) || 0);
     });
-    if (p.last_seen && Date.now() - new Date(p.last_seen).getTime() < 45000) onlineCount++;
   });
   document.getElementById("statPlayers").innerText = fullPlayerCache.length;
-  document.getElementById("statOnline").innerText = onlineCount;
   document.getElementById("statCurrencies").innerText = currenciesArray.length;
   document.getElementById("statCosmetics").innerText = globalCatalog.length;
+  recomputeOnlineCount();
   renderAllPlayers();
   renderCosmetics();
   renderCurrencies();
   if (selectedPlayer) openPlayerDrawer(selectedPlayer.id, true);
+}
+
+// "Online" is derived from last_seen freshness rather than a push event, so
+// it needs to be recomputed on a timer too — otherwise a player who closes
+// the game would stay looking "online" forever until the next DB write.
+function recomputeOnlineCount() {
+  let onlineCount = 0;
+  const now = Date.now();
+  fullPlayerCache.forEach((p) => {
+    if (p.last_seen && now - new Date(p.last_seen).getTime() < 45000) onlineCount++;
+  });
+  document.getElementById("statOnline").innerText = onlineCount;
+}
+
+// Keeps the Players tab (and online count) near-real-time: pushed updates
+// via Supabase Realtime for actual DB changes (new player, name/ban/tag
+// edits, etc.), plus a periodic tick purely to let "online" status decay
+// client-side as last_seen goes stale, without needing a new DB write.
+function subscribeToPlayerUpdates(projectId) {
+  if (playersRealtimeChannel) { client.removeChannel(playersRealtimeChannel); playersRealtimeChannel = null; }
+  if (onlineDecayTimer) { clearInterval(onlineDecayTimer); onlineDecayTimer = null; }
+
+  playersRealtimeChannel = client
+    .channel(`players-${projectId}`)
+    .on("postgres_changes", { event: "*", schema: "public", table: "players", filter: `project_id=eq.${projectId}` }, (payload) => {
+      if (payload.eventType === "DELETE") {
+        fullPlayerCache = fullPlayerCache.filter((p) => p.id !== payload.old.id);
+      } else {
+        const idx = fullPlayerCache.findIndex((p) => p.id === payload.new.id);
+        const merged = { ...(idx >= 0 ? fullPlayerCache[idx] : {}), ...payload.new };
+        merged.balances = (idx >= 0 ? fullPlayerCache[idx].balances : {}) || {};
+        if (idx >= 0) fullPlayerCache[idx] = merged; else fullPlayerCache.push(merged);
+      }
+      document.getElementById("statPlayers").innerText = fullPlayerCache.length;
+      recomputeOnlineCount();
+      renderAllPlayers();
+      if (selectedPlayer && payload.new && selectedPlayer.id === payload.new.id) openPlayerDrawer(selectedPlayer.id, true);
+    })
+    .subscribe();
+
+  onlineDecayTimer = setInterval(recomputeOnlineCount, 5000);
 }
 
 function renderAllPlayers() {
