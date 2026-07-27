@@ -347,6 +347,11 @@
           </div>
 
           <div class="panel-raised p-4 rounded-xl mb-4">
+            <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Cosmetics</h4>
+            <div id="playerCosmeticsList" class="flex flex-col gap-2 max-h-64 overflow-y-auto"></div>
+          </div>
+
+          <div class="panel-raised p-4 rounded-xl mb-4">
             <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Identity</h4>
             <div class="flex gap-2 mb-3">
               <input type="text" id="newName" class="w-full p-2.5 input-field rounded-lg text-sm" placeholder="Rename player">
@@ -949,7 +954,7 @@ function switchTab(tabId) {
 async function fetchProjectData() {
   if (!activeProject) return;
   const [pRes, cRes, curRes] = await Promise.all([
-    client.from("players").select("*, player_balances(currency_id, amount)").eq("project_id", activeProject.id),
+    client.from("players").select("*, player_balances(currency_id, amount), player_cosmetics(cosmetic_id, granted_at)").eq("project_id", activeProject.id),
     client.from("cosmetics").select("*").eq("project_id", activeProject.id),
     client.from("currencies").select("*").eq("project_id", activeProject.id),
   ]);
@@ -963,6 +968,7 @@ async function fetchProjectData() {
       p.balances[b.currency_id] = b.amount;
       currencyTotals[b.currency_id] = (currencyTotals[b.currency_id] || 0) + (Number(b.amount) || 0);
     });
+    p.ownedCosmeticIds = new Set((p.player_cosmetics || []).map((pc) => pc.cosmetic_id));
   });
   document.getElementById("statPlayers").innerText = fullPlayerCache.length;
   document.getElementById("statCurrencies").innerText = currenciesArray.length;
@@ -1076,6 +1082,23 @@ function openPlayerDrawer(pid) {
     });
   }
 
+  const cosmeticsList = document.getElementById("playerCosmeticsList");
+  cosmeticsList.innerHTML = "";
+  if (globalCatalog.length === 0) {
+    cosmeticsList.innerHTML = `<p class="text-xs italic" style="color: var(--text-faint);">No cosmetics in the catalog yet.</p>`;
+  } else {
+    globalCatalog.forEach((c) => {
+      const owned = p.ownedCosmeticIds && p.ownedCosmeticIds.has(c.id);
+      const row = document.createElement("div");
+      row.className = "flex items-center justify-between gap-2 panel p-2.5 rounded-lg";
+      row.innerHTML = `
+        <span class="text-xs font-semibold truncate">${escapeHtml(c.name)} <span class="text-[9px] ml-1 uppercase" style="color: var(--text-faint);">${escapeHtml(c.slot)}</span></span>
+        <button class="toggle-btn text-[10px] font-black uppercase shrink-0" style="color: ${owned ? "var(--danger-text)" : "var(--accent-text)"};">${owned ? "Remove" : "Give"}</button>`;
+      row.querySelector(".toggle-btn").onclick = () => (owned ? removeCosmeticFromPlayer(c.id) : giveCosmeticToPlayer(c.id));
+      cosmeticsList.appendChild(row);
+    });
+  }
+
   const tagsContainer = document.getElementById("playerTagsContainer");
   tagsContainer.innerHTML = "";
   if (p.tags && p.tags.length > 0) {
@@ -1110,6 +1133,28 @@ async function modifyBalance(currencyId, amount, isSet) {
     fetchProjectData();
     showToast("Balance updated.");
   }
+}
+async function giveCosmeticToPlayer(cosmeticId) {
+  if (!selectedPlayer) return;
+  const { error } = await client.from("player_cosmetics").upsert(
+    { player_id: selectedPlayer.id, cosmetic_id: cosmeticId, granted_at: new Date().toISOString() },
+    { onConflict: "player_id,cosmetic_id" }
+  );
+  if (!error) {
+    await logAudit("grant_cosmetic", { player: selectedPlayer.id, cosmeticId });
+    fetchProjectData();
+    showToast("Cosmetic granted.");
+  } else showToast("Couldn't grant that cosmetic.", true);
+}
+async function removeCosmeticFromPlayer(cosmeticId) {
+  if (!selectedPlayer) return;
+  const { error } = await client.from("player_cosmetics").delete()
+    .eq("player_id", selectedPlayer.id).eq("cosmetic_id", cosmeticId);
+  if (!error) {
+    await logAudit("revoke_cosmetic", { player: selectedPlayer.id, cosmeticId });
+    fetchProjectData();
+    showToast("Cosmetic removed.");
+  } else showToast("Couldn't remove that cosmetic.", true);
 }
 async function changeName() {
   const name = document.getElementById("newName").value.trim();
