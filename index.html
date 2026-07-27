@@ -396,7 +396,10 @@
               <option value="HeadCos">Slot: Head</option><option value="FaceCos">Slot: Face</option>
               <option value="BodyCos">Slot: Body</option><option value="LeftCos">Slot: Left hand</option><option value="RightCos">Slot: Right hand</option>
             </select>
-            <input id="newCosPrice" type="number" class="w-full p-3 mb-6 input-field rounded-lg text-sm" placeholder="Price">
+            <input id="newCosPrice" type="number" class="w-full p-3 mb-3 input-field rounded-lg text-sm" placeholder="Price">
+            <select id="newCosCurrency" class="w-full p-3 mb-6 input-field rounded-lg text-sm">
+              <option value="">Priced in… (select a currency)</option>
+            </select>
             <div class="flex gap-2">
               <button onclick="submitCosmetic()" class="btn-accent font-bold py-3 flex-1 rounded-lg text-sm">Save</button>
               <button onclick="cancelCosmeticEdit()" id="cancelCosEditBtn" class="btn-ghost font-bold py-3 px-4 rounded-lg text-sm hidden">Cancel</button>
@@ -455,6 +458,20 @@
             <input id="projSettingNameInput" type="text" class="w-full p-3.5 input-field rounded-lg text-sm font-semibold">
           </div>
           <div class="pt-1"><button onclick="saveCurrentProjectSettings()" class="btn-accent font-bold py-3 px-8 rounded-lg text-sm">Save changes</button></div>
+        </div>
+
+        <div class="panel p-6 md:p-8 rounded-2xl flex flex-col gap-3">
+          <label class="block text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-faint);">Server-only key (admin RPCs — GrantCurrency, TakeCurrency, GrantCosmetic, TakeCosmetic)</label>
+          <p class="text-xs" style="color: var(--danger-text);">This is a completely separate secret from your regular Game API key. Only ever put it in a dedicated server's config/build — never in a player-facing client. Anyone with this key can grant/revoke currency and cosmetics for any player.</p>
+          <div id="serverKeyNotGenerated" class="flex flex-col gap-2">
+            <button onclick="generateServerKey()" class="btn-accent font-bold py-2.5 px-6 rounded-lg text-xs self-start">Generate server key</button>
+          </div>
+          <div id="serverKeyGenerated" class="hidden flex flex-col gap-2">
+            <div class="flex gap-2">
+              <input type="text" readonly value="•••••••••••••••••••••••••••• (hidden — copied once at generation)" class="flex-1 p-3 rounded-lg text-sm font-mono input-field" style="color: var(--text-faint);">
+              <button onclick="generateServerKey()" class="btn-ghost px-4 rounded-lg text-xs font-bold" style="color: var(--danger-text);">Regenerate</button>
+            </div>
+          </div>
         </div>
         <div class="rounded-2xl p-6 md:p-8" style="background: var(--danger-soft); border: 1px solid var(--hairline);">
           <h3 class="font-bold text-sm mb-1.5" style="color: var(--danger-text);">Delete this project</h3>
@@ -609,6 +626,7 @@ let currencyTotals = {};
 let selectedPlayer = null;
 let playersRealtimeChannel = null;
 let onlineDecayTimer = null;
+let pendingRevealTarget = null;
 
 // =========================================================================
 // I18N
@@ -829,6 +847,9 @@ function selectProject(proj) {
   const hasKey = !!proj.api_key_hash;
   document.getElementById("apiKeyNotGenerated").classList.toggle("hidden", hasKey);
   document.getElementById("apiKeyGenerated").classList.toggle("hidden", !hasKey);
+  const hasServerKey = !!proj.server_key_hash;
+  document.getElementById("serverKeyNotGenerated").classList.toggle("hidden", hasServerKey);
+  document.getElementById("serverKeyGenerated").classList.toggle("hidden", !hasServerKey);
   document.getElementById("projSettingNameInput").value = proj.name;
   switchTab("overview");
   fetchProjectData();
@@ -865,14 +886,33 @@ async function generateApiKey() {
   if (error) { showToast("Couldn't generate a new key.", true); return; }
   activeProject.api_key_hash = "set"; // we never see the real hash client-side, just that one now exists
   await logAudit(document.getElementById("apiKeyGenerated").classList.contains("hidden") ? "generate_api_key" : "regenerate_api_key", {});
+  pendingRevealTarget = "game";
+  document.getElementById("apiKeyRevealInput").value = data;
+  document.getElementById("apiKeyRevealModal").classList.remove("hidden");
+}
+async function generateServerKey() {
+  if (activeProject.server_key_hash) {
+    if (!confirm("Regenerating invalidates the current server key immediately — your dedicated server will need the new one to keep using GrantCurrency/TakeCurrency/GrantCosmetic/TakeCosmetic. Continue?")) return;
+  }
+  const { data, error } = await client.rpc("regenerate_project_server_key", { p_project_id: activeProject.id });
+  if (error) { showToast("Couldn't generate a new server key.", true); return; }
+  activeProject.server_key_hash = "set";
+  await logAudit(document.getElementById("serverKeyGenerated").classList.contains("hidden") ? "generate_server_key" : "regenerate_server_key", {});
+  pendingRevealTarget = "server";
   document.getElementById("apiKeyRevealInput").value = data;
   document.getElementById("apiKeyRevealModal").classList.remove("hidden");
 }
 function acknowledgeApiKeyReveal() {
   closeModal("apiKeyRevealModal");
   document.getElementById("apiKeyRevealInput").value = "";
-  document.getElementById("apiKeyNotGenerated").classList.add("hidden");
-  document.getElementById("apiKeyGenerated").classList.remove("hidden");
+  if (pendingRevealTarget === "server") {
+    document.getElementById("serverKeyNotGenerated").classList.add("hidden");
+    document.getElementById("serverKeyGenerated").classList.remove("hidden");
+  } else {
+    document.getElementById("apiKeyNotGenerated").classList.add("hidden");
+    document.getElementById("apiKeyGenerated").classList.remove("hidden");
+  }
+  pendingRevealTarget = null;
 }
 async function deleteCurrentProject() {
   if (!confirm(`Delete "${activeProject.name}"? This can't be undone.`)) return;
@@ -1209,13 +1249,20 @@ async function deleteCurrency(id) {
 // CATALOG
 // =========================================================================
 function renderCosmetics() {
+  const currencySelect = document.getElementById("newCosCurrency");
+  const prevValue = currencySelect.value;
+  currencySelect.innerHTML = `<option value="">Priced in… (select a currency)</option>` +
+    currenciesArray.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  currencySelect.value = prevValue;
+
+  const currencyName = (id) => currenciesArray.find((c) => c.id === id)?.name || "no currency set";
   const clist = document.getElementById("globalCosmeticList");
   clist.innerHTML = "";
   if (globalCatalog.length === 0) { clist.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No cosmetics yet.</li>`; return; }
   globalCatalog.forEach((c) => {
     const li = document.createElement("li");
     li.className = "py-3.5 px-4 flex justify-between items-center hover:bg-black/5 transition rounded-lg gap-2";
-    li.innerHTML = `<span class="font-semibold text-sm truncate" style="color: var(--accent-text);">${escapeHtml(c.name)} <span class="text-[9px] ml-2 uppercase px-1.5 py-0.5 rounded" style="color: var(--text-faint); border: 1px solid var(--hairline-soft);">${escapeHtml(c.slot)}</span> <span class="font-mono text-[10px]" style="color: var(--text-dim);">${c.price}</span></span>
+    li.innerHTML = `<span class="font-semibold text-sm truncate" style="color: var(--accent-text);">${escapeHtml(c.name)} <span class="text-[9px] ml-2 uppercase px-1.5 py-0.5 rounded" style="color: var(--text-faint); border: 1px solid var(--hairline-soft);">${escapeHtml(c.slot)}</span> <span class="font-mono text-[10px]" style="color: var(--text-dim);">${c.price} ${escapeHtml(currencyName(c.currency_id))}</span></span>
       <span class="flex gap-2 shrink-0">
         <button class="edit-btn text-[10px] font-black uppercase">Edit</button>
         <button class="del-btn text-[10px] font-black uppercase" style="color: var(--danger-text);">Delete</button>
@@ -1233,6 +1280,7 @@ function editCosmetic(c) {
   document.getElementById("newCosName").value = c.name;
   document.getElementById("newCosSlot").value = c.slot;
   document.getElementById("newCosPrice").value = c.price;
+  document.getElementById("newCosCurrency").value = c.currency_id || "";
   document.getElementById("cancelCosEditBtn").classList.remove("hidden");
 }
 function cancelCosmeticEdit() {
@@ -1242,6 +1290,7 @@ function cancelCosmeticEdit() {
   document.getElementById("newCosId").value = "";
   document.getElementById("newCosName").value = "";
   document.getElementById("newCosPrice").value = "";
+  document.getElementById("newCosCurrency").value = "";
   document.getElementById("cancelCosEditBtn").classList.add("hidden");
 }
 async function submitCosmetic() {
@@ -1250,10 +1299,11 @@ async function submitCosmetic() {
   const name = document.getElementById("newCosName").value.trim();
   const slot = document.getElementById("newCosSlot").value;
   const price = parseInt(document.getElementById("newCosPrice").value) || 0;
+  const currency_id = document.getElementById("newCosCurrency").value || null;
   if (!id || !name) { showToast("Item ID and name are required.", true); return; }
   const { error } = editId
-    ? await client.from("cosmetics").update({ name, slot, price }).eq("id", editId)
-    : await client.from("cosmetics").insert([{ id, project_id: activeProject.id, name, slot, price }]);
+    ? await client.from("cosmetics").update({ name, slot, price, currency_id }).eq("id", editId)
+    : await client.from("cosmetics").insert([{ id, project_id: activeProject.id, name, slot, price, currency_id }]);
   if (!error) {
     await logAudit(editId ? "update_cosmetic" : "create_cosmetic", { id });
     cancelCosmeticEdit(); fetchProjectData(); showToast(editId ? "Cosmetic updated." : "Cosmetic added.");
