@@ -366,12 +366,10 @@
 
           <div class="panel-raised p-4 rounded-xl">
             <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Access &amp; moderation</h4>
-            <select id="roleSelect" onchange="changeRole()" class="w-full p-2.5 input-field rounded-lg text-sm mb-3">
-              <option value="user">User</option>
-              <option value="moderator">Moderator</option>
-              <option value="admin">Admin</option>
-              <option value="owner">Owner</option>
-            </select>
+            <div class="flex gap-2 mb-3">
+              <select id="roleSelect" onchange="changeRole()" class="w-full p-2.5 input-field rounded-lg text-sm"></select>
+              <button onclick="showRolesModal()" class="btn-ghost px-3 rounded-lg text-xs font-bold shrink-0" title="Manage roles">Edit</button>
+            </div>
             <div class="flex flex-col gap-2.5">
               <button id="banToggleBtn" onclick="toggleBan()" class="btn-ghost font-bold py-2.5 rounded-lg text-xs" style="color: var(--danger-text);">Ban player</button>
               <button onclick="deletePlayer()" class="btn-ghost font-bold py-2.5 rounded-lg text-xs">Delete player</button>
@@ -611,6 +609,30 @@
   </div>
 </div>
 
+<div id="rolesModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: var(--backdrop);" role="dialog" aria-modal="true">
+  <div class="panel rounded-2xl w-full max-w-md p-7 rise my-8">
+    <h3 class="font-display font-bold text-lg mb-2">Manage roles</h3>
+    <p class="text-xs mb-5" style="color: var(--text-dim);">Roles are custom per project — add, reorder by rank, or remove them here.</p>
+    <div id="rolesModalList" class="flex flex-col gap-2 mb-5 max-h-64 overflow-y-auto"></div>
+    <div class="panel-raised p-4 rounded-xl">
+      <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">New role</h4>
+      <input type="hidden" id="roleEditId">
+      <input id="roleName" type="text" class="w-full p-2.5 mb-2.5 input-field rounded-lg text-sm" placeholder="Role name (e.g. VIP, Beta Tester)">
+      <div class="flex gap-2.5 mb-2.5">
+        <input id="roleRank" type="number" class="w-full p-2.5 input-field rounded-lg text-sm" placeholder="Rank (higher = more access)" value="0">
+        <input id="roleColor" type="color" class="w-14 p-1 input-field rounded-lg" value="#e8a33d" title="Badge color">
+      </div>
+      <label class="flex items-center gap-2 text-xs font-semibold mb-3" style="color: var(--text-dim);">
+        <input type="checkbox" id="roleIsDefault"> Default role for new players
+      </label>
+      <button onclick="submitRole()" class="w-full btn-accent font-bold py-2.5 rounded-lg text-sm">Add role</button>
+    </div>
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeModal('rolesModal')" class="flex-1 btn-ghost py-3 rounded-lg text-sm font-bold">Done</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://pqfxhueerqbyriykxtyf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_oMFiT2Lx3CpsyoAzSzVjRw_giugXJdZ';
@@ -627,6 +649,7 @@ let projectsArray = [];
 let fullPlayerCache = [];
 let globalCatalog = [];
 let currenciesArray = [];
+let rolesArray = [];
 let currencyTotals = {};
 let selectedPlayer = null;
 let playersRealtimeChannel = null;
@@ -953,14 +976,16 @@ function switchTab(tabId) {
 // =========================================================================
 async function fetchProjectData() {
   if (!activeProject) return;
-  const [pRes, cRes, curRes] = await Promise.all([
+  const [pRes, cRes, curRes, roleRes] = await Promise.all([
     client.from("players").select("*, player_balances(currency_id, amount), player_cosmetics(cosmetic_id, granted_at)").eq("project_id", activeProject.id),
     client.from("cosmetics").select("*").eq("project_id", activeProject.id),
     client.from("currencies").select("*").eq("project_id", activeProject.id),
+    client.from("project_roles").select("*").eq("project_id", activeProject.id).order("rank", { ascending: true }),
   ]);
   fullPlayerCache = pRes.data || [];
   globalCatalog = cRes.data || [];
   currenciesArray = curRes.data || [];
+  rolesArray = roleRes.data || [];
   currencyTotals = {};
   fullPlayerCache.forEach((p) => {
     p.balances = {};
@@ -977,7 +1002,83 @@ async function fetchProjectData() {
   renderAllPlayers();
   renderCosmetics();
   renderCurrencies();
+  renderRoleSelect();
+  renderRolesModalList();
   if (selectedPlayer) openPlayerDrawer(selectedPlayer.id, true);
+}
+
+// Rebuilds the #roleSelect <option> list from this project's custom roles
+// (project_roles), sorted by rank. Replaces the old hardcoded 4-option list.
+function renderRoleSelect() {
+  const select = document.getElementById("roleSelect");
+  if (!select) return;
+  const current = select.value;
+  if (rolesArray.length === 0) {
+    select.innerHTML = `<option value="user">User (default — add custom roles via Edit)</option>`;
+  } else {
+    select.innerHTML = rolesArray.map((r) => `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}${r.is_default ? " (default)" : ""}</option>`).join("");
+  }
+  if (current && [...select.options].some((o) => o.value === current)) select.value = current;
+}
+
+function renderRolesModalList() {
+  const list = document.getElementById("rolesModalList");
+  if (!list) return;
+  list.innerHTML = rolesArray.length
+    ? rolesArray.map((r) => `
+      <div class="panel p-3 rounded-lg flex items-center justify-between gap-2">
+        <span class="flex items-center gap-2 min-w-0">
+          <span class="w-3 h-3 rounded-full shrink-0" style="background:${escapeHtml(r.color || "#e8a33d")};"></span>
+          <span class="font-semibold text-sm truncate">${escapeHtml(r.name)}</span>
+          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded panel-raised shrink-0" style="color: var(--text-faint);">rank ${r.rank}</span>
+          ${r.is_default ? `<span class="text-[9px] font-bold uppercase shrink-0" style="color: var(--moss-text);">default</span>` : ""}
+        </span>
+        <button onclick="deleteRole('${r.id}')" class="text-[10px] font-black uppercase shrink-0" style="color: var(--danger-text);">Remove</button>
+      </div>`).join("")
+    : `<p class="text-xs italic text-center py-4" style="color: var(--text-faint);">No roles yet — add one below.</p>`;
+}
+
+function showRolesModal() {
+  renderRolesModalList();
+  document.getElementById("rolesModal").classList.remove("hidden");
+}
+
+async function submitRole() {
+  if (!activeProject) return;
+  const name = document.getElementById("roleName").value.trim();
+  const rank = parseInt(document.getElementById("roleRank").value, 10) || 0;
+  const color = document.getElementById("roleColor").value;
+  const isDefault = document.getElementById("roleIsDefault").checked;
+  if (!name) { showToast("Enter a role name.", true); return; }
+
+  // Only one default role per project — clear any existing default first.
+  if (isDefault) {
+    await client.from("project_roles").update({ is_default: false }).eq("project_id", activeProject.id).eq("is_default", true);
+  }
+
+  const { error } = await client.from("project_roles").insert([{ project_id: activeProject.id, name, rank, color, is_default: isDefault }]);
+  if (!error) {
+    document.getElementById("roleName").value = "";
+    document.getElementById("roleRank").value = "0";
+    document.getElementById("roleIsDefault").checked = false;
+    await logAudit("create_role", { name });
+    fetchProjectData();
+    showToast("Role added.");
+  } else {
+    showToast(error.code === "23505" ? "A role with that name already exists." : "Couldn't add that role.", true);
+  }
+}
+
+async function deleteRole(id) {
+  const role = rolesArray.find((r) => r.id === id);
+  if (!role) return;
+  // Warn if players currently hold this role — deleting the role doesn't
+  // change their assigned value, it just removes it from the dropdown.
+  const inUse = fullPlayerCache.filter((p) => p.role === role.name).length;
+  if (inUse > 0 && !confirm(`${inUse} player(s) currently have the "${role.name}" role. Delete it anyway? Their role value won't change, but it'll no longer appear in the dropdown.`)) return;
+
+  const { error } = await client.from("project_roles").delete().eq("id", id);
+  if (!error) { await logAudit("delete_role", { name: role.name }); fetchProjectData(); showToast("Role removed."); }
 }
 
 // "Online" is derived from last_seen freshness rather than a push event, so
@@ -1027,7 +1128,8 @@ function renderAllPlayers() {
   if (fullPlayerCache.length === 0) { list.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No players yet.</li>`; return; }
   fullPlayerCache.forEach((p) => {
     const banned = p.is_banned ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ml-2.5" style="background: var(--danger-soft); color: var(--danger-text);">BANNED</span>` : "";
-    const roleBadge = p.role && p.role !== "user" ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ml-2.5 uppercase" style="background: var(--accent-soft); color: var(--accent-text);">${escapeHtml(p.role)}</span>` : "";
+    const roleInfo = rolesArray.find((r) => r.name === p.role);
+    const roleBadge = p.role && p.role !== "user" ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ml-2.5 uppercase" style="background: ${roleInfo && roleInfo.color ? roleInfo.color + "26" : "var(--accent-soft)"}; color: ${roleInfo && roleInfo.color ? roleInfo.color : "var(--accent-text)"};">${escapeHtml(p.role)}</span>` : "";
     const li = document.createElement("li");
     li.className = "py-3.5 px-4 sm:px-5 flex justify-between items-center cursor-pointer hover:bg-black/5 transition gap-3";
     li.onclick = () => openPlayerDrawer(p.id);
@@ -1051,6 +1153,7 @@ function openPlayerDrawer(pid) {
   document.getElementById("displayId").innerText = p.id;
   document.getElementById("banBadge").classList.toggle("hidden", !p.is_banned);
   document.getElementById("banToggleBtn").innerText = p.is_banned ? "Unban player" : "Ban player";
+  renderRoleSelect();
   document.getElementById("roleSelect").value = p.role || "user";
 
   const balancesList = document.getElementById("playerBalancesList");
@@ -1194,7 +1297,8 @@ async function executeProvision() {
   const id = document.getElementById("provPlayerId").value.trim();
   const name = document.getElementById("provPlayerName").value.trim() || "Player";
   if (!id) return;
-  const { error } = await client.from("players").insert([{ id, project_id: activeProject.id, name, role: "user", is_banned: false, tags: [] }]);
+  const defaultRole = (rolesArray.find((r) => r.is_default) || {}).name || "user";
+  const { error } = await client.from("players").insert([{ id, project_id: activeProject.id, name, role: defaultRole, is_banned: false, tags: [] }]);
   if (!error) { closeModal("provisionModal"); document.getElementById("provPlayerId").value = ""; document.getElementById("provPlayerName").value = ""; fetchProjectData(); showToast("Player added."); }
   else showToast("Couldn't add that player — ID may already exist.", true);
 }
