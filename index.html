@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" href="data:,">
-<title>ClouorVR — Field Console</title>
+<title>ClouorVR - Field Console</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
@@ -12,9 +12,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
-     PALETTE — ink slate base, raspberry-berry accent, sea-teal
+     PALETTE - ink slate base, raspberry-berry accent, sea-teal
      secondary. Chosen because it's a warm/cool complementary pair
-     that doesn't read as "tech blue" or "SaaS orange" — it feels
+     that doesn't read as "tech blue" or "SaaS orange" - it feels
      like a considered brand, not a Tailwind demo.
      ============================================================ */
   :root {
@@ -48,63 +48,10 @@
     color-scheme: dark;
   }
 
-  [data-style="enhanced"] .keycard, [data-style="maximum"] .keycard, [data-style="ultra"] .keycard, [data-style="godtier"] .keycard { box-shadow: 0 0 0 1px var(--hairline), 0 12px 40px -12px rgba(196,88,132,0.25); }
-  [data-style="enhanced"] h1.font-display.font-bold, [data-style="enhanced"] h2.font-display.font-bold, [data-style="enhanced"] h3.font-display.font-bold,
-  [data-style="maximum"] h1.font-display.font-bold, [data-style="maximum"] h2.font-display.font-bold, [data-style="maximum"] h3.font-display.font-bold,
-  [data-style="ultra"] h1.font-display.font-bold, [data-style="ultra"] h2.font-display.font-bold, [data-style="ultra"] h3.font-display.font-bold,
-  [data-style="godtier"] h1.font-display.font-bold, [data-style="godtier"] h2.font-display.font-bold, [data-style="godtier"] h3.font-display.font-bold {
-    background: linear-gradient(100deg, var(--text) 40%, var(--accent-text) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  [data-style="enhanced"] .btn-accent, [data-style="maximum"] .btn-accent, [data-style="ultra"] .btn-accent, [data-style="godtier"] .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #e07aa0 100%); box-shadow: 0 4px 18px -4px rgba(196,88,132,0.5); }
-  [data-style="enhanced"] .nav-item.active, [data-style="maximum"] .nav-item.active, [data-style="ultra"] .nav-item.active, [data-style="godtier"] .nav-item.active { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(196,88,132,0.4); }
-  @keyframes sheenMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-  [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised,
-  [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised,
-  [data-style="godtier"] .panel, [data-style="godtier"] .panel-raised {
-    background-image: linear-gradient(115deg, var(--panel) 0%, var(--panel) 40%, var(--accent-soft) 50%, var(--panel) 60%, var(--panel) 100%);
-    background-size: 250% 100%;
-    animation: sheenMove 9s linear infinite;
-  }
-  [data-style="maximum"] .keycard, [data-style="ultra"] .keycard, [data-style="godtier"] .keycard { animation: sheenMove 5s linear infinite; background-image: linear-gradient(115deg, var(--panel-raised) 0%, var(--panel) 35%, var(--accent-soft) 50%, var(--panel) 65%, var(--panel-raised) 100%); background-size: 260% 100%; }
-
-  @keyframes glowPulse { 0%, 100% { box-shadow: inset 0 0 0 1px var(--hairline), 0 0 16px -6px rgba(196,88,132,0.35); } 50% { box-shadow: inset 0 0 0 1px var(--accent), 0 0 26px -4px rgba(196,88,132,0.7); } }
-  @keyframes auroraDrift { 0% { transform: translate(0,0) rotate(0deg); } 100% { transform: translate(-4%, 3%) rotate(360deg); } }
-  [data-style="ultra"] .nav-item.active, [data-style="godtier"] .nav-item.active { animation: glowPulse 3.5s ease-in-out infinite; }
-  [data-style="ultra"] .keycard, [data-style="ultra"] .panel:hover,
-  [data-style="godtier"] .keycard, [data-style="godtier"] .panel:hover { animation: sheenMove 3.5s linear infinite, glowPulse 4s ease-in-out infinite; }
-  [data-style="ultra"] body::before, [data-style="godtier"] body::before {
-    content: ""; position: fixed; inset: -50%; z-index: -1; pointer-events: none;
-    background: conic-gradient(from 0deg, transparent 0%, var(--accent-soft) 15%, transparent 30%, var(--moss-soft) 55%, transparent 70%, var(--accent-soft) 88%, transparent 100%);
-    opacity: 0.35; filter: blur(60px);
-    animation: auroraDrift 40s linear infinite;
-  }
-  @keyframes rimRotate { 0% { --rim-angle: 0deg; } 100% { --rim-angle: 360deg; } }
-  [data-style="godtier"] .nav-item.active { animation: glowPulse 2.2s ease-in-out infinite; }
-  [data-style="godtier"] .keycard, [data-style="godtier"] .panel:hover { animation: sheenMove 2.4s linear infinite, glowPulse 2.6s ease-in-out infinite; }
-  [data-style="godtier"] body::before { opacity: 0.5; animation: auroraDrift 22s linear infinite; }
-  [data-style="godtier"] .panel, [data-style="godtier"] .panel-raised, [data-style="godtier"] .keycard { position: relative; }
-  [data-style="godtier"] .panel::after, [data-style="godtier"] .panel-raised::after, [data-style="godtier"] .keycard::after {
-    content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; z-index: 1;
-    padding: 1px;
-    background: conic-gradient(from var(--rim-angle, 0deg), transparent 0%, var(--accent) 8%, transparent 20%, transparent 100%);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: rimRotate 6s linear infinite;
-    opacity: 0.8;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-style="maximum"] .panel, [data-style="maximum"] .panel-raised, [data-style="maximum"] .keycard,
-    [data-style="ultra"] .panel, [data-style="ultra"] .panel-raised, [data-style="ultra"] .keycard,
-    [data-style="ultra"] .nav-item.active, [data-style="ultra"] body::before,
-    [data-style="godtier"] .panel, [data-style="godtier"] .panel-raised, [data-style="godtier"] .keycard,
-    [data-style="godtier"] .nav-item.active, [data-style="godtier"] body::before,
-    [data-style="godtier"] .panel::after, [data-style="godtier"] .panel-raised::after, [data-style="godtier"] .keycard::after { animation: none; }
-  }
-
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: background 0.2s ease, color 0.2s ease; letter-spacing: -0.1px; }
-  /* Serif display font — a considered, editorial choice instead of another
+  /* Serif display font - a considered, editorial choice instead of another
      geometric sans. Immediately signals "someone picked this" rather than
      "the default AI stack". */
   .font-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; letter-spacing: -0.2px; }
@@ -125,13 +72,13 @@
   .panel-raised { background: var(--panel-raised); border: 1px solid var(--hairline-soft); border-radius: 6px; }
   .toast { animation: riseIn 0.25s forwards, fadeIn 0.25s reverse forwards 2.6s; }
 
-  /* Keycard — the one element that gets a distinct treatment: a soft
+  /* Keycard - the one element that gets a distinct treatment: a soft
      diagonal gradient plus a thin top accent line, so it reads as the
      "important" surface rather than another identical rounded box. */
   .keycard { position: relative; background: linear-gradient(155deg, var(--panel-raised) 0%, var(--panel) 100%); border: 1px solid var(--hairline); border-radius: 6px; overflow: hidden; }
   .keycard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent) 0%, transparent 85%); }
 
-  /* Buttons — sharper corners than the rest of the UI on purpose: the
+  /* Buttons - sharper corners than the rest of the UI on purpose: the
      one place we want a click target to feel deliberate, not soft. */
   .btn-accent { background: var(--accent); color: #1c0812; border-radius: 3px; font-weight: 600; position: relative; overflow: hidden; transition: transform 0.15s ease, box-shadow 0.15s ease; }
   .btn-accent::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, #e07aa0, var(--accent)); opacity: 0; transition: opacity 0.2s ease; }
@@ -152,7 +99,7 @@
   .oauth-btn:active { transform: scale(0.98); }
 
   /* Deliberate asymmetry on the four overview stat tiles instead of four
-     identical rounded boxes — each gets its own small distinguishing
+     identical rounded boxes - each gets its own small distinguishing
      treatment so the eye doesn't skim past them as one repeated unit. */
   #tab-overview .grid.grid-cols-2 > .panel:nth-child(1) { border-radius: 3px; }
   #tab-overview .grid.grid-cols-2 > .panel:nth-child(2) { border-left: 3px solid var(--moss); border-radius: 0 6px 6px 0; }
@@ -176,6 +123,31 @@
     #mainArea { height: auto; }
     main#mainContent { padding: 1.1rem !important; }
   }
+
+  /* ---- PlayFab-parity additions ----
+     Reports get a left rule whose weight scales with how many times the
+     target has been reported: a moderator should see "this one is on fire"
+     before reading a word. Codes render as ticket stubs (dashed perforation)
+     because that's what they are to the player. */
+  .nav-badge { margin-left: auto; font: 700 10px 'IBM Plex Mono', monospace; padding: 1px 6px; background: var(--danger-soft); color: var(--danger-text); border-radius: 2px; }
+  .report-row { border-left: 2px solid var(--hairline-soft); transition: background .15s ease, border-color .15s ease; }
+  .report-row.heat-2 { border-left: 3px solid var(--accent); }
+  .report-row.heat-3 { border-left: 5px solid var(--danger); }
+  .report-row:hover { background: var(--accent-soft); }
+  .code-stub { display: grid; grid-template-columns: 1fr auto; border: 1px solid var(--hairline); background: var(--panel-raised); border-radius: 0; }
+  .code-stub .stub-tail { border-left: 2px dashed var(--hairline); padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; min-width: 92px; }
+  .code-stub .stub-code { font: 600 17px 'IBM Plex Mono', monospace; letter-spacing: 2px; color: var(--accent-text); }
+  .code-stub.spent { opacity: .55; }
+  .code-stub.spent .stub-code { text-decoration: line-through; text-decoration-color: var(--danger); }
+  .news-post { border-bottom: 1px solid var(--hairline-soft); padding: 18px 4px 18px 0; }
+  .news-post.pinned { border-top: 2px solid var(--accent); padding-top: 16px; }
+  .news-post h4 { font-family: 'Fraunces', serif; font-size: 19px; line-height: 1.2; }
+  .ledger-delta.pos { color: var(--moss-text); } .ledger-delta.neg { color: var(--danger-text); }
+  .seg { display: inline-flex; border: 1px solid var(--hairline); }
+  .seg button { padding: 6px 12px; font-size: 11px; font-weight: 700; color: var(--text-dim); transition: background .12s ease, color .12s ease; }
+  .seg button + button { border-left: 1px solid var(--hairline); }
+  .seg button.active { background: var(--accent-soft); color: var(--accent-text); }
+  .seg button:hover:not(.active) { color: var(--text); }
 </style>
 </head>
 <body>
@@ -258,6 +230,9 @@
       <button onclick="switchTab('activity')" id="btn-activity" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg><span id="lbl-activity">Activity</span></button>
       <button onclick="switchTab('projectsettings')" id="btn-projectsettings" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span id="lbl-projectsettings">Project</span></button>
       <button onclick="switchTab('leaderboards')" id="btn-leaderboards" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H3a4 4 0 0 0 4 4M17 6h4a4 4 0 0 1-4 4"/></svg><span id="lbl-leaderboards">Leaderboards</span></button>
+      <button onclick="switchTab('moderation')" id="btn-moderation" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5"/></svg><span id="lbl-moderation">Moderation</span><span id="navBadge-moderation" class="nav-badge hidden"></span></button>
+      <button onclick="switchTab('news')" id="btn-news" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M4 4h13v16H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/></svg><span id="lbl-news">News</span><span id="navBadge-news" class="nav-badge hidden"></span></button>
+      <button onclick="switchTab('codes')" id="btn-codes" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><path d="M3 8V5h18v3a3 3 0 0 0 0 6v3H3v-3a3 3 0 0 0 0-6z"/><path d="M13 5v2M13 11v2M13 17v2"/></svg><span id="lbl-codes">Codes</span><span id="navBadge-codes" class="nav-badge hidden"></span></button>
       <button onclick="switchTab('platform')" id="btn-platform" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition hidden"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0 mr-2.5" style="display:inline-block;vertical-align:-3px;"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6z"/></svg><span id="lbl-platform">Platform</span></button>
       <button onclick="switchTab('settings')" id="btn-settings" class="nav-item text-left px-3.5 py-2.5 font-semibold text-sm transition flex items-center gap-2.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg><span id="lbl-settings">Settings</span></button>
     </nav>
@@ -321,16 +296,35 @@
             <div>
               <label class="block text-[10px] font-bold uppercase tracking-widest mb-2" style="color: var(--text-faint);">Game API key (for this project)</label>
               <div id="apiKeyNotGenerated" class="flex flex-col gap-2">
-                <p class="text-xs" style="color: var(--text-dim);">No key yet — generate one before your game can connect. You'll only be able to view it once, right after generating, so copy it somewhere safe.</p>
+                <p class="text-xs" style="color: var(--text-dim);">No key yet - generate one before your game can connect. You'll only be able to view it once, right after generating, so copy it somewhere safe.</p>
                 <button onclick="generateApiKey()" class="btn-accent font-bold py-2.5 px-6 text-xs self-start">Generate Game API key</button>
               </div>
               <div id="apiKeyGenerated" class="hidden flex flex-col gap-2">
                 <div class="flex gap-2">
-                  <input type="text" readonly value="•••••••••••••••••••••••••••• (hidden — copied once at generation)" class="flex-1 p-3 text-sm font-mono input-field" style="color: var(--text-faint);">
+                  <input type="text" readonly value="•••••••••••••••••••••••••••• (hidden - copied once at generation)" class="flex-1 p-3 text-sm font-mono input-field" style="color: var(--text-faint);">
                   <button onclick="generateApiKey()" class="btn-ghost px-4 text-xs font-bold" style="color: var(--danger-text);">Regenerate</button>
                 </div>
-                <p class="text-[11px]" style="color: var(--text-faint);">Lost it? Regenerating immediately invalidates the old key — any live game builds using it will stop authenticating until updated.</p>
+                <p class="text-[11px]" style="color: var(--text-faint);">Lost it? Regenerating immediately invalidates the old key - any live game builds using it will stop authenticating until updated.</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-display font-bold text-base mb-3">Recently joined</h3>
+            <div class="panel overflow-hidden">
+              <ul id="recentPlayersList" class="divide-y text-sm max-h-64 overflow-y-auto" style="border-color: var(--hairline-soft);">
+                <li class="py-8 text-center text-xs" style="color: var(--text-faint);">No players yet.</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-base mb-3">Currency in circulation</h3>
+            <div class="panel overflow-hidden">
+              <ul id="overviewCurrencyList" class="divide-y text-sm max-h-64 overflow-y-auto" style="border-color: var(--hairline-soft);">
+                <li class="py-8 text-center text-xs" style="color: var(--text-faint);">No currencies yet.</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -371,6 +365,29 @@
           </div>
 
           <div class="panel-raised p-4 mb-4">
+            <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Statistics</h4>
+            <div id="playerStatsList" class="flex flex-col gap-1.5 text-xs font-mono"><p class="italic" style="color: var(--text-faint);">Loading...</p></div>
+          </div>
+
+          <div class="panel-raised p-4 mb-4">
+            <div class="flex items-baseline justify-between mb-3">
+              <h4 class="font-bold uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Player data</h4>
+              <span class="text-[9px] font-mono" style="color: var(--text-faint);">pub · ro</span>
+            </div>
+            <div id="playerDataList" class="flex flex-col gap-1.5 text-xs font-mono mb-3"></div>
+            <div class="flex gap-1.5">
+              <input id="pdKey" type="text" class="w-2/5 p-2 input-field text-xs font-mono" placeholder="key">
+              <input id="pdValue" type="text" class="w-full p-2 input-field text-xs" placeholder="value">
+              <button onclick="savePlayerDataKey()" class="btn-ghost px-3 text-[10px] font-bold shrink-0" title="Saved as read-only: the game can read it but not overwrite it">Set</button>
+            </div>
+          </div>
+
+          <div class="panel-raised p-4 mb-4">
+            <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Currency history</h4>
+            <ul id="playerLedgerList" class="text-[11px] font-mono max-h-48 overflow-y-auto"></ul>
+          </div>
+
+          <div class="panel-raised p-4 mb-4">
             <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">Identity</h4>
             <div class="flex gap-2 mb-3">
               <input type="text" id="newName" class="w-full p-2.5 input-field text-sm" placeholder="Rename player">
@@ -390,6 +407,13 @@
               <button onclick="showRolesModal()" class="btn-ghost px-3 text-xs font-bold shrink-0" title="Manage roles">Edit</button>
             </div>
             <div class="flex flex-col gap-2.5">
+              <p id="banDetail" class="hidden text-[11px] font-mono" style="color: var(--danger-text);"></p>
+              <div id="banControls" class="flex gap-1.5">
+                <input id="banReason" type="text" class="w-full p-2 input-field text-xs" placeholder="Reason (shown to player)">
+                <select id="banDuration" class="p-2 input-field text-xs shrink-0">
+                  <option value="1">1 hour</option><option value="24">1 day</option><option value="168">7 days</option><option value="720">30 days</option><option value="0" selected>Permanent</option>
+                </select>
+              </div>
               <button id="banToggleBtn" onclick="toggleBan()" class="btn-ghost font-bold py-2.5 text-xs" style="color: var(--danger-text);">Ban player</button>
               <button onclick="deletePlayer()" class="btn-ghost font-bold py-2.5 text-xs">Delete player</button>
             </div>
@@ -400,7 +424,7 @@
       <!-- CURRENCIES -->
       <div id="tab-currencies" class="tab-content hidden max-w-4xl mx-auto rise">
         <div class="flex justify-between items-center mb-6">
-          <p class="text-sm max-w-md" style="color: var(--text-dim);">Every economy in ClouorVR is custom — nothing is pre-loaded.</p>
+          <p class="text-sm max-w-md" style="color: var(--text-dim);">Every economy in ClouorVR is custom - nothing is pre-loaded.</p>
           <button onclick="showCurrencyModal()" class="btn-accent font-bold px-5 py-2.5 text-sm shrink-0">New currency</button>
         </div>
         <div id="currencyCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
@@ -444,7 +468,7 @@
             <textarea id="newTdValue" rows="4" class="w-full p-3 mb-3 input-field text-sm" placeholder="Value (plain text or JSON string)"></textarea>
             <label class="flex items-center gap-2 mb-6 text-xs" style="color: var(--text-dim);">
               <input type="checkbox" id="newTdInternal">
-              Internal only (dashboard-only — never sent to the game client)
+              Internal only (dashboard-only - never sent to the game client)
             </label>
             <div class="flex gap-2">
               <button onclick="submitTitleData()" class="btn-accent font-bold py-3 flex-1 text-sm">Save</button>
@@ -453,7 +477,7 @@
           </div>
           <div class="md:col-span-2 panel p-6 md:p-7 flex flex-col">
             <h3 class="font-bold uppercase text-[10px] tracking-widest mb-2" style="color: var(--text-faint);">Title Data</h3>
-            <p class="text-xs mb-5" style="color: var(--text-faint);">Title-wide config your game can read via <span class="font-mono">MirrorVRManager.GetTitleData</span> — a shared key/value store for things like feature flags, MOTDs, or event toggles, without shipping a new build. Internal keys are hidden from the game client and only visible here.</p>
+            <p class="text-xs mb-5" style="color: var(--text-faint);">Title-wide config your game can read via <span class="font-mono">MirrorVRManager.GetTitleData</span> - a shared key/value store for things like feature flags, MOTDs, or event toggles, without shipping a new build. Internal keys are hidden from the game client and only visible here.</p>
             <ul id="titleDataList" class="divide-y text-sm flex-1 overflow-y-auto panel-raised p-2 max-h-96" style="border-color: var(--hairline-soft);"></ul>
           </div>
         </div>
@@ -473,16 +497,80 @@
 
       <!-- LEADERBOARDS -->
       <div id="tab-leaderboards" class="tab-content hidden max-w-4xl mx-auto rise">
-        <p class="text-sm mb-5" style="color: var(--text-dim);">Reads live from <span class="font-mono">player_statistics</span> — whatever your game submits with <span class="font-mono">SubmitStatistic</span> shows up here.</p>
+        <p class="text-sm mb-5" style="color: var(--text-dim);">Reads live from <span class="font-mono">player_statistics</span> - whatever your game submits with <span class="font-mono">SubmitStatistic</span> shows up here.</p>
         <div id="leaderboardStatChips" class="flex flex-wrap gap-2 mb-5"></div>
         <div class="flex gap-2 mb-6">
           <input type="text" id="leaderboardStatInput" class="flex-1 p-3 input-field text-sm" placeholder="Stat name, e.g. high_score">
           <button onclick="loadLeaderboard()" class="btn-accent px-6 text-sm font-bold">Load</button>
         </div>
+        <div id="statDefBar" class="hidden flex flex-wrap items-center gap-3 mb-4 panel-raised px-4 py-3">
+          <span class="text-[10px] uppercase tracking-widest font-bold" style="color: var(--text-faint);">Aggregation</span>
+          <div class="seg" id="statAggSeg"><button data-v="last">Last</button><button data-v="max">Max</button><button data-v="min">Min</button><button data-v="sum">Sum</button></div>
+          <span class="text-[10px] uppercase tracking-widest font-bold ml-2" style="color: var(--text-faint);">Resets</span>
+          <div class="seg" id="statResetSeg"><button data-v="never">Never</button><button data-v="daily">Daily</button><button data-v="weekly">Weekly</button><button data-v="monthly">Monthly</button></div>
+          <span id="statSeasonLabel" class="text-[11px] font-mono ml-auto" style="color: var(--text-faint);"></span>
+          <button onclick="resetSeasonNow()" class="btn-ghost px-3 py-1.5 text-[10px] font-bold" style="color: var(--danger-text);">End season now</button>
+        </div>
         <div class="panel overflow-hidden">
           <ul id="leaderboardList" class="divide-y text-sm max-h-[600px] overflow-y-auto" style="border-color: var(--hairline-soft);">
             <li class="py-10 text-center font-medium" style="color: var(--text-faint);">Pick a stat above to see rankings.</li>
           </ul>
+        </div>
+      </div>
+
+      <!-- MODERATION -->
+      <div id="tab-moderation" class="tab-content hidden max-w-4xl mx-auto rise">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <p class="text-sm max-w-md" style="color: var(--text-dim);">Reports filed in-game with <span class="font-mono">ReportPlayer</span>. Thicker left rule = more reports against the same player.</p>
+          <div class="seg" id="reportFilterSeg">
+            <button data-f="open" class="active">Open</button><button data-f="actioned">Actioned</button><button data-f="dismissed">Dismissed</button>
+          </div>
+        </div>
+        <div class="panel overflow-hidden"><ul id="reportsList" class="text-sm max-h-[640px] overflow-y-auto"></ul></div>
+      </div>
+
+      <!-- NEWS -->
+      <div id="tab-news" class="tab-content hidden max-w-4xl mx-auto rise">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+          <div class="md:col-span-2 panel p-6 h-fit">
+            <h3 class="font-bold uppercase text-[10px] tracking-widest mb-5" style="color: var(--text-faint);" id="newsFormTitle">New post</h3>
+            <input type="hidden" id="newsEditId">
+            <input id="newsTitle" type="text" maxlength="120" class="w-full p-3 mb-3 input-field text-sm" placeholder="Headline">
+            <textarea id="newsBody" rows="6" maxlength="5000" class="w-full p-3 mb-3 input-field text-sm" placeholder="What changed, what's coming, why it matters"></textarea>
+            <label class="flex items-center gap-2 mb-2 text-xs" style="color: var(--text-dim);"><input type="checkbox" id="newsPublished"> Publish now</label>
+            <label class="flex items-center gap-2 mb-6 text-xs" style="color: var(--text-dim);"><input type="checkbox" id="newsPinned"> Pin to top</label>
+            <div class="flex gap-2">
+              <button onclick="submitNews()" class="btn-accent font-bold py-3 flex-1 text-sm">Save</button>
+              <button onclick="resetNewsForm()" id="newsCancelBtn" class="btn-ghost font-bold py-3 px-4 text-sm hidden">Cancel</button>
+            </div>
+          </div>
+          <div class="md:col-span-3">
+            <p class="text-xs mb-3" style="color: var(--text-faint);">Players read these with <span class="font-mono">MirrorVRManager.GetNews</span>. Drafts stay here.</p>
+            <div id="newsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CODES -->
+      <div id="tab-codes" class="tab-content hidden max-w-4xl mx-auto rise">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+          <div class="md:col-span-3 order-2 md:order-1 flex flex-col gap-3" id="codesList"></div>
+          <div class="md:col-span-2 order-1 md:order-2 panel p-6 h-fit">
+            <h3 class="font-bold uppercase text-[10px] tracking-widest mb-5" style="color: var(--text-faint);">New code</h3>
+            <div class="flex gap-2 mb-3">
+              <input id="codeValue" type="text" maxlength="32" class="w-full p-3 input-field text-sm font-mono uppercase" placeholder="LAUNCH2026">
+              <button onclick="randomCode()" class="btn-ghost px-3 text-[10px] font-bold shrink-0" title="Generate">Roll</button>
+            </div>
+            <h4 class="text-[10px] uppercase tracking-widest font-bold mb-2 mt-4" style="color: var(--text-faint);">Grants</h4>
+            <div id="codeCurrencyInputs" class="flex flex-col gap-2 mb-3"></div>
+            <select id="codeCosmetics" multiple class="w-full p-2 input-field text-xs mb-1 h-24"></select>
+            <p class="text-[10px] mb-4" style="color: var(--text-faint);">Ctrl/Cmd-click for several cosmetics.</p>
+            <div class="flex gap-2 mb-6">
+              <input id="codeMaxUses" type="number" min="1" class="w-full p-2.5 input-field text-xs" placeholder="Max uses (blank = unlimited)">
+              <input id="codeExpires" type="date" class="w-full p-2.5 input-field text-xs" title="Expires">
+            </div>
+            <button onclick="submitCode()" class="w-full btn-accent font-bold py-3 text-sm">Create code</button>
+          </div>
         </div>
       </div>
 
@@ -498,14 +586,14 @@
         </div>
 
         <div class="panel p-6 md:p-8 flex flex-col gap-3">
-          <label class="block text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-faint);">Server-only key (admin RPCs — GrantCurrency, TakeCurrency, GrantCosmetic, TakeCosmetic)</label>
-          <p class="text-xs" style="color: var(--danger-text);">This is a completely separate secret from your regular Game API key. Only ever put it in a dedicated server's config/build — never in a player-facing client. Anyone with this key can grant/revoke currency and cosmetics for any player.</p>
+          <label class="block text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-faint);">Server-only key (admin RPCs - GrantCurrency, TakeCurrency, GrantCosmetic, TakeCosmetic)</label>
+          <p class="text-xs" style="color: var(--danger-text);">This is a completely separate secret from your regular Game API key. Only ever put it in a dedicated server's config/build - never in a player-facing client. Anyone with this key can grant/revoke currency and cosmetics for any player.</p>
           <div id="serverKeyNotGenerated" class="flex flex-col gap-2">
             <button onclick="generateServerKey()" class="btn-accent font-bold py-2.5 px-6 text-xs self-start">Generate server key</button>
           </div>
           <div id="serverKeyGenerated" class="hidden flex flex-col gap-2">
             <div class="flex gap-2">
-              <input type="text" readonly value="•••••••••••••••••••••••••••• (hidden — copied once at generation)" class="flex-1 p-3 text-sm font-mono input-field" style="color: var(--text-faint);">
+              <input type="text" readonly value="•••••••••••••••••••••••••••• (hidden - copied once at generation)" class="flex-1 p-3 text-sm font-mono input-field" style="color: var(--text-faint);">
               <button onclick="generateServerKey()" class="btn-ghost px-4 text-xs font-bold" style="color: var(--danger-text);">Regenerate</button>
             </div>
           </div>
@@ -517,7 +605,7 @@
         </div>
       </div>
 
-      <!-- PLATFORM (owner only — client-side hide is UX, RLS is the real gate) -->
+      <!-- PLATFORM (owner only - client-side hide is UX, RLS is the real gate) -->
       <div id="tab-platform" class="tab-content hidden max-w-3xl mx-auto rise">
         <h1 class="font-display font-bold text-2xl mb-2">Platform</h1>
         <p class="text-sm mb-7" style="color: var(--text-dim);">Anyone can sign up and manage their own projects. This is where you block abusive accounts.</p>
@@ -544,19 +632,6 @@
               <button onclick="setTheme('dark')" id="themeBtnDark" class="btn-ghost px-4 py-2 text-xs font-bold">Dark</button>
               <button onclick="setTheme('superdark')" id="themeBtnSuperdark" class="btn-ghost px-4 py-2 text-xs font-bold">Super dark</button>
               <button onclick="setTheme('light')" id="themeBtnLight" class="btn-ghost px-4 py-2 text-xs font-bold">Light</button>
-            </div>
-          </div>
-          <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-            <div>
-              <div class="text-sm" style="color: var(--text-dim);">Visual style</div>
-              <div class="text-[11px]" style="color: var(--text-faint);">How much extra polish to layer on top of your theme.</div>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="setVisualStyle('clean')" id="styleBtnClean" class="btn-ghost px-3.5 py-2 text-xs font-bold">Clean</button>
-              <button onclick="setVisualStyle('enhanced')" id="styleBtnEnhanced" class="btn-ghost px-3.5 py-2 text-xs font-bold">Cooler</button>
-              <button onclick="setVisualStyle('maximum')" id="styleBtnMaximum" class="btn-ghost px-3.5 py-2 text-xs font-bold">Cooler COOLER</button>
-              <button onclick="setVisualStyle('ultra')" id="styleBtnUltra" class="btn-ghost px-3.5 py-2 text-xs font-bold">Cooler Cooler Duper x100</button>
-              <button onclick="setVisualStyle('godtier')" id="styleBtnGodtier" class="btn-ghost px-3.5 py-2 text-xs font-bold">Super Duper Cooler Cool 100.1x cooler</button>
             </div>
           </div>
           <div class="flex items-center justify-between mt-4">
@@ -605,12 +680,12 @@
 <div id="apiKeyRevealModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: var(--backdrop);" role="dialog" aria-modal="true">
   <div class="panel w-full max-w-md p-7 rise" style="border-radius: 8px;">
     <h3 class="font-display font-bold text-lg mb-2">Your new Game API key</h3>
-    <p class="text-xs mb-5" style="color: var(--danger-text);">This is the only time it will be shown. Copy it now and paste it into your game's MirrorVRManager — you won't be able to view it again.</p>
+    <p class="text-xs mb-5" style="color: var(--danger-text);">This is the only time it will be shown. Copy it now and paste it into your game's MirrorVRManager - you won't be able to view it again.</p>
     <div class="flex gap-2 mb-6">
       <input id="apiKeyRevealInput" type="text" readonly class="flex-1 p-3 text-sm font-mono input-field" style="color: var(--accent-text);">
       <button onclick="copyToClipboard('apiKeyRevealInput')" class="btn-ghost px-4 text-xs font-bold">Copy</button>
     </div>
-    <button onclick="acknowledgeApiKeyReveal()" class="w-full btn-accent font-bold py-3 text-sm">I've copied it — done</button>
+    <button onclick="acknowledgeApiKeyReveal()" class="w-full btn-accent font-bold py-3 text-sm">I've copied it - done</button>
   </div>
 </div>
 
@@ -646,7 +721,7 @@
 <div id="rolesModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: var(--backdrop);" role="dialog" aria-modal="true">
   <div class="panel w-full max-w-md p-7 rise my-8" style="border-radius: 8px;">
     <h3 class="font-display font-bold text-lg mb-2">Manage roles</h3>
-    <p class="text-xs mb-5" style="color: var(--text-dim);">Roles are custom per project — add, reorder by rank, or remove them here.</p>
+    <p class="text-xs mb-5" style="color: var(--text-dim);">Roles are custom per project - add, reorder by rank, or remove them here.</p>
     <div id="rolesModalList" class="flex flex-col gap-2 mb-5 max-h-64 overflow-y-auto"></div>
     <div class="panel-raised p-4">
       <h4 class="font-bold mb-3 uppercase text-[10px] tracking-widest" style="color: var(--text-faint);">New role</h4>
@@ -672,7 +747,7 @@ const SUPABASE_URL = 'https://pqfxhueerqbyriykxtyf.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_oMFiT2Lx3CpsyoAzSzVjRw_giugXJdZ';
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// UI-only convenience — the REAL platform-owner gate is Postgres RLS
+// UI-only convenience - the REAL platform-owner gate is Postgres RLS
 // (is_platform_owner() in supabase_rls_setup.sql). This just controls
 // whether the Platform tab appears; it grants no actual access by itself.
 const PLATFORM_OWNER_EMAIL = 'YOUR_EMAIL_HERE@example.com';
@@ -743,16 +818,8 @@ function toggleTheme() {
   const cur = document.documentElement.getAttribute("data-theme");
   setTheme(cur === "light" ? "dark" : "light");
 }
-function setVisualStyle(style) {
-  document.documentElement.setAttribute("data-style", style);
-  localStorage.setItem("cvr_style", style);
-  ["styleBtnClean", "styleBtnEnhanced", "styleBtnMaximum", "styleBtnUltra", "styleBtnGodtier"].forEach((id) => document.getElementById(id).classList.remove("active"));
-  const btnId = style === "godtier" ? "styleBtnGodtier" : style === "ultra" ? "styleBtnUltra" : style === "maximum" ? "styleBtnMaximum" : style === "enhanced" ? "styleBtnEnhanced" : "styleBtnClean";
-  document.getElementById(btnId).classList.add("active");
-}
 (function initAppearance() {
   setTheme(localStorage.getItem("cvr_theme") || "dark");
-  setVisualStyle(localStorage.getItem("cvr_style") || "clean");
 })();
 
 // =========================================================================
@@ -823,13 +890,13 @@ async function manualSignUp() {
   const { data, error } = await client.auth.signUp({ email, password });
   if (error) { console.error("Sign-up error:", error); showLoginError(error.message); return; }
   if (data && data.user && data.user.identities && data.user.identities.length === 0) {
-    showLoginError("An account with that email already exists — try signing in instead.");
+    showLoginError("An account with that email already exists - try signing in instead.");
     return;
   }
   if (data && data.session) {
     await handleSession(data.session);
   } else {
-    showLoginError("Account created — check your email for a confirmation link, then sign in.");
+    showLoginError("Account created - check your email for a confirmation link, then sign in.");
   }
 }
 async function logout() { await client.auth.signOut(); location.reload(); }
@@ -935,7 +1002,7 @@ async function saveCurrentProjectSettings() {
 }
 async function generateApiKey() {
   if (activeProject.api_key_hash) {
-    if (!confirm("Regenerating invalidates the current key immediately — any game build still using the old one will stop authenticating. Continue?")) return;
+    if (!confirm("Regenerating invalidates the current key immediately - any game build still using the old one will stop authenticating. Continue?")) return;
   }
   const { data, error } = await client.rpc("regenerate_project_api_key", { p_project_id: activeProject.id });
   if (error) { showToast("Couldn't generate a new key.", true); return; }
@@ -947,7 +1014,7 @@ async function generateApiKey() {
 }
 async function generateServerKey() {
   if (activeProject.server_key_hash) {
-    if (!confirm("Regenerating invalidates the current server key immediately — your dedicated server will need the new one to keep using GrantCurrency/TakeCurrency/GrantCosmetic/TakeCosmetic. Continue?")) return;
+    if (!confirm("Regenerating invalidates the current server key immediately - your dedicated server will need the new one to keep using GrantCurrency/TakeCurrency/GrantCosmetic/TakeCosmetic. Continue?")) return;
   }
   const { data, error } = await client.rpc("regenerate_project_server_key", { p_project_id: activeProject.id });
   if (error) { showToast("Couldn't generate a new server key.", true); return; }
@@ -986,7 +1053,7 @@ async function deleteCurrentProject() {
 function switchTab(tabId) {
   document.querySelectorAll(".tab-content").forEach((el) => el.classList.add("hidden"));
   document.getElementById(`tab-${tabId}`).classList.remove("hidden");
-  const titles = { overview: "Overview", players: "Players", currencies: "Currencies", cosmetics: "Catalog", titledata: "Title Data", activity: "Activity", leaderboards: "Leaderboards", projectsettings: "Project settings", platform: "Platform", settings: "Settings" };
+  const titles = { overview: "Overview", players: "Players", currencies: "Currencies", cosmetics: "Catalog", titledata: "Title Data", activity: "Activity", leaderboards: "Leaderboards", projectsettings: "Project settings", platform: "Platform", settings: "Settings", moderation: "Moderation", news: "News", codes: "Codes" };
   document.getElementById("currentTabTitle").innerText = titles[tabId];
   document.getElementById("mobileTabTitle").innerText = titles[tabId];
   document.querySelectorAll("#mainNav button").forEach((b) => b.classList.remove("active"));
@@ -995,6 +1062,9 @@ function switchTab(tabId) {
   if (tabId === "activity") setActivityView(document.getElementById("activityViewBtnEvents").classList.contains("active") ? "events" : "audit");
   if (tabId === "leaderboards") loadLeaderboardStatChips();
   if (tabId === "titledata") loadTitleData();
+  if (tabId === "moderation") loadReports();
+  if (tabId === "news") loadNews();
+  if (tabId === "codes") { renderCodeGrantInputs(); loadCodes(); }
   document.getElementById("mainContent").focus();
 }
 
@@ -1031,7 +1101,37 @@ async function fetchProjectData() {
   renderCurrencies();
   renderRoleSelect();
   renderRolesModalList();
+  renderRecentPlayers();
+  renderOverviewCurrencyList();
+  refreshReportBadge();
   if (selectedPlayer) openPlayerDrawer(selectedPlayer.id, true);
+}
+
+// Overview widget: last 5 players by signup time, newest first - a quick
+// pulse check without leaving the tab you land on.
+function renderRecentPlayers() {
+  const list = document.getElementById("recentPlayersList");
+  if (!list) return;
+  const recent = [...fullPlayerCache].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+  if (recent.length === 0) { list.innerHTML = `<li class="py-8 text-center text-xs" style="color: var(--text-faint);">No players yet.</li>`; return; }
+  list.innerHTML = recent.map((p) => `
+    <li class="py-2.5 px-4 flex justify-between items-center gap-2">
+      <span class="font-semibold truncate">${escapeHtml(p.name)}</span>
+      <span class="text-[10px] font-mono shrink-0" style="color: var(--text-faint);">${p.created_at ? new Date(p.created_at).toLocaleDateString() : ""}</span>
+    </li>`).join("");
+}
+
+// Overview widget: same circulation totals used on the currency cards,
+// surfaced here too so it's visible without switching tabs.
+function renderOverviewCurrencyList() {
+  const list = document.getElementById("overviewCurrencyList");
+  if (!list) return;
+  if (currenciesArray.length === 0) { list.innerHTML = `<li class="py-8 text-center text-xs" style="color: var(--text-faint);">No currencies yet.</li>`; return; }
+  list.innerHTML = currenciesArray.map((c) => `
+    <li class="py-2.5 px-4 flex justify-between items-center gap-2">
+      <span class="font-semibold truncate">${escapeHtml(c.name)}</span>
+      <span class="text-xs font-mono font-bold shrink-0" style="color: var(--accent-text);">${currencyTotals[c.id] || 0}</span>
+    </li>`).join("");
 }
 
 function renderRoleSelect() {
@@ -1039,7 +1139,7 @@ function renderRoleSelect() {
   if (!select) return;
   const current = select.value;
   if (rolesArray.length === 0) {
-    select.innerHTML = `<option value="user">User (default — add custom roles via Edit)</option>`;
+    select.innerHTML = `<option value="user">User (default - add custom roles via Edit)</option>`;
   } else {
     select.innerHTML = rolesArray.map((r) => `<option value="${escapeHtml(r.name)}">${escapeHtml(r.name)}${r.is_default ? " (default)" : ""}</option>`).join("");
   }
@@ -1060,7 +1160,7 @@ function renderRolesModalList() {
         </span>
         <button onclick="deleteRole('${r.id}')" class="text-[10px] font-black uppercase shrink-0" style="color: var(--danger-text);">Remove</button>
       </div>`).join("")
-    : `<p class="text-xs italic text-center py-4" style="color: var(--text-faint);">No roles yet — add one below.</p>`;
+    : `<p class="text-xs italic text-center py-4" style="color: var(--text-faint);">No roles yet - add one below.</p>`;
 }
 
 function showRolesModal() {
@@ -1231,7 +1331,36 @@ function openPlayerDrawer(pid) {
   } else {
     tagsContainer.innerHTML = `<span class="text-xs italic" style="color: var(--text-faint);">No tags yet.</span>`;
   }
+
+  loadPlayerStatsForDrawer(p.id);
+  loadPlayerDataForDrawer(p.id);
+  loadLedgerForDrawer(p.id);
+  const banDetail = document.getElementById("banDetail");
+  document.getElementById("banControls").classList.toggle("hidden", !!p.is_banned);
+  if (p.is_banned) {
+    banDetail.classList.remove("hidden");
+    banDetail.innerText = `${p.ban_reason ? p.ban_reason + " · " : ""}${p.ban_expires_at ? "until " + new Date(p.ban_expires_at).toLocaleString() : "permanent"}`;
+  } else banDetail.classList.add("hidden");
 }
+
+// Per-player breakdown of whatever the game has reported via
+// SubmitStatistic - separate from the aggregate leaderboards tab, this
+// shows every stat this one player has, not just a single ranked one.
+async function loadPlayerStatsForDrawer(playerId) {
+  const container = document.getElementById("playerStatsList");
+  const { data, error } = await client.from("player_statistics").select("stat_name, value").eq("player_id", playerId).order("stat_name", { ascending: true });
+  if (!selectedPlayer || selectedPlayer.id !== playerId) return;
+  if (error || !data || data.length === 0) {
+    container.innerHTML = `<p class="italic" style="color: var(--text-faint);">No stats reported yet.</p>`;
+    return;
+  }
+  container.innerHTML = data.map((s) => `
+    <div class="flex justify-between panel px-2.5 py-1.5">
+      <span style="color: var(--text-dim);">${escapeHtml(s.stat_name)}</span>
+      <span class="font-bold" style="color: var(--accent-text);">${escapeHtml(String(s.value))}</span>
+    </div>`).join("");
+}
+
 function closePlayerDrawer() {
   document.getElementById("playerDrawer").classList.add("hidden");
   document.getElementById("playerDrawerBackdrop").classList.add("hidden");
@@ -1299,8 +1428,19 @@ async function changeRole() {
 }
 async function toggleBan() {
   const next = !selectedPlayer.is_banned;
-  const { error } = await client.from("players").update({ is_banned: next }).eq("id", selectedPlayer.id);
-  if (!error) { await logAudit("toggle_ban", { player: selectedPlayer.id, banned: next }); fetchProjectData(); showToast(next ? "Player banned." : "Player unbanned."); }
+  let error;
+  if (next) {
+    const reason = document.getElementById("banReason").value.trim();
+    const hours = parseInt(document.getElementById("banDuration").value, 10) || null;
+    ({ error } = await client.rpc("dashboard_ban_player", { p_player_id: selectedPlayer.id, p_reason: reason, p_hours: hours }));
+    if (!error) await logAudit("ban_player", { player: selectedPlayer.id, reason, hours: hours || "permanent" });
+  } else {
+    ({ error } = await client.from("players").update({ is_banned: false, ban_reason: null, ban_expires_at: null, banned_at: null }).eq("id", selectedPlayer.id));
+    if (!error) await logAudit("unban_player", { player: selectedPlayer.id });
+  }
+  if (error) { showToast("Couldn't change ban state.", true); return; }
+  document.getElementById("banReason").value = "";
+  fetchProjectData(); showToast(next ? "Player banned." : "Player unbanned.");
 }
 async function deletePlayer() {
   if (!confirm("Delete this player? This can't be undone.")) return;
@@ -1315,7 +1455,7 @@ async function executeProvision() {
   const defaultRole = (rolesArray.find((r) => r.is_default) || {}).name || "user";
   const { error } = await client.from("players").insert([{ id, project_id: activeProject.id, name, role: defaultRole, is_banned: false, tags: [] }]);
   if (!error) { closeModal("provisionModal"); document.getElementById("provPlayerId").value = ""; document.getElementById("provPlayerName").value = ""; fetchProjectData(); showToast("Player added."); }
-  else showToast("Couldn't add that player — ID may already exist.", true);
+  else showToast("Couldn't add that player - ID may already exist.", true);
 }
 
 function csvEscape(val) {
@@ -1535,7 +1675,7 @@ async function submitTitleData() {
   if (!error) {
     await logAudit(editKey ? "update_title_data" : "create_title_data", { key });
     cancelTitleDataEdit(); loadTitleData(); showToast(editKey ? "Title data updated." : "Title data added.");
-  } else showToast("Couldn't save that key — it may already exist.", true);
+  } else showToast("Couldn't save that key - it may already exist.", true);
 }
 async function deleteTitleData(key) {
   const { error } = await client.from("title_data").delete().eq("project_id", activeProject.id).eq("key", key);
@@ -1583,7 +1723,7 @@ async function loadLeaderboardStatChips() {
   const chips = document.getElementById("leaderboardStatChips");
   chips.innerHTML = names.length
     ? names.map((n) => `<button class="stat-chip btn-ghost px-3 py-1.5 rounded-full text-xs font-bold" data-name="${escapeHtml(n)}">${escapeHtml(n)}</button>`).join("")
-    : `<span class="text-xs italic" style="color: var(--text-faint);">No stats reported yet — call SubmitStatistic from your game first.</span>`;
+    : `<span class="text-xs italic" style="color: var(--text-faint);">No stats reported yet - call SubmitStatistic from your game first.</span>`;
   chips.querySelectorAll(".stat-chip").forEach((btn) => {
     btn.onclick = () => { document.getElementById("leaderboardStatInput").value = btn.dataset.name; loadLeaderboard(); };
   });
@@ -1592,6 +1732,7 @@ async function loadLeaderboard() {
   const statName = document.getElementById("leaderboardStatInput").value.trim();
   const list = document.getElementById("leaderboardList");
   if (!statName || !activeProject) { showToast("Enter a stat name first.", true); return; }
+  loadStatDefinition(statName);
   const ids = fullPlayerCache.map((p) => p.id);
   if (ids.length === 0) { list.innerHTML = `<li class="py-10 text-center font-medium" style="color: var(--text-faint);">No players yet.</li>`; return; }
   const { data, error } = await client.from("player_statistics").select("player_id, value").in("player_id", ids).eq("stat_name", statName).order("value", { ascending: false }).limit(50);
@@ -1631,6 +1772,312 @@ async function unbanAccount(email) {
   const { error } = await client.from("banned_emails").delete().eq("email", email);
   if (!error) { loadBannedUsers(); showToast("Account unblocked."); }
 }
+// =========================================================================
+// PLAYFAB PARITY - moderation, news, codes, player data, ledger, seasons
+// Requires clouorvr_playfab_parity.sql.
+// =========================================================================
+const fmtWhen = (ts) => ts ? new Date(ts).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
+const playerName = (id) => (fullPlayerCache.find((p) => p.id === id) || {}).name || id || "unknown";
+
+// ---- Moderation ---------------------------------------------------------
+let reportFilter = "open";
+document.querySelectorAll("#reportFilterSeg button").forEach((b) => {
+  b.onclick = () => {
+    reportFilter = b.dataset.f;
+    document.querySelectorAll("#reportFilterSeg button").forEach((x) => x.classList.toggle("active", x === b));
+    loadReports();
+  };
+});
+
+async function refreshReportBadge() {
+  if (!activeProject) return;
+  const { count } = await client.from("player_reports").select("id", { count: "exact", head: true })
+    .eq("project_id", activeProject.id).eq("status", "open");
+  const badge = document.getElementById("navBadge-moderation");
+  badge.innerText = count || "";
+  badge.classList.toggle("hidden", !count);
+}
+
+async function loadReports() {
+  if (!activeProject) return;
+  const list = document.getElementById("reportsList");
+  const { data, error } = await client.from("player_reports").select("*")
+    .eq("project_id", activeProject.id).eq("status", reportFilter)
+    .order("created_at", { ascending: false }).limit(200);
+  if (error) { list.innerHTML = `<li class="py-10 text-center" style="color: var(--danger-text);">Run clouorvr_playfab_parity.sql first.</li>`; return; }
+  const rows = data || [];
+  if (!rows.length) {
+    list.innerHTML = `<li class="py-14 text-center font-medium" style="color: var(--text-faint);">${reportFilter === "open" ? "Queue's clear." : "Nothing here."}</li>`;
+    return;
+  }
+  // Heat: how many reports in this view point at the same player.
+  const heat = {};
+  rows.forEach((r) => (heat[r.target_id] = (heat[r.target_id] || 0) + 1));
+  list.innerHTML = "";
+  rows.forEach((r) => {
+    const n = heat[r.target_id];
+    const target = fullPlayerCache.find((p) => p.id === r.target_id);
+    const li = document.createElement("li");
+    li.className = `report-row heat-${n >= 3 ? 3 : n >= 2 ? 2 : 1} px-5 py-4 flex gap-4 items-start border-b`;
+    li.style.borderBottomColor = "var(--hairline-soft)";
+    li.innerHTML = `
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-baseline gap-x-2">
+          <button class="open-target font-semibold hover:underline">${escapeHtml(playerName(r.target_id))}</button>
+          ${n > 1 ? `<span class="text-[10px] font-mono font-bold" style="color: var(--danger-text);">×${n}</span>` : ""}
+          ${target && target.is_banned ? `<span class="text-[9px] font-black tracking-wider" style="color: var(--danger-text);">BANNED</span>` : ""}
+          <span class="text-[11px] font-mono ml-auto" style="color: var(--text-faint);">${fmtWhen(r.created_at)}</span>
+        </div>
+        <div class="text-xs mt-1"><span class="font-bold uppercase tracking-wide text-[10px]" style="color: var(--accent-text);">${escapeHtml(r.reason)}</span>
+          <span style="color: var(--text-faint);"> from ${escapeHtml(playerName(r.reporter_id))}</span></div>
+        ${r.details ? `<p class="text-xs mt-1.5 leading-relaxed" style="color: var(--text-dim);">${escapeHtml(r.details)}</p>` : ""}
+      </div>
+      ${r.status === "open" ? `<div class="flex flex-col gap-1.5 shrink-0">
+        <button class="ban-btn btn-ghost px-3 py-1.5 text-[10px] font-bold" style="color: var(--danger-text);">Ban 24h</button>
+        <button class="dismiss-btn text-[10px] font-bold uppercase" style="color: var(--text-faint);">Dismiss</button>
+      </div>` : `<span class="text-[10px] font-mono shrink-0" style="color: var(--text-faint);">${escapeHtml(r.resolved_by || "")}</span>`}`;
+    li.querySelector(".open-target").onclick = () => target && openPlayerDrawer(target.id);
+    const banBtn = li.querySelector(".ban-btn");
+    if (banBtn) banBtn.onclick = () => quickBanFromReport(r);
+    const dis = li.querySelector(".dismiss-btn");
+    if (dis) dis.onclick = () => resolveReport(r.id, "dismissed");
+    list.appendChild(li);
+  });
+}
+
+async function quickBanFromReport(r) {
+  const { error } = await client.rpc("dashboard_ban_player", { p_player_id: r.target_id, p_reason: r.reason, p_hours: 24 });
+  if (error) { showToast("Ban failed.", true); return; }
+  await logAudit("ban_player", { player: r.target_id, reason: r.reason, hours: 24, from_report: r.id });
+  showToast(`${playerName(r.target_id)} banned for 24h.`);
+  fetchProjectData(); loadReports();
+}
+
+async function resolveReport(id, status) {
+  const { error } = await client.from("player_reports")
+    .update({ status, resolved_by: currentUser.email, resolved_at: new Date().toISOString() }).eq("id", id);
+  if (error) { showToast("Couldn't update report.", true); return; }
+  refreshReportBadge(); loadReports();
+}
+
+// ---- News ---------------------------------------------------------------
+async function loadNews() {
+  if (!activeProject) return;
+  const { data } = await client.from("title_news").select("*").eq("project_id", activeProject.id)
+    .order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
+  const list = document.getElementById("newsList");
+  const rows = data || [];
+  if (!rows.length) { list.innerHTML = `<p class="py-10 text-sm" style="color: var(--text-faint);">No posts yet. The first one sets the tone.</p>`; return; }
+  list.innerHTML = "";
+  rows.forEach((n) => {
+    const el = document.createElement("article");
+    el.className = `news-post${n.is_pinned ? " pinned" : ""}`;
+    el.innerHTML = `
+      <div class="flex items-center gap-2 mb-1.5 text-[10px] font-mono uppercase tracking-wider" style="color: var(--text-faint);">
+        ${n.is_published ? `<span style="color: var(--moss-text);">live</span> · ${fmtWhen(n.published_at)}` : `<span>draft</span>`}
+        ${n.is_pinned ? `· <span style="color: var(--accent-text);">pinned</span>` : ""}
+      </div>
+      <h4 class="font-semibold mb-1.5">${escapeHtml(n.title)}</h4>
+      <p class="text-sm leading-relaxed whitespace-pre-line" style="color: var(--text-dim);">${escapeHtml(n.body.length > 280 ? n.body.slice(0, 280) + "..." : n.body)}</p>
+      <div class="flex gap-4 mt-3 text-[10px] font-black uppercase">
+        <button class="edit">Edit</button>
+        <button class="toggle" style="color: var(--accent-text);">${n.is_published ? "Unpublish" : "Publish"}</button>
+        <button class="del" style="color: var(--danger-text);">Delete</button>
+      </div>`;
+    el.querySelector(".edit").onclick = () => editNews(n);
+    el.querySelector(".toggle").onclick = () => saveNewsRow(n.id, { is_published: !n.is_published, published_at: !n.is_published ? new Date().toISOString() : n.published_at });
+    el.querySelector(".del").onclick = async () => {
+      if (!confirm("Delete this post?")) return;
+      await client.from("title_news").delete().eq("id", n.id);
+      await logAudit("delete_news", { id: n.id }); loadNews();
+    };
+    list.appendChild(el);
+  });
+}
+function editNews(n) {
+  document.getElementById("newsFormTitle").innerText = "Edit post";
+  document.getElementById("newsEditId").value = n.id;
+  document.getElementById("newsTitle").value = n.title;
+  document.getElementById("newsBody").value = n.body;
+  document.getElementById("newsPublished").checked = n.is_published;
+  document.getElementById("newsPinned").checked = n.is_pinned;
+  document.getElementById("newsCancelBtn").classList.remove("hidden");
+}
+function resetNewsForm() {
+  document.getElementById("newsFormTitle").innerText = "New post";
+  ["newsEditId", "newsTitle", "newsBody"].forEach((id) => (document.getElementById(id).value = ""));
+  document.getElementById("newsPublished").checked = false;
+  document.getElementById("newsPinned").checked = false;
+  document.getElementById("newsCancelBtn").classList.add("hidden");
+}
+async function saveNewsRow(id, patch) {
+  const { error } = await client.from("title_news").update(patch).eq("id", id);
+  if (error) { showToast("Couldn't save post.", true); return; }
+  await logAudit("update_news", { id, ...patch }); loadNews();
+}
+async function submitNews() {
+  const id = document.getElementById("newsEditId").value;
+  const title = document.getElementById("newsTitle").value.trim();
+  const body = document.getElementById("newsBody").value;
+  const is_published = document.getElementById("newsPublished").checked;
+  const is_pinned = document.getElementById("newsPinned").checked;
+  if (!title) { showToast("A headline is required.", true); return; }
+  const row = { title, body, is_published, is_pinned };
+  if (is_published) row.published_at = new Date().toISOString();
+  const { error } = id
+    ? await client.from("title_news").update(row).eq("id", id)
+    : await client.from("title_news").insert([{ ...row, project_id: activeProject.id }]);
+  if (error) { showToast("Couldn't save post.", true); return; }
+  await logAudit(id ? "update_news" : "create_news", { title });
+  resetNewsForm(); loadNews(); showToast(is_published ? "Post is live." : "Draft saved.");
+}
+
+// ---- Redeem codes -------------------------------------------------------
+function randomCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I - players type these
+  let c = ""; for (let i = 0; i < 8; i++) c += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById("codeValue").value = c.slice(0, 4) + "-" + c.slice(4);
+}
+function renderCodeGrantInputs() {
+  document.getElementById("codeCurrencyInputs").innerHTML = currenciesArray.length
+    ? currenciesArray.map((c) => `<label class="flex items-center gap-2 text-xs"><span class="w-24 truncate" style="color: var(--text-dim);">${escapeHtml(c.name)}</span>
+        <input type="number" min="0" data-cur="${c.id}" class="code-cur w-full p-2 input-field text-xs" placeholder="0"></label>`).join("")
+    : `<p class="text-xs italic" style="color: var(--text-faint);">No currencies yet.</p>`;
+  document.getElementById("codeCosmetics").innerHTML = globalCatalog.map((c) => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)} (${escapeHtml(c.slot)})</option>`).join("");
+}
+function describeGrants(g) {
+  const parts = (g.currencies || []).map((x) => `${x.amount} ${(currenciesArray.find((c) => c.id === x.currency_id) || {}).name || "?"}`);
+  (g.cosmetics || []).forEach((id) => parts.push((globalCatalog.find((c) => c.id === id) || {}).name || id));
+  return parts.join(" + ") || "nothing";
+}
+async function loadCodes() {
+  if (!activeProject) return;
+  const { data } = await client.from("redeem_codes").select("*").eq("project_id", activeProject.id).order("created_at", { ascending: false });
+  const list = document.getElementById("codesList");
+  const rows = data || [];
+  if (!rows.length) { list.innerHTML = `<p class="py-10 text-sm" style="color: var(--text-faint);">No codes yet. Make one for your next update or stream.</p>`; return; }
+  list.innerHTML = "";
+  rows.forEach((c) => {
+    const expired = c.expires_at && new Date(c.expires_at) < new Date();
+    const spent = !c.is_active || expired || (c.max_uses && c.uses >= c.max_uses);
+    const el = document.createElement("div");
+    el.className = `code-stub${spent ? " spent" : ""}`;
+    el.innerHTML = `
+      <div class="p-4 min-w-0">
+        <div class="stub-code">${escapeHtml(c.code)}</div>
+        <div class="text-xs mt-1 truncate" style="color: var(--text-dim);">${escapeHtml(describeGrants(c.grants || {}))}</div>
+        <div class="flex gap-3 mt-2 text-[10px] font-black uppercase">
+          <button class="copy">Copy</button>
+          <button class="toggle" style="color: var(--accent-text);">${c.is_active ? "Disable" : "Enable"}</button>
+          <button class="del" style="color: var(--danger-text);">Delete</button>
+        </div>
+      </div>
+      <div class="stub-tail">
+        <span class="font-mono font-bold text-lg leading-none">${c.uses}<span class="text-xs" style="color: var(--text-faint);">/${c.max_uses ?? "∞"}</span></span>
+        <span class="text-[10px] font-mono mt-1.5" style="color: ${expired ? "var(--danger-text)" : "var(--text-faint)"};">${c.expires_at ? (expired ? "expired" : "til " + new Date(c.expires_at).toLocaleDateString()) : "no expiry"}</span>
+      </div>`;
+    el.querySelector(".copy").onclick = () => { navigator.clipboard.writeText(c.code); showToast("Code copied."); };
+    el.querySelector(".toggle").onclick = async () => { await client.from("redeem_codes").update({ is_active: !c.is_active }).eq("id", c.id); await logAudit("toggle_code", { code: c.code, active: !c.is_active }); loadCodes(); };
+    el.querySelector(".del").onclick = async () => { if (!confirm(`Delete ${c.code}?`)) return; await client.from("redeem_codes").delete().eq("id", c.id); await logAudit("delete_code", { code: c.code }); loadCodes(); };
+    list.appendChild(el);
+  });
+}
+async function submitCode() {
+  const code = document.getElementById("codeValue").value.trim().toUpperCase();
+  if (!/^[A-Z0-9_-]{3,32}$/.test(code)) { showToast("Codes are 3-32 chars: A-Z, 0-9, - and _.", true); return; }
+  const currencies = [...document.querySelectorAll(".code-cur")]
+    .map((i) => ({ currency_id: i.dataset.cur, amount: parseInt(i.value, 10) || 0 })).filter((x) => x.amount > 0);
+  const cosmetics = [...document.getElementById("codeCosmetics").selectedOptions].map((o) => o.value);
+  if (!currencies.length && !cosmetics.length) { showToast("Give the code something to grant.", true); return; }
+  const maxUses = parseInt(document.getElementById("codeMaxUses").value, 10) || null;
+  const exp = document.getElementById("codeExpires").value;
+  const { error } = await client.from("redeem_codes").insert([{
+    project_id: activeProject.id, code, grants: { currencies, cosmetics }, max_uses: maxUses,
+    expires_at: exp ? new Date(exp + "T23:59:59").toISOString() : null,
+  }]);
+  if (error) { showToast(error.code === "23505" ? "That code already exists." : "Couldn't create code.", true); return; }
+  await logAudit("create_code", { code, max_uses: maxUses });
+  ["codeValue", "codeMaxUses", "codeExpires"].forEach((id) => (document.getElementById(id).value = ""));
+  renderCodeGrantInputs(); loadCodes(); showToast(`${code} is ready.`);
+}
+
+// ---- Player data + ledger (drawer) --------------------------------------
+async function loadPlayerDataForDrawer(playerId) {
+  const box = document.getElementById("playerDataList");
+  const { data, error } = await client.from("player_data").select("*").eq("player_id", playerId).order("key");
+  if (!selectedPlayer || selectedPlayer.id !== playerId) return;
+  if (error || !data || !data.length) { box.innerHTML = `<p class="italic font-sans" style="color: var(--text-faint);">No data keys.</p>`; return; }
+  box.innerHTML = "";
+  data.forEach((d) => {
+    const row = document.createElement("div");
+    row.className = "flex items-center gap-2 panel px-2.5 py-1.5";
+    row.innerHTML = `
+      <span class="shrink-0" style="color: var(--text-dim);">${escapeHtml(d.key)}</span>
+      <span class="truncate flex-1 text-right font-bold" style="color: var(--accent-text);" title="${escapeHtml(d.value)}">${escapeHtml(d.value)}</span>
+      <span class="shrink-0 text-[9px]" style="color: var(--text-faint);">${d.is_public ? "pub" : "---"}·${d.is_readonly ? "ro" : "rw"}</span>
+      <button class="shrink-0" aria-label="Delete key" style="color: var(--danger-text);">×</button>`;
+    row.querySelector("button").onclick = async () => {
+      await client.from("player_data").delete().eq("player_id", playerId).eq("key", d.key);
+      await logAudit("delete_player_data", { player: playerId, key: d.key }); loadPlayerDataForDrawer(playerId);
+    };
+    box.appendChild(row);
+  });
+}
+async function savePlayerDataKey() {
+  const key = document.getElementById("pdKey").value.trim();
+  const value = document.getElementById("pdValue").value;
+  if (!key) { showToast("Key required.", true); return; }
+  const { error } = await client.from("player_data").upsert([{ player_id: selectedPlayer.id, key, value, is_readonly: true, updated_at: new Date().toISOString() }]);
+  if (error) { showToast("Couldn't save key.", true); return; }
+  await logAudit("set_player_data", { player: selectedPlayer.id, key });
+  document.getElementById("pdKey").value = ""; document.getElementById("pdValue").value = "";
+  loadPlayerDataForDrawer(selectedPlayer.id);
+}
+async function loadLedgerForDrawer(playerId) {
+  const list = document.getElementById("playerLedgerList");
+  const { data, error } = await client.from("currency_transactions").select("*").eq("player_id", playerId).order("ts", { ascending: false }).limit(50);
+  if (!selectedPlayer || selectedPlayer.id !== playerId) return;
+  if (error || !data || !data.length) { list.innerHTML = `<li class="italic font-sans" style="color: var(--text-faint);">No transactions yet.</li>`; return; }
+  const curName = (id) => (currenciesArray.find((c) => c.id === id) || {}).name || "?";
+  list.innerHTML = data.map((t) => `
+    <li class="flex items-center gap-2 py-1 border-b" style="border-color: var(--hairline-soft);">
+      <span class="ledger-delta ${t.delta > 0 ? "pos" : "neg"} w-14 text-right font-bold">${t.delta > 0 ? "+" : ""}${t.delta}</span>
+      <span class="w-14 truncate" style="color: var(--text-dim);">${escapeHtml(curName(t.currency_id))}</span>
+      <span class="flex-1 truncate" style="color: var(--text-faint);">${escapeHtml(t.source)}</span>
+      <span class="shrink-0" style="color: var(--text-faint);">${fmtWhen(t.ts)}</span>
+    </li>`).join("");
+}
+
+// ---- Stat definitions / seasons ----------------------------------------
+let currentStatDef = null;
+async function loadStatDefinition(statName) {
+  const { data, error } = await client.from("statistic_definitions").select("*").eq("project_id", activeProject.id).eq("stat_name", statName).maybeSingle();
+  if (error) return; // migration not applied yet - keep the bar hidden
+  currentStatDef = data || { project_id: activeProject.id, stat_name: statName, aggregation: "last", reset_period: "never", version: 0 };
+  document.getElementById("statDefBar").classList.remove("hidden");
+  document.querySelectorAll("#statAggSeg button").forEach((b) => b.classList.toggle("active", b.dataset.v === currentStatDef.aggregation));
+  document.querySelectorAll("#statResetSeg button").forEach((b) => b.classList.toggle("active", b.dataset.v === currentStatDef.reset_period));
+  document.getElementById("statSeasonLabel").innerText = `season ${currentStatDef.version + 1}${currentStatDef.last_reset_at ? " · since " + new Date(currentStatDef.last_reset_at).toLocaleDateString() : ""}`;
+}
+async function saveStatDefinition(patch) {
+  if (!currentStatDef) return;
+  const row = { project_id: currentStatDef.project_id, stat_name: currentStatDef.stat_name, aggregation: currentStatDef.aggregation, reset_period: currentStatDef.reset_period, ...patch };
+  const { error } = await client.from("statistic_definitions").upsert([row], { onConflict: "project_id,stat_name" });
+  if (error) { showToast("Couldn't save stat settings.", true); return; }
+  await logAudit("update_stat_definition", row);
+  loadStatDefinition(row.stat_name);
+}
+document.querySelectorAll("#statAggSeg button").forEach((b) => (b.onclick = () => saveStatDefinition({ aggregation: b.dataset.v })));
+document.querySelectorAll("#statResetSeg button").forEach((b) => (b.onclick = () => saveStatDefinition({ reset_period: b.dataset.v })));
+async function resetSeasonNow() {
+  if (!currentStatDef || !confirm(`End the current "${currentStatDef.stat_name}" season? Scores are archived and the board starts empty.`)) return;
+  const { data, error } = await client.rpc("dashboard_reset_statistic", { p_project_id: activeProject.id, p_stat_name: currentStatDef.stat_name });
+  if (error) { showToast("Reset failed.", true); return; }
+  await logAudit("reset_statistic", { stat: currentStatDef.stat_name, archived: data });
+  showToast(`Season closed - ${data} scores archived.`);
+  loadLeaderboard();
+}
+
 </script>
 </body>
 </html>
